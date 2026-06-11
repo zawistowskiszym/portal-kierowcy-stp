@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedUrlopyRouteImport } from './routes/_authenticated/urlopy'
+import { Route as AuthenticatedStatystykiRouteImport } from './routes/_authenticated/statystyki'
 import { Route as AuthenticatedPulpitRouteImport } from './routes/_authenticated/pulpit'
 import { Route as AuthenticatedOgloszeniaRouteImport } from './routes/_authenticated/ogloszenia'
 import { Route as AuthenticatedGrafikRouteImport } from './routes/_authenticated/grafik'
@@ -55,6 +56,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedUrlopyRoute = AuthenticatedUrlopyRouteImport.update({
   id: '/urlopy',
   path: '/urlopy',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedStatystykiRoute = AuthenticatedStatystykiRouteImport.update({
+  id: '/statystyki',
+  path: '/statystyki',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedPulpitRoute = AuthenticatedPulpitRouteImport.update({
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/grafik': typeof AuthenticatedGrafikRoute
   '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/pulpit': typeof AuthenticatedPulpitRoute
+  '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
@@ -153,6 +160,7 @@ export interface FileRoutesByTo {
   '/grafik': typeof AuthenticatedGrafikRoute
   '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/pulpit': typeof AuthenticatedPulpitRoute
+  '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
@@ -174,6 +182,7 @@ export interface FileRoutesById {
   '/_authenticated/grafik': typeof AuthenticatedGrafikRoute
   '/_authenticated/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/_authenticated/pulpit': typeof AuthenticatedPulpitRoute
+  '/_authenticated/statystyki': typeof AuthenticatedStatystykiRoute
   '/_authenticated/urlopy': typeof AuthenticatedUrlopyRoute
   '/_authenticated/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/_authenticated/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
@@ -195,6 +204,7 @@ export interface FileRouteTypes {
     | '/grafik'
     | '/ogloszenia'
     | '/pulpit'
+    | '/statystyki'
     | '/urlopy'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/grafik'
     | '/ogloszenia'
     | '/pulpit'
+    | '/statystyki'
     | '/urlopy'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/_authenticated/grafik'
     | '/_authenticated/ogloszenia'
     | '/_authenticated/pulpit'
+    | '/_authenticated/statystyki'
     | '/_authenticated/urlopy'
     | '/_authenticated/admin/ogloszenia'
     | '/_authenticated/admin/pojazdy'
@@ -297,6 +309,13 @@ declare module '@tanstack/react-router' {
       path: '/urlopy'
       fullPath: '/urlopy'
       preLoaderRoute: typeof AuthenticatedUrlopyRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/statystyki': {
+      id: '/_authenticated/statystyki'
+      path: '/statystyki'
+      fullPath: '/statystyki'
+      preLoaderRoute: typeof AuthenticatedStatystykiRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/pulpit': {
@@ -409,6 +428,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedGrafikRoute: typeof AuthenticatedGrafikRoute
   AuthenticatedOgloszeniaRoute: typeof AuthenticatedOgloszeniaRoute
   AuthenticatedPulpitRoute: typeof AuthenticatedPulpitRoute
+  AuthenticatedStatystykiRoute: typeof AuthenticatedStatystykiRoute
   AuthenticatedUrlopyRoute: typeof AuthenticatedUrlopyRoute
 }
 
@@ -418,6 +438,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedGrafikRoute: AuthenticatedGrafikRoute,
   AuthenticatedOgloszeniaRoute: AuthenticatedOgloszeniaRoute,
   AuthenticatedPulpitRoute: AuthenticatedPulpitRoute,
+  AuthenticatedStatystykiRoute: AuthenticatedStatystykiRoute,
   AuthenticatedUrlopyRoute: AuthenticatedUrlopyRoute,
 }
 
