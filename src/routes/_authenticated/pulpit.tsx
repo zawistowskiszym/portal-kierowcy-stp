@@ -109,7 +109,6 @@ function PulpitPage() {
               <tr>
                 <th className="px-6 py-3">Data</th>
                 <th className="px-6 py-3">Nr służby</th>
-                <th className="px-6 py-3">Godziny</th>
                 <th className="px-6 py-3">Linia</th>
                 <th className="px-6 py-3">Pojazd</th>
                 <th className="px-6 py-3">Status</th>
@@ -117,13 +116,12 @@ function PulpitPage() {
             </thead>
             <tbody className="divide-y divide-border">
               {upc.length === 0 && (
-                <tr><td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">Brak nadchodzących służb.</td></tr>
+                <tr><td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">Brak nadchodzących służb.</td></tr>
               )}
               {upc.map((d) => (
                 <tr key={d.id}>
                   <td className="px-6 py-3 font-medium">{fmtDateShort(d.duty_date)}</td>
                   <td className="px-6 py-3 font-mono text-xs">{d.duty_number}</td>
-                  <td className="px-6 py-3 font-mono">{fmtTime(d.start_time)} — {fmtTime(d.end_time)}</td>
                   <td className="px-6 py-3">{d.route}</td>
                   <td className="px-6 py-3 font-mono text-xs">{d.vehicle_label ?? "—"}</td>
                   <td className="px-6 py-3"><Badge variant="secondary">Potwierdzona</Badge></td>
