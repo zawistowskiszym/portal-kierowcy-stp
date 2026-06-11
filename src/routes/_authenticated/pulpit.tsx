@@ -16,10 +16,6 @@ function fmtDateShort(iso: string) {
   const d = new Date(iso + "T00:00:00");
   return `${PL_DAYS[d.getDay()]}, ${d.getDate()} ${PL_MONTHS_SHORT[d.getMonth()]}`;
 }
-function fmtTime(t?: string | null) {
-  if (!t) return "—";
-  return t.slice(0, 5);
-}
 
 function PulpitPage() {
   const nextDutyFn = useServerFn(getMyNextDuty);
@@ -47,18 +43,13 @@ function PulpitPage() {
         </div>
         {nd ? (
           <>
-            <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Linia / Służba</p>
                 <p className="text-3xl font-bold">
                   {nd.route} <span className="text-muted-foreground/50 font-normal font-mono text-2xl">/ {nd.duty_number}</span>
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">{nd.depot}</p>
-              </div>
-              <div>
-                <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Czas pracy</p>
-                <p className="text-xl font-bold font-mono">{fmtTime(nd.start_time)} — {fmtTime(nd.end_time)}</p>
-                <p className="text-sm text-muted-foreground mt-1">Zmiana</p>
               </div>
               <div>
                 <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Pojazd</p>
@@ -114,7 +105,6 @@ function PulpitPage() {
               <tr>
                 <th className="px-6 py-3">Data</th>
                 <th className="px-6 py-3">Nr służby</th>
-                <th className="px-6 py-3">Godziny</th>
                 <th className="px-6 py-3">Linia</th>
                 <th className="px-6 py-3">Pojazd</th>
                 <th className="px-6 py-3">Status</th>
@@ -122,13 +112,12 @@ function PulpitPage() {
             </thead>
             <tbody className="divide-y divide-border">
               {upc.length === 0 && (
-                <tr><td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">Brak nadchodzących służb.</td></tr>
+                <tr><td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">Brak nadchodzących służb.</td></tr>
               )}
               {upc.map((d) => (
                 <tr key={d.id}>
                   <td className="px-6 py-3 font-medium">{fmtDateShort(d.duty_date)}</td>
                   <td className="px-6 py-3 font-mono text-xs">{d.duty_number}</td>
-                  <td className="px-6 py-3 font-mono">{fmtTime(d.start_time)} — {fmtTime(d.end_time)}</td>
                   <td className="px-6 py-3">{d.route}</td>
                   <td className="px-6 py-3 font-mono text-xs">{d.vehicle_label ?? "—"}</td>
                   <td className="px-6 py-3"><Badge variant="secondary">Potwierdzona</Badge></td>

@@ -1,34 +1,47 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { toast } from "sonner";
 import { getMyDutiesInRange } from "@/lib/portal.functions";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Map as MapIcon, CalendarDays, FileText, AlertTriangle, Bus, Hash, Clock, StickyNote, Building2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/grafik")({
   head: () => ({ meta: [{ title: "Mój grafik — Portal STP" }] }),
   component: GrafikPage,
 });
 
-const PL_MONTHS = ["Styczeń","Luty","Marzec","Kwiecień","Maj","Czerwiec","Lipiec","Sierpień","Wrzesień","Październik","Listopad","Grudzień"];
-const PL_DOW = ["Pn","Wt","Śr","Cz","Pt","Sb","Nd"];
+const PL_DOW = ["Nd", "Pn", "Wt", "Śr", "Cz", "Pt", "Sb"];
+const PL_MONTHS_SHORT = ["sty", "lut", "mar", "kwi", "maj", "cze", "lip", "sie", "wrz", "paź", "lis", "gru"];
 
-function pad(n: number) { return String(n).padStart(2, "0"); }
-function isoDate(d: Date) { return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
-function monthRange(year: number, month: number) {
-  const from = new Date(year, month, 1);
-  const to = new Date(year, month + 1, 0);
-  return { from: isoDate(from), to: isoDate(to) };
+const pad = (n: number) => String(n).padStart(2, "0");
+const isoDate = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+function durationLabel(start?: string | null, end?: string | null) {
+  if (!start || !end) return null;
+  const [sh, sm] = start.split(":").map(Number);
+  const [eh, em] = end.split(":").map(Number);
+  let mins = (eh * 60 + em) - (sh * 60 + sm);
+  if (mins < 0) mins += 24 * 60;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m === 0 ? `${h} h` : `${h} h ${m} min`;
 }
 
 function GrafikPage() {
-  const [cursor, setCursor] = useState(() => { const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; });
-  const { from, to } = monthRange(cursor.y, cursor.m);
+  const today = useMemo(() => { const d = new Date(); d.setHours(0,0,0,0); return d; }, []);
+  const days = useMemo(() => Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today); d.setDate(today.getDate() + i); return d;
+  }), [today]);
+
+  const from = isoDate(days[0]);
+  const to = isoDate(days[6]);
+
   const fn = useServerFn(getMyDutiesInRange);
   const { data } = useQuery({
-    queryKey: ["grafik", from, to],
+    queryKey: ["grafik-7d", from, to],
     queryFn: () => fn({ data: { from, to } }),
   });
   const duties = (data ?? []) as any[];
@@ -39,100 +52,127 @@ function GrafikPage() {
     byDate.set(d.duty_date, arr);
   }
 
-  const firstDay = new Date(cursor.y, cursor.m, 1);
-  // Monday-first index
-  const startOffset = (firstDay.getDay() + 6) % 7;
-  const daysInMonth = new Date(cursor.y, cursor.m + 1, 0).getDate();
-  const cells: { date: Date | null; iso?: string }[] = [];
-  for (let i = 0; i < startOffset; i++) cells.push({ date: null });
-  for (let day = 1; day <= daysInMonth; day++) {
-    const d = new Date(cursor.y, cursor.m, day);
-    cells.push({ date: d, iso: isoDate(d) });
-  }
+  const [selectedIso, setSelectedIso] = useState<string>(isoDate(today));
+  const selectedDuties = byDate.get(selectedIso) ?? [];
+
+  const notImplemented = (label: string) => () =>
+    toast.info(`${label} — funkcja wkrótce dostępna`);
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="kalendarz" className="w-full">
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-          <TabsList>
-            <TabsTrigger value="kalendarz">Kalendarz</TabsTrigger>
-            <TabsTrigger value="lista">Lista</TabsTrigger>
-          </TabsList>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={() => setCursor((c) => c.m === 0 ? { y: c.y - 1, m: 11 } : { ...c, m: c.m - 1 })}>
-              <ChevronLeft className="size-4" />
-            </Button>
-            <div className="text-sm font-semibold w-44 text-center">
-              {PL_MONTHS[cursor.m]} {cursor.y}
-            </div>
-            <Button variant="outline" size="icon" onClick={() => setCursor((c) => c.m === 11 ? { y: c.y + 1, m: 0 } : { ...c, m: c.m + 1 })}>
-              <ChevronRight className="size-4" />
-            </Button>
-          </div>
-        </div>
+      <div>
+        <h2 className="text-xl font-bold mb-1">Mój grafik</h2>
+        <p className="text-sm text-muted-foreground">Najbliższe 7 dni — wybierz dzień, aby zobaczyć szczegóły służby.</p>
+      </div>
 
-        <TabsContent value="kalendarz" className="mt-4">
-          <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
-            <div className="grid grid-cols-7 gap-2 mb-2">
-              {PL_DOW.map((d) => (
-                <div key={d} className="text-[10px] font-bold uppercase text-muted-foreground text-center">{d}</div>
-              ))}
-            </div>
-            <div className="grid grid-cols-7 gap-2">
-              {cells.map((c, idx) => {
-                if (!c.date) return <div key={idx} className="aspect-square" />;
-                const items = c.iso ? byDate.get(c.iso) ?? [] : [];
-                const isToday = isoDate(new Date()) === c.iso;
-                return (
-                  <div key={idx} className={`aspect-square border border-border rounded-md p-1.5 flex flex-col gap-1 ${isToday ? "ring-2 ring-brand-accent" : ""}`}>
-                    <div className="text-xs font-mono font-semibold">{c.date.getDate()}</div>
-                    {items.slice(0, 2).map((d) => (
-                      <div key={d.id} className="text-[10px] bg-brand/10 text-brand rounded px-1 py-0.5 truncate font-mono">
-                        {d.start_time.slice(0,5)} {d.route}
-                      </div>
-                    ))}
-                    {items.length > 2 && (
-                      <div className="text-[10px] text-muted-foreground">+{items.length - 2}</div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="lista" className="mt-4">
-          <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-muted/40 border-b border-border text-muted-foreground uppercase text-[10px] font-bold">
-                <tr>
-                  <th className="px-6 py-3">Data</th>
-                  <th className="px-6 py-3">Nr</th>
-                  <th className="px-6 py-3">Godziny</th>
-                  <th className="px-6 py-3">Linia</th>
-                  <th className="px-6 py-3">Pojazd</th>
-                  <th className="px-6 py-3">Zajezdnia</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {duties.length === 0 && (
-                  <tr><td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">Brak służb w tym miesiącu.</td></tr>
+      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
+        {days.map((d) => {
+          const iso = isoDate(d);
+          const items = byDate.get(iso) ?? [];
+          const isSelected = iso === selectedIso;
+          const isToday = iso === isoDate(today);
+          return (
+            <button
+              key={iso}
+              onClick={() => setSelectedIso(iso)}
+              className={[
+                "p-3 rounded-xl border text-left transition-all",
+                isSelected
+                  ? "bg-brand text-brand-foreground border-brand shadow-md scale-[1.02]"
+                  : "bg-card border-border hover:border-brand/40 hover:shadow-sm",
+              ].join(" ")}
+            >
+              <div className={`text-[10px] font-bold uppercase ${isSelected ? "opacity-80" : "text-muted-foreground"}`}>
+                {PL_DOW[d.getDay()]} {isToday && !isSelected && <span className="text-brand-accent">• dziś</span>}
+              </div>
+              <div className="text-2xl font-bold font-mono leading-tight mt-1">
+                {d.getDate()}
+              </div>
+              <div className={`text-[10px] font-mono ${isSelected ? "opacity-80" : "text-muted-foreground"}`}>
+                {PL_MONTHS_SHORT[d.getMonth()]}
+              </div>
+              <div className="mt-2">
+                {items.length > 0 ? (
+                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                    isSelected ? "bg-brand-foreground/20" : "bg-brand/10 text-brand"
+                  }`}>
+                    {items.length === 1 ? items[0].route : `${items.length} służb`}
+                  </span>
+                ) : (
+                  <span className={`text-[10px] ${isSelected ? "opacity-70" : "text-muted-foreground"}`}>wolne</span>
                 )}
-                {duties.map((d) => (
-                  <tr key={d.id}>
-                    <td className="px-6 py-3 font-medium">{d.duty_date}</td>
-                    <td className="px-6 py-3 font-mono text-xs">{d.duty_number}</td>
-                    <td className="px-6 py-3 font-mono">{d.start_time.slice(0,5)} — {d.end_time.slice(0,5)}</td>
-                    <td className="px-6 py-3">{d.route}</td>
-                    <td className="px-6 py-3 font-mono text-xs">{d.vehicle_label ?? "—"}</td>
-                    <td className="px-6 py-3 text-muted-foreground">{d.depot}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="space-y-4">
+        {selectedDuties.length === 0 ? (
+          <div className="bg-card border border-border rounded-xl p-10 text-center text-sm text-muted-foreground shadow-sm">
+            Brak przypisanej służby w wybranym dniu.
           </div>
-        </TabsContent>
-      </Tabs>
+        ) : selectedDuties.map((d) => {
+          const duration = durationLabel(d.start_time, d.end_time);
+          return (
+            <div key={d.id} className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+              <div className="bg-brand-accent px-4 py-3 flex items-center justify-between">
+                <h3 className="font-bold uppercase tracking-wide text-xs text-brand-accent-foreground">
+                  Szczegóły służby
+                </h3>
+                <Badge variant="secondary" className="font-mono">{d.duty_number}</Badge>
+              </div>
+
+              <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+                <Field icon={Hash} label="Linia / brygada" value={`${d.route} / ${d.duty_number}`} mono />
+                <Field icon={Bus} label="Pojazd" value={d.vehicle_label ?? "—"} mono />
+                <Field icon={Building2} label="Zajezdnia" value={d.depot} />
+                <Field icon={Clock} label="Czas służby" value={duration ?? "—"} />
+              </div>
+
+              {d.notes && (
+                <div className="px-6 py-4 bg-muted/40 border-t border-border">
+                  <div className="flex items-start gap-2 text-sm">
+                    <StickyNote className="size-4 text-muted-foreground mt-0.5 shrink-0" />
+                    <div>
+                      <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-0.5">
+                        Informacje dodatkowe
+                      </div>
+                      <div>{d.notes}</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="px-6 py-4 border-t border-border grid grid-cols-2 md:grid-cols-4 gap-2">
+                <Button variant="outline" onClick={notImplemented("Mapa trasy")} className="justify-start">
+                  <MapIcon className="size-4 mr-2" /> Mapa trasy
+                </Button>
+                <Button variant="outline" onClick={notImplemented("Rozkład jazdy")} className="justify-start">
+                  <CalendarDays className="size-4 mr-2" /> Rozkład jazdy
+                </Button>
+                <Button variant="outline" onClick={notImplemented("Złóż raport")} className="justify-start">
+                  <FileText className="size-4 mr-2" /> Złóż raport
+                </Button>
+                <Button variant="outline" onClick={notImplemented("Zgłoś zdarzenie drogowe")} className="justify-start text-destructive hover:text-destructive">
+                  <AlertTriangle className="size-4 mr-2" /> Zdarzenie drogowe
+                </Button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function Field({ icon: Icon, label, value, mono }: { icon: any; label: string; value: string; mono?: boolean }) {
+  return (
+    <div>
+      <div className="flex items-center gap-1.5 text-[10px] uppercase text-muted-foreground font-bold mb-1">
+        <Icon className="size-3" /> {label}
+      </div>
+      <div className={`text-lg font-bold ${mono ? "font-mono" : ""}`}>{value}</div>
     </div>
   );
 }
