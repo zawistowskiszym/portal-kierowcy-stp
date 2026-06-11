@@ -117,7 +117,7 @@ function AuthPage() {
                 Brak administratora w systemie.
               </p>
               <Button asChild variant="outline" size="sm" className="w-full">
-                <Link to="/auth/bootstrap">Utwórz pierwsze konto administratora</Link>
+                <Link to="/bootstrap">Utwórz pierwsze konto administratora</Link>
               </Button>
             </div>
           )}
