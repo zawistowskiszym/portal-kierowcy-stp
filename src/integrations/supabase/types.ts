@@ -145,6 +145,48 @@ export type Database = {
         }
         Relationships: []
       }
+      vehicles: {
+        Row: {
+          active: boolean
+          capacity: number | null
+          created_at: string
+          depot: string
+          fuel: Database["public"]["Enums"]["fuel_type"]
+          id: string
+          model: string
+          notes: string | null
+          production_year: number | null
+          updated_at: string
+          vehicle_number: string
+        }
+        Insert: {
+          active?: boolean
+          capacity?: number | null
+          created_at?: string
+          depot: string
+          fuel: Database["public"]["Enums"]["fuel_type"]
+          id?: string
+          model: string
+          notes?: string | null
+          production_year?: number | null
+          updated_at?: string
+          vehicle_number: string
+        }
+        Update: {
+          active?: boolean
+          capacity?: number | null
+          created_at?: string
+          depot?: string
+          fuel?: Database["public"]["Enums"]["fuel_type"]
+          id?: string
+          model?: string
+          notes?: string | null
+          production_year?: number | null
+          updated_at?: string
+          vehicle_number?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -167,6 +209,7 @@ export type Database = {
         | "training"
         | "general"
       app_role: "admin" | "driver"
+      fuel_type: "Diesel" | "Elektryczny" | "Hybrydowy" | "Wodorowy"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -302,6 +345,7 @@ export const Constants = {
         "general",
       ],
       app_role: ["admin", "driver"],
+      fuel_type: ["Diesel", "Elektryczny", "Hybrydowy", "Wodorowy"],
     },
   },
 } as const

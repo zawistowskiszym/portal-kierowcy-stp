@@ -366,3 +366,58 @@ export const bootstrapFirstAdmin = createServerFn({ method: "POST" })
 
     return { ok: true };
   });
+
+// ============ VEHICLES ============
+
+export const listVehicles = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("vehicles")
+      .select("*")
+      .order("vehicle_number", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+const vehicleSchema = z.object({
+  vehicle_number: z.string().trim().min(1).max(20),
+  model: z.string().trim().min(1).max(120),
+  fuel: z.enum(["Diesel", "Elektryczny", "Hybrydowy", "Wodorowy"]),
+  depot: z.string().trim().min(1).max(80),
+  production_year: z.number().int().min(1980).max(2100).nullable().optional(),
+  capacity: z.number().int().min(0).max(500).nullable().optional(),
+  active: z.boolean().optional(),
+  notes: z.string().max(500).nullable().optional(),
+});
+
+export const createVehicle = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => vehicleSchema.parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context.supabase, context.userId);
+    const { error } = await context.supabase.from("vehicles").insert(data);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const updateVehicle = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).merge(vehicleSchema.partial()).parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context.supabase, context.userId);
+    const { id, ...patch } = data;
+    const { error } = await context.supabase.from("vehicles").update(patch).eq("id", id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteVehicle = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context.supabase, context.userId);
+    const { error } = await context.supabase.from("vehicles").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
