@@ -16,10 +16,6 @@ function fmtDateShort(iso: string) {
   const d = new Date(iso + "T00:00:00");
   return `${PL_DAYS[d.getDay()]}, ${d.getDate()} ${PL_MONTHS_SHORT[d.getMonth()]}`;
 }
-function fmtTime(t?: string | null) {
-  if (!t) return "—";
-  return t.slice(0, 5);
-}
 
 function PulpitPage() {
   const nextDutyFn = useServerFn(getMyNextDuty);
