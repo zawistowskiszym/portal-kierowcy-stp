@@ -1,4 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
+import stpLogo from "@/assets/stp-logo.png.asset.json";
 import {
   LayoutDashboard,
   CalendarRange,
