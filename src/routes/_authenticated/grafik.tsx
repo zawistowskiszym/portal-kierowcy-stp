@@ -1,8 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useMemo } from "react";
-import { toast } from "sonner";
 import { getMyDutiesInRange } from "@/lib/portal.functions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -55,8 +54,6 @@ function GrafikPage() {
   const [selectedIso, setSelectedIso] = useState<string>(isoDate(today));
   const selectedDuties = byDate.get(selectedIso) ?? [];
 
-  const notImplemented = (label: string) => () =>
-    toast.info(`${label} — funkcja wkrótce dostępna`);
 
   return (
     <div className="space-y-6">
@@ -145,17 +142,25 @@ function GrafikPage() {
               )}
 
               <div className="px-6 py-4 border-t border-border grid grid-cols-2 md:grid-cols-4 gap-2">
-                <Button variant="outline" onClick={notImplemented("Mapa trasy")} className="justify-start">
-                  <MapPin className="size-4 mr-2" /> Mapa trasy
+                <Button asChild variant="outline" className="justify-start">
+                  <Link to="/sluzba/$dutyId/mapa" params={{ dutyId: d.id }}>
+                    <MapPin className="size-4 mr-2" /> Mapa trasy
+                  </Link>
                 </Button>
-                <Button variant="outline" onClick={notImplemented("Rozkład jazdy")} className="justify-start">
-                  <CalendarDays className="size-4 mr-2" /> Rozkład jazdy
+                <Button asChild variant="outline" className="justify-start">
+                  <Link to="/sluzba/$dutyId/rozklad" params={{ dutyId: d.id }}>
+                    <CalendarDays className="size-4 mr-2" /> Rozkład jazdy
+                  </Link>
                 </Button>
-                <Button variant="outline" onClick={notImplemented("Złóż raport")} className="justify-start">
-                  <FileText className="size-4 mr-2" /> Złóż raport
+                <Button asChild variant="outline" className="justify-start">
+                  <Link to="/sluzba/$dutyId/raport" params={{ dutyId: d.id }}>
+                    <FileText className="size-4 mr-2" /> Złóż raport
+                  </Link>
                 </Button>
-                <Button variant="outline" onClick={notImplemented("Zgłoś zdarzenie drogowe")} className="justify-start text-destructive hover:text-destructive">
-                  <AlertTriangle className="size-4 mr-2" /> Zdarzenie drogowe
+                <Button asChild variant="outline" className="justify-start text-destructive hover:text-destructive">
+                  <Link to="/sluzba/$dutyId/zdarzenie" params={{ dutyId: d.id }}>
+                    <AlertTriangle className="size-4 mr-2" /> Zdarzenie drogowe
+                  </Link>
                 </Button>
               </div>
             </div>

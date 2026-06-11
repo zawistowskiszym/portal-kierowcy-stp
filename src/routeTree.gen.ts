@@ -30,6 +30,10 @@ import { Route as AuthenticatedAdminOgloszeniaRouteImport } from './routes/_auth
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as AuthenticatedSluzbaDutyIdZdarzenieRouteImport } from './routes/_authenticated/sluzba.$dutyId.zdarzenie'
+import { Route as AuthenticatedSluzbaDutyIdRozkladRouteImport } from './routes/_authenticated/sluzba.$dutyId.rozklad'
+import { Route as AuthenticatedSluzbaDutyIdRaportRouteImport } from './routes/_authenticated/sluzba.$dutyId.raport'
+import { Route as AuthenticatedSluzbaDutyIdMapaRouteImport } from './routes/_authenticated/sluzba.$dutyId.mapa'
 
 const ZaproszenieRoute = ZaproszenieRouteImport.update({
   id: '/zaproszenie',
@@ -143,6 +147,30 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedSluzbaDutyIdZdarzenieRoute =
+  AuthenticatedSluzbaDutyIdZdarzenieRouteImport.update({
+    id: '/sluzba/$dutyId/zdarzenie',
+    path: '/sluzba/$dutyId/zdarzenie',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedSluzbaDutyIdRozkladRoute =
+  AuthenticatedSluzbaDutyIdRozkladRouteImport.update({
+    id: '/sluzba/$dutyId/rozklad',
+    path: '/sluzba/$dutyId/rozklad',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedSluzbaDutyIdRaportRoute =
+  AuthenticatedSluzbaDutyIdRaportRouteImport.update({
+    id: '/sluzba/$dutyId/raport',
+    path: '/sluzba/$dutyId/raport',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedSluzbaDutyIdMapaRoute =
+  AuthenticatedSluzbaDutyIdMapaRouteImport.update({
+    id: '/sluzba/$dutyId/mapa',
+    path: '/sluzba/$dutyId/mapa',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -162,6 +190,10 @@ export interface FileRoutesByFullPath {
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
   '/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
+  '/sluzba/$dutyId/mapa': typeof AuthenticatedSluzbaDutyIdMapaRoute
+  '/sluzba/$dutyId/raport': typeof AuthenticatedSluzbaDutyIdRaportRoute
+  '/sluzba/$dutyId/rozklad': typeof AuthenticatedSluzbaDutyIdRozkladRoute
+  '/sluzba/$dutyId/zdarzenie': typeof AuthenticatedSluzbaDutyIdZdarzenieRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -184,6 +216,10 @@ export interface FileRoutesByTo {
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
   '/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
+  '/sluzba/$dutyId/mapa': typeof AuthenticatedSluzbaDutyIdMapaRoute
+  '/sluzba/$dutyId/raport': typeof AuthenticatedSluzbaDutyIdRaportRoute
+  '/sluzba/$dutyId/rozklad': typeof AuthenticatedSluzbaDutyIdRozkladRoute
+  '/sluzba/$dutyId/zdarzenie': typeof AuthenticatedSluzbaDutyIdZdarzenieRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -208,6 +244,10 @@ export interface FileRoutesById {
   '/_authenticated/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
   '/_authenticated/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/_authenticated/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
+  '/_authenticated/sluzba/$dutyId/mapa': typeof AuthenticatedSluzbaDutyIdMapaRoute
+  '/_authenticated/sluzba/$dutyId/raport': typeof AuthenticatedSluzbaDutyIdRaportRoute
+  '/_authenticated/sluzba/$dutyId/rozklad': typeof AuthenticatedSluzbaDutyIdRozkladRoute
+  '/_authenticated/sluzba/$dutyId/zdarzenie': typeof AuthenticatedSluzbaDutyIdZdarzenieRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -232,6 +272,10 @@ export interface FileRouteTypes {
     | '/admin/sluzby'
     | '/admin/urlopy'
     | '/admin/uzytkownicy'
+    | '/sluzba/$dutyId/mapa'
+    | '/sluzba/$dutyId/raport'
+    | '/sluzba/$dutyId/rozklad'
+    | '/sluzba/$dutyId/zdarzenie'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -254,6 +298,10 @@ export interface FileRouteTypes {
     | '/admin/sluzby'
     | '/admin/urlopy'
     | '/admin/uzytkownicy'
+    | '/sluzba/$dutyId/mapa'
+    | '/sluzba/$dutyId/raport'
+    | '/sluzba/$dutyId/rozklad'
+    | '/sluzba/$dutyId/zdarzenie'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -277,6 +325,10 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/sluzby'
     | '/_authenticated/admin/urlopy'
     | '/_authenticated/admin/uzytkownicy'
+    | '/_authenticated/sluzba/$dutyId/mapa'
+    | '/_authenticated/sluzba/$dutyId/raport'
+    | '/_authenticated/sluzba/$dutyId/rozklad'
+    | '/_authenticated/sluzba/$dutyId/zdarzenie'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -442,6 +494,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/sluzba/$dutyId/zdarzenie': {
+      id: '/_authenticated/sluzba/$dutyId/zdarzenie'
+      path: '/sluzba/$dutyId/zdarzenie'
+      fullPath: '/sluzba/$dutyId/zdarzenie'
+      preLoaderRoute: typeof AuthenticatedSluzbaDutyIdZdarzenieRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/sluzba/$dutyId/rozklad': {
+      id: '/_authenticated/sluzba/$dutyId/rozklad'
+      path: '/sluzba/$dutyId/rozklad'
+      fullPath: '/sluzba/$dutyId/rozklad'
+      preLoaderRoute: typeof AuthenticatedSluzbaDutyIdRozkladRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/sluzba/$dutyId/raport': {
+      id: '/_authenticated/sluzba/$dutyId/raport'
+      path: '/sluzba/$dutyId/raport'
+      fullPath: '/sluzba/$dutyId/raport'
+      preLoaderRoute: typeof AuthenticatedSluzbaDutyIdRaportRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/sluzba/$dutyId/mapa': {
+      id: '/_authenticated/sluzba/$dutyId/mapa'
+      path: '/sluzba/$dutyId/mapa'
+      fullPath: '/sluzba/$dutyId/mapa'
+      preLoaderRoute: typeof AuthenticatedSluzbaDutyIdMapaRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
@@ -474,6 +554,10 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPulpitRoute: typeof AuthenticatedPulpitRoute
   AuthenticatedStatystykiRoute: typeof AuthenticatedStatystykiRoute
   AuthenticatedUrlopyRoute: typeof AuthenticatedUrlopyRoute
+  AuthenticatedSluzbaDutyIdMapaRoute: typeof AuthenticatedSluzbaDutyIdMapaRoute
+  AuthenticatedSluzbaDutyIdRaportRoute: typeof AuthenticatedSluzbaDutyIdRaportRoute
+  AuthenticatedSluzbaDutyIdRozkladRoute: typeof AuthenticatedSluzbaDutyIdRozkladRoute
+  AuthenticatedSluzbaDutyIdZdarzenieRoute: typeof AuthenticatedSluzbaDutyIdZdarzenieRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -484,6 +568,11 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPulpitRoute: AuthenticatedPulpitRoute,
   AuthenticatedStatystykiRoute: AuthenticatedStatystykiRoute,
   AuthenticatedUrlopyRoute: AuthenticatedUrlopyRoute,
+  AuthenticatedSluzbaDutyIdMapaRoute: AuthenticatedSluzbaDutyIdMapaRoute,
+  AuthenticatedSluzbaDutyIdRaportRoute: AuthenticatedSluzbaDutyIdRaportRoute,
+  AuthenticatedSluzbaDutyIdRozkladRoute: AuthenticatedSluzbaDutyIdRozkladRoute,
+  AuthenticatedSluzbaDutyIdZdarzenieRoute:
+    AuthenticatedSluzbaDutyIdZdarzenieRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
