@@ -146,7 +146,7 @@ function GrafikPage() {
 
               <div className="px-6 py-4 border-t border-border grid grid-cols-2 md:grid-cols-4 gap-2">
                 <Button variant="outline" onClick={notImplemented("Mapa trasy")} className="justify-start">
-                  <MapIcon className="size-4 mr-2" /> Mapa trasy
+                  <MapPin className="size-4 mr-2" /> Mapa trasy
                 </Button>
                 <Button variant="outline" onClick={notImplemented("Rozkład jazdy")} className="justify-start">
                   <CalendarDays className="size-4 mr-2" /> Rozkład jazdy
