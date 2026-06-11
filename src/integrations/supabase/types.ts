@@ -14,16 +14,159 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      announcements: {
+        Row: {
+          archived: boolean
+          author_id: string | null
+          body: string
+          category: Database["public"]["Enums"]["announcement_category"]
+          created_at: string
+          id: string
+          published_at: string
+          title: string
+        }
+        Insert: {
+          archived?: boolean
+          author_id?: string | null
+          body: string
+          category?: Database["public"]["Enums"]["announcement_category"]
+          created_at?: string
+          id?: string
+          published_at?: string
+          title: string
+        }
+        Update: {
+          archived?: boolean
+          author_id?: string | null
+          body?: string
+          category?: Database["public"]["Enums"]["announcement_category"]
+          created_at?: string
+          id?: string
+          published_at?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      duties: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          created_by: string | null
+          depot: string
+          duty_date: string
+          duty_number: string
+          end_time: string
+          id: string
+          notes: string | null
+          route: string
+          start_time: string
+          vehicle_label: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string | null
+          depot: string
+          duty_date: string
+          duty_number: string
+          end_time: string
+          id?: string
+          notes?: string | null
+          route: string
+          start_time: string
+          vehicle_label?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string | null
+          depot?: string
+          duty_date?: string
+          duty_number?: string
+          end_time?: string
+          id?: string
+          notes?: string | null
+          route?: string
+          start_time?: string
+          vehicle_label?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "duties_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          active: boolean
+          created_at: string
+          depot: string | null
+          employee_id: string | null
+          full_name: string
+          id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          depot?: string | null
+          employee_id?: string | null
+          full_name: string
+          id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          depot?: string | null
+          employee_id?: string | null
+          full_name?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_any_admin: { Args: never; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      announcement_category:
+        | "operations"
+        | "service_changes"
+        | "events"
+        | "training"
+        | "general"
+      app_role: "admin" | "driver"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +293,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      announcement_category: [
+        "operations",
+        "service_changes",
+        "events",
+        "training",
+        "general",
+      ],
+      app_role: ["admin", "driver"],
+    },
   },
 } as const
