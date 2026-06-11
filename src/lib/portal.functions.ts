@@ -207,48 +207,72 @@ export const listUsers = createServerFn({ method: "GET" })
     }));
   });
 
-const newUserInput = z.object({
+const inviteUserInput = z.object({
   email: z.string().email().max(254),
-  password: z.string().min(8).max(72),
-  full_name: z.string().min(1).max(120),
-  employee_id: z.string().max(40).optional().nullable(),
-  depot: z.string().max(80).optional().nullable(),
   role: z.enum(["admin", "driver"]),
+  redirectTo: z.string().url(),
 });
 
-export const createUser = createServerFn({ method: "POST" })
+export const inviteUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: unknown) => newUserInput.parse(d))
+  .inputValidator((d: unknown) => inviteUserInput.parse(d))
   .handler(async ({ data, context }) => {
     await requireAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
-      email: data.email,
-      password: data.password,
-      email_confirm: true,
-    });
-    if (createErr || !created?.user) throw new Error(createErr?.message ?? "Nie udało się utworzyć konta");
-
-    const uid = created.user.id;
-    const { error: profileErr } = await supabaseAdmin.from("profiles").insert({
-      id: uid,
-      full_name: data.full_name,
-      employee_id: data.employee_id ?? null,
-      depot: data.depot ?? null,
-      active: true,
-    });
-    if (profileErr) {
-      await supabaseAdmin.auth.admin.deleteUser(uid).catch(() => {});
-      throw new Error(profileErr.message);
+    const { data: invited, error: inviteErr } =
+      await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, {
+        redirectTo: data.redirectTo,
+      });
+    if (inviteErr || !invited?.user) {
+      throw new Error(inviteErr?.message ?? "Nie udało się wysłać zaproszenia");
     }
 
+    const uid = invited.user.id;
+
+    // Pre-create an inactive profile so the user shows up as "pending" in the admin list.
+    const { error: profileErr } = await supabaseAdmin
+      .from("profiles")
+      .upsert(
+        { id: uid, full_name: data.email, active: false },
+        { onConflict: "id" },
+      );
+    if (profileErr) throw new Error(profileErr.message);
+
+    await supabaseAdmin.from("user_roles").delete().eq("user_id", uid);
     const { error: roleErr } = await supabaseAdmin
       .from("user_roles")
       .insert({ user_id: uid, role: data.role });
     if (roleErr) throw new Error(roleErr.message);
 
     return { id: uid };
+  });
+
+const completeInvitationInput = z.object({
+  full_name: z.string().trim().min(1).max(120),
+  employee_id: z.string().trim().max(40).optional().nullable(),
+  depot: z.string().trim().max(80).optional().nullable(),
+});
+
+export const completeInvitation = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => completeInvitationInput.parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .upsert(
+        {
+          id: context.userId,
+          full_name: data.full_name,
+          employee_id: data.employee_id ?? null,
+          depot: data.depot ?? null,
+          active: true,
+        },
+        { onConflict: "id" },
+      );
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
 
 export const updateUser = createServerFn({ method: "POST" })
