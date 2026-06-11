@@ -17,6 +17,9 @@ import { Route as AuthenticatedPulpitRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedOgloszeniaRouteImport } from './routes/_authenticated/ogloszenia'
 import { Route as AuthenticatedGrafikRouteImport } from './routes/_authenticated/grafik'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAdminUzytkownicyRouteImport } from './routes/_authenticated/admin/uzytkownicy'
+import { Route as AuthenticatedAdminSluzbyRouteImport } from './routes/_authenticated/admin/sluzby'
+import { Route as AuthenticatedAdminOgloszeniaRouteImport } from './routes/_authenticated/admin/ogloszenia'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -57,35 +60,62 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminUzytkownicyRoute =
+  AuthenticatedAdminUzytkownicyRouteImport.update({
+    id: '/uzytkownicy',
+    path: '/uzytkownicy',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminSluzbyRoute =
+  AuthenticatedAdminSluzbyRouteImport.update({
+    id: '/sluzby',
+    path: '/sluzby',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminOgloszeniaRoute =
+  AuthenticatedAdminOgloszeniaRouteImport.update({
+    id: '/ogloszenia',
+    path: '/ogloszenia',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
-  '/admin': typeof AuthenticatedAdminRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/grafik': typeof AuthenticatedGrafikRoute
   '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/pulpit': typeof AuthenticatedPulpitRoute
   '/auth/bootstrap': typeof AuthBootstrapRoute
+  '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
+  '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
+  '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRouteWithChildren
-  '/admin': typeof AuthenticatedAdminRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/grafik': typeof AuthenticatedGrafikRoute
   '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/pulpit': typeof AuthenticatedPulpitRoute
   '/auth/bootstrap': typeof AuthBootstrapRoute
+  '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
+  '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
+  '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
-  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/grafik': typeof AuthenticatedGrafikRoute
   '/_authenticated/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/_authenticated/pulpit': typeof AuthenticatedPulpitRoute
   '/auth/bootstrap': typeof AuthBootstrapRoute
+  '/_authenticated/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
+  '/_authenticated/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
+  '/_authenticated/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,6 +127,9 @@ export interface FileRouteTypes {
     | '/ogloszenia'
     | '/pulpit'
     | '/auth/bootstrap'
+    | '/admin/ogloszenia'
+    | '/admin/sluzby'
+    | '/admin/uzytkownicy'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,6 +139,9 @@ export interface FileRouteTypes {
     | '/ogloszenia'
     | '/pulpit'
     | '/auth/bootstrap'
+    | '/admin/ogloszenia'
+    | '/admin/sluzby'
+    | '/admin/uzytkownicy'
   id:
     | '__root__'
     | '/'
@@ -116,6 +152,9 @@ export interface FileRouteTypes {
     | '/_authenticated/ogloszenia'
     | '/_authenticated/pulpit'
     | '/auth/bootstrap'
+    | '/_authenticated/admin/ogloszenia'
+    | '/_authenticated/admin/sluzby'
+    | '/_authenticated/admin/uzytkownicy'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -182,18 +221,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/uzytkownicy': {
+      id: '/_authenticated/admin/uzytkownicy'
+      path: '/uzytkownicy'
+      fullPath: '/admin/uzytkownicy'
+      preLoaderRoute: typeof AuthenticatedAdminUzytkownicyRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/sluzby': {
+      id: '/_authenticated/admin/sluzby'
+      path: '/sluzby'
+      fullPath: '/admin/sluzby'
+      preLoaderRoute: typeof AuthenticatedAdminSluzbyRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/ogloszenia': {
+      id: '/_authenticated/admin/ogloszenia'
+      path: '/ogloszenia'
+      fullPath: '/admin/ogloszenia'
+      preLoaderRoute: typeof AuthenticatedAdminOgloszeniaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminOgloszeniaRoute: typeof AuthenticatedAdminOgloszeniaRoute
+  AuthenticatedAdminSluzbyRoute: typeof AuthenticatedAdminSluzbyRoute
+  AuthenticatedAdminUzytkownicyRoute: typeof AuthenticatedAdminUzytkownicyRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminOgloszeniaRoute: AuthenticatedAdminOgloszeniaRoute,
+  AuthenticatedAdminSluzbyRoute: AuthenticatedAdminSluzbyRoute,
+  AuthenticatedAdminUzytkownicyRoute: AuthenticatedAdminUzytkownicyRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
 interface AuthenticatedRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedGrafikRoute: typeof AuthenticatedGrafikRoute
   AuthenticatedOgloszeniaRoute: typeof AuthenticatedOgloszeniaRoute
   AuthenticatedPulpitRoute: typeof AuthenticatedPulpitRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedGrafikRoute: AuthenticatedGrafikRoute,
   AuthenticatedOgloszeniaRoute: AuthenticatedOgloszeniaRoute,
   AuthenticatedPulpitRoute: AuthenticatedPulpitRoute,
