@@ -47,18 +47,13 @@ function PulpitPage() {
         </div>
         {nd ? (
           <>
-            <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Linia / Służba</p>
                 <p className="text-3xl font-bold">
                   {nd.route} <span className="text-muted-foreground/50 font-normal font-mono text-2xl">/ {nd.duty_number}</span>
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">{nd.depot}</p>
-              </div>
-              <div>
-                <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Czas pracy</p>
-                <p className="text-xl font-bold font-mono">{fmtTime(nd.start_time)} — {fmtTime(nd.end_time)}</p>
-                <p className="text-sm text-muted-foreground mt-1">Zmiana</p>
               </div>
               <div>
                 <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Pojazd</p>
