@@ -14,6 +14,7 @@ import { Route as BootstrapRouteImport } from './routes/bootstrap'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedUrlopyRouteImport } from './routes/_authenticated/urlopy'
 import { Route as AuthenticatedPulpitRouteImport } from './routes/_authenticated/pulpit'
 import { Route as AuthenticatedOgloszeniaRouteImport } from './routes/_authenticated/ogloszenia'
 import { Route as AuthenticatedGrafikRouteImport } from './routes/_authenticated/grafik'
@@ -50,6 +51,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedUrlopyRoute = AuthenticatedUrlopyRouteImport.update({
+  id: '/urlopy',
+  path: '/urlopy',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedPulpitRoute = AuthenticatedPulpitRouteImport.update({
   id: '/pulpit',
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/grafik': typeof AuthenticatedGrafikRoute
   '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/pulpit': typeof AuthenticatedPulpitRoute
+  '/urlopy': typeof AuthenticatedUrlopyRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
@@ -146,6 +153,7 @@ export interface FileRoutesByTo {
   '/grafik': typeof AuthenticatedGrafikRoute
   '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/pulpit': typeof AuthenticatedPulpitRoute
+  '/urlopy': typeof AuthenticatedUrlopyRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
@@ -166,6 +174,7 @@ export interface FileRoutesById {
   '/_authenticated/grafik': typeof AuthenticatedGrafikRoute
   '/_authenticated/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/_authenticated/pulpit': typeof AuthenticatedPulpitRoute
+  '/_authenticated/urlopy': typeof AuthenticatedUrlopyRoute
   '/_authenticated/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/_authenticated/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/_authenticated/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/grafik'
     | '/ogloszenia'
     | '/pulpit'
+    | '/urlopy'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
     | '/admin/sluzby'
@@ -204,6 +214,7 @@ export interface FileRouteTypes {
     | '/grafik'
     | '/ogloszenia'
     | '/pulpit'
+    | '/urlopy'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
     | '/admin/sluzby'
@@ -223,6 +234,7 @@ export interface FileRouteTypes {
     | '/_authenticated/grafik'
     | '/_authenticated/ogloszenia'
     | '/_authenticated/pulpit'
+    | '/_authenticated/urlopy'
     | '/_authenticated/admin/ogloszenia'
     | '/_authenticated/admin/pojazdy'
     | '/_authenticated/admin/sluzby'
@@ -279,6 +291,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/urlopy': {
+      id: '/_authenticated/urlopy'
+      path: '/urlopy'
+      fullPath: '/urlopy'
+      preLoaderRoute: typeof AuthenticatedUrlopyRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/pulpit': {
       id: '/_authenticated/pulpit'
@@ -390,6 +409,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedGrafikRoute: typeof AuthenticatedGrafikRoute
   AuthenticatedOgloszeniaRoute: typeof AuthenticatedOgloszeniaRoute
   AuthenticatedPulpitRoute: typeof AuthenticatedPulpitRoute
+  AuthenticatedUrlopyRoute: typeof AuthenticatedUrlopyRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -398,6 +418,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedGrafikRoute: AuthenticatedGrafikRoute,
   AuthenticatedOgloszeniaRoute: AuthenticatedOgloszeniaRoute,
   AuthenticatedPulpitRoute: AuthenticatedPulpitRoute,
+  AuthenticatedUrlopyRoute: AuthenticatedUrlopyRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
