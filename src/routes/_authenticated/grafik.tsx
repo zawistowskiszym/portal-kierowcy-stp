@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { getMyDutiesInRange } from "@/lib/portal.functions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Map as MapIcon, CalendarDays, FileText, AlertTriangle, Bus, Hash, Clock, StickyNote, Building2 } from "lucide-react";
+import { MapPin, CalendarDays, FileText, AlertTriangle, Bus, Hash, Clock, StickyNote, Building2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/grafik")({
   head: () => ({ meta: [{ title: "Mój grafik — Portal STP" }] }),
@@ -146,7 +146,7 @@ function GrafikPage() {
 
               <div className="px-6 py-4 border-t border-border grid grid-cols-2 md:grid-cols-4 gap-2">
                 <Button variant="outline" onClick={notImplemented("Mapa trasy")} className="justify-start">
-                  <MapIcon className="size-4 mr-2" /> Mapa trasy
+                  <MapPin className="size-4 mr-2" /> Mapa trasy
                 </Button>
                 <Button variant="outline" onClick={notImplemented("Rozkład jazdy")} className="justify-start">
                   <CalendarDays className="size-4 mr-2" /> Rozkład jazdy
