@@ -17,6 +17,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedPulpitRouteImport } from './routes/_authenticated/pulpit'
 import { Route as AuthenticatedOgloszeniaRouteImport } from './routes/_authenticated/ogloszenia'
 import { Route as AuthenticatedGrafikRouteImport } from './routes/_authenticated/grafik'
+import { Route as AuthenticatedDyspozycyjnoscRouteImport } from './routes/_authenticated/dyspozycyjnosc'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminUzytkownicyRouteImport } from './routes/_authenticated/admin/uzytkownicy'
 import { Route as AuthenticatedAdminSluzbyRouteImport } from './routes/_authenticated/admin/sluzby'
@@ -65,6 +66,12 @@ const AuthenticatedGrafikRoute = AuthenticatedGrafikRouteImport.update({
   path: '/grafik',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedDyspozycyjnoscRoute =
+  AuthenticatedDyspozycyjnoscRouteImport.update({
+    id: '/dyspozycyjnosc',
+    path: '/dyspozycyjnosc',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -117,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/bootstrap': typeof BootstrapRoute
   '/zaproszenie': typeof ZaproszenieRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
   '/grafik': typeof AuthenticatedGrafikRoute
   '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/pulpit': typeof AuthenticatedPulpitRoute
@@ -134,6 +142,7 @@ export interface FileRoutesByTo {
   '/bootstrap': typeof BootstrapRoute
   '/zaproszenie': typeof ZaproszenieRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
   '/grafik': typeof AuthenticatedGrafikRoute
   '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/pulpit': typeof AuthenticatedPulpitRoute
@@ -153,6 +162,7 @@ export interface FileRoutesById {
   '/bootstrap': typeof BootstrapRoute
   '/zaproszenie': typeof ZaproszenieRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
   '/_authenticated/grafik': typeof AuthenticatedGrafikRoute
   '/_authenticated/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/_authenticated/pulpit': typeof AuthenticatedPulpitRoute
@@ -172,6 +182,7 @@ export interface FileRouteTypes {
     | '/bootstrap'
     | '/zaproszenie'
     | '/admin'
+    | '/dyspozycyjnosc'
     | '/grafik'
     | '/ogloszenia'
     | '/pulpit'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/bootstrap'
     | '/zaproszenie'
     | '/admin'
+    | '/dyspozycyjnosc'
     | '/grafik'
     | '/ogloszenia'
     | '/pulpit'
@@ -207,6 +219,7 @@ export interface FileRouteTypes {
     | '/bootstrap'
     | '/zaproszenie'
     | '/_authenticated/admin'
+    | '/_authenticated/dyspozycyjnosc'
     | '/_authenticated/grafik'
     | '/_authenticated/ogloszenia'
     | '/_authenticated/pulpit'
@@ -288,6 +301,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGrafikRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/dyspozycyjnosc': {
+      id: '/_authenticated/dyspozycyjnosc'
+      path: '/dyspozycyjnosc'
+      fullPath: '/dyspozycyjnosc'
+      preLoaderRoute: typeof AuthenticatedDyspozycyjnoscRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -366,6 +386,7 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedDyspozycyjnoscRoute: typeof AuthenticatedDyspozycyjnoscRoute
   AuthenticatedGrafikRoute: typeof AuthenticatedGrafikRoute
   AuthenticatedOgloszeniaRoute: typeof AuthenticatedOgloszeniaRoute
   AuthenticatedPulpitRoute: typeof AuthenticatedPulpitRoute
@@ -373,6 +394,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedDyspozycyjnoscRoute: AuthenticatedDyspozycyjnoscRoute,
   AuthenticatedGrafikRoute: AuthenticatedGrafikRoute,
   AuthenticatedOgloszeniaRoute: AuthenticatedOgloszeniaRoute,
   AuthenticatedPulpitRoute: AuthenticatedPulpitRoute,
@@ -395,3 +417,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
