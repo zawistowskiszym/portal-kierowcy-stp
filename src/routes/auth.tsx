@@ -45,9 +45,7 @@ function AuthPage() {
     <div className="min-h-screen grid lg:grid-cols-2 bg-brand-surface">
       <div className="hidden lg:flex flex-col justify-between bg-brand text-brand-foreground p-12">
         <div className="flex items-center gap-3">
-          <div className="size-10 bg-brand-accent rounded-md flex items-center justify-center text-brand font-bold">
-            STP
-          </div>
+          <img src={stpLogo.url} alt="STP" className="size-10 invert" />
           <div>
             <div className="font-bold tracking-tight">Portal Kierowcy</div>
             <div className="text-[11px] uppercase tracking-widest text-brand-foreground/50">
