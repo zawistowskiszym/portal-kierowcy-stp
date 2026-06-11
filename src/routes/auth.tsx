@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { bootstrapStatus, bootstrapFirstAdmin } from "@/lib/portal.functions";
+import stpLogo from "@/assets/stp-logo.png.asset.json";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
