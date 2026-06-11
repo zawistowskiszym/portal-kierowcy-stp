@@ -47,6 +47,36 @@ export type Database = {
         }
         Relationships: []
       }
+      driver_availability: {
+        Row: {
+          created_at: string
+          day: string
+          id: string
+          note: string | null
+          type: Database["public"]["Enums"]["availability_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day: string
+          id?: string
+          note?: string | null
+          type: Database["public"]["Enums"]["availability_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          id?: string
+          note?: string | null
+          type?: Database["public"]["Enums"]["availability_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       duties: {
         Row: {
           assigned_to: string | null
@@ -256,6 +286,48 @@ export type Database = {
         }
         Relationships: []
       }
+      vacation_requests: {
+        Row: {
+          admin_note: string | null
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          end_date: string
+          id: string
+          reason: string | null
+          start_date: string
+          status: Database["public"]["Enums"]["vacation_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_note?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          end_date: string
+          id?: string
+          reason?: string | null
+          start_date: string
+          status?: Database["public"]["Enums"]["vacation_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_note?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          end_date?: string
+          id?: string
+          reason?: string | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["vacation_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       vehicles: {
         Row: {
           active: boolean
@@ -345,7 +417,9 @@ export type Database = {
         | "training"
         | "general"
       app_role: "admin" | "driver"
+      availability_type: "unavailable" | "preferred"
       fuel_type: "Diesel" | "Elektryczny" | "Hybrydowy" | "Wodorowy"
+      vacation_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -481,7 +555,9 @@ export const Constants = {
         "general",
       ],
       app_role: ["admin", "driver"],
+      availability_type: ["unavailable", "preferred"],
       fuel_type: ["Diesel", "Elektryczny", "Hybrydowy", "Wodorowy"],
+      vacation_status: ["pending", "approved", "rejected"],
     },
   },
 } as const

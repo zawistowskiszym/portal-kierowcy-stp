@@ -14,12 +14,17 @@ import { Route as BootstrapRouteImport } from './routes/bootstrap'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedUrlopyRouteImport } from './routes/_authenticated/urlopy'
+import { Route as AuthenticatedStatystykiRouteImport } from './routes/_authenticated/statystyki'
 import { Route as AuthenticatedPulpitRouteImport } from './routes/_authenticated/pulpit'
 import { Route as AuthenticatedOgloszeniaRouteImport } from './routes/_authenticated/ogloszenia'
 import { Route as AuthenticatedGrafikRouteImport } from './routes/_authenticated/grafik'
+import { Route as AuthenticatedDyspozycyjnoscRouteImport } from './routes/_authenticated/dyspozycyjnosc'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminUzytkownicyRouteImport } from './routes/_authenticated/admin/uzytkownicy'
+import { Route as AuthenticatedAdminUrlopyRouteImport } from './routes/_authenticated/admin/urlopy'
 import { Route as AuthenticatedAdminSluzbyRouteImport } from './routes/_authenticated/admin/sluzby'
+import { Route as AuthenticatedAdminRaportyRouteImport } from './routes/_authenticated/admin/raporty'
 import { Route as AuthenticatedAdminPojazdyRouteImport } from './routes/_authenticated/admin/pojazdy'
 import { Route as AuthenticatedAdminOgloszeniaRouteImport } from './routes/_authenticated/admin/ogloszenia'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -50,6 +55,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedUrlopyRoute = AuthenticatedUrlopyRouteImport.update({
+  id: '/urlopy',
+  path: '/urlopy',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedStatystykiRoute = AuthenticatedStatystykiRouteImport.update({
+  id: '/statystyki',
+  path: '/statystyki',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedPulpitRoute = AuthenticatedPulpitRouteImport.update({
   id: '/pulpit',
   path: '/pulpit',
@@ -65,6 +80,12 @@ const AuthenticatedGrafikRoute = AuthenticatedGrafikRouteImport.update({
   path: '/grafik',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedDyspozycyjnoscRoute =
+  AuthenticatedDyspozycyjnoscRouteImport.update({
+    id: '/dyspozycyjnosc',
+    path: '/dyspozycyjnosc',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -76,10 +97,22 @@ const AuthenticatedAdminUzytkownicyRoute =
     path: '/uzytkownicy',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminUrlopyRoute =
+  AuthenticatedAdminUrlopyRouteImport.update({
+    id: '/urlopy',
+    path: '/urlopy',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminSluzbyRoute =
   AuthenticatedAdminSluzbyRouteImport.update({
     id: '/sluzby',
     path: '/sluzby',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminRaportyRoute =
+  AuthenticatedAdminRaportyRouteImport.update({
+    id: '/raporty',
+    path: '/raporty',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminPojazdyRoute =
@@ -117,12 +150,17 @@ export interface FileRoutesByFullPath {
   '/bootstrap': typeof BootstrapRoute
   '/zaproszenie': typeof ZaproszenieRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
   '/grafik': typeof AuthenticatedGrafikRoute
   '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/pulpit': typeof AuthenticatedPulpitRoute
+  '/statystyki': typeof AuthenticatedStatystykiRoute
+  '/urlopy': typeof AuthenticatedUrlopyRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
+  '/admin/raporty': typeof AuthenticatedAdminRaportyRoute
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
+  '/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -134,12 +172,17 @@ export interface FileRoutesByTo {
   '/bootstrap': typeof BootstrapRoute
   '/zaproszenie': typeof ZaproszenieRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
   '/grafik': typeof AuthenticatedGrafikRoute
   '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/pulpit': typeof AuthenticatedPulpitRoute
+  '/statystyki': typeof AuthenticatedStatystykiRoute
+  '/urlopy': typeof AuthenticatedUrlopyRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
+  '/admin/raporty': typeof AuthenticatedAdminRaportyRoute
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
+  '/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -153,12 +196,17 @@ export interface FileRoutesById {
   '/bootstrap': typeof BootstrapRoute
   '/zaproszenie': typeof ZaproszenieRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
   '/_authenticated/grafik': typeof AuthenticatedGrafikRoute
   '/_authenticated/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/_authenticated/pulpit': typeof AuthenticatedPulpitRoute
+  '/_authenticated/statystyki': typeof AuthenticatedStatystykiRoute
+  '/_authenticated/urlopy': typeof AuthenticatedUrlopyRoute
   '/_authenticated/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/_authenticated/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
+  '/_authenticated/admin/raporty': typeof AuthenticatedAdminRaportyRoute
   '/_authenticated/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
+  '/_authenticated/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/_authenticated/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -172,12 +220,17 @@ export interface FileRouteTypes {
     | '/bootstrap'
     | '/zaproszenie'
     | '/admin'
+    | '/dyspozycyjnosc'
     | '/grafik'
     | '/ogloszenia'
     | '/pulpit'
+    | '/statystyki'
+    | '/urlopy'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
+    | '/admin/raporty'
     | '/admin/sluzby'
+    | '/admin/urlopy'
     | '/admin/uzytkownicy'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -189,12 +242,17 @@ export interface FileRouteTypes {
     | '/bootstrap'
     | '/zaproszenie'
     | '/admin'
+    | '/dyspozycyjnosc'
     | '/grafik'
     | '/ogloszenia'
     | '/pulpit'
+    | '/statystyki'
+    | '/urlopy'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
+    | '/admin/raporty'
     | '/admin/sluzby'
+    | '/admin/urlopy'
     | '/admin/uzytkownicy'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -207,12 +265,17 @@ export interface FileRouteTypes {
     | '/bootstrap'
     | '/zaproszenie'
     | '/_authenticated/admin'
+    | '/_authenticated/dyspozycyjnosc'
     | '/_authenticated/grafik'
     | '/_authenticated/ogloszenia'
     | '/_authenticated/pulpit'
+    | '/_authenticated/statystyki'
+    | '/_authenticated/urlopy'
     | '/_authenticated/admin/ogloszenia'
     | '/_authenticated/admin/pojazdy'
+    | '/_authenticated/admin/raporty'
     | '/_authenticated/admin/sluzby'
+    | '/_authenticated/admin/urlopy'
     | '/_authenticated/admin/uzytkownicy'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -267,6 +330,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/urlopy': {
+      id: '/_authenticated/urlopy'
+      path: '/urlopy'
+      fullPath: '/urlopy'
+      preLoaderRoute: typeof AuthenticatedUrlopyRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/statystyki': {
+      id: '/_authenticated/statystyki'
+      path: '/statystyki'
+      fullPath: '/statystyki'
+      preLoaderRoute: typeof AuthenticatedStatystykiRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/pulpit': {
       id: '/_authenticated/pulpit'
       path: '/pulpit'
@@ -288,6 +365,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGrafikRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/dyspozycyjnosc': {
+      id: '/_authenticated/dyspozycyjnosc'
+      path: '/dyspozycyjnosc'
+      fullPath: '/dyspozycyjnosc'
+      preLoaderRoute: typeof AuthenticatedDyspozycyjnoscRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -302,11 +386,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUzytkownicyRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/urlopy': {
+      id: '/_authenticated/admin/urlopy'
+      path: '/urlopy'
+      fullPath: '/admin/urlopy'
+      preLoaderRoute: typeof AuthenticatedAdminUrlopyRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/sluzby': {
       id: '/_authenticated/admin/sluzby'
       path: '/sluzby'
       fullPath: '/admin/sluzby'
       preLoaderRoute: typeof AuthenticatedAdminSluzbyRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/raporty': {
+      id: '/_authenticated/admin/raporty'
+      path: '/raporty'
+      fullPath: '/admin/raporty'
+      preLoaderRoute: typeof AuthenticatedAdminRaportyRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/pojazdy': {
@@ -350,14 +448,18 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminOgloszeniaRoute: typeof AuthenticatedAdminOgloszeniaRoute
   AuthenticatedAdminPojazdyRoute: typeof AuthenticatedAdminPojazdyRoute
+  AuthenticatedAdminRaportyRoute: typeof AuthenticatedAdminRaportyRoute
   AuthenticatedAdminSluzbyRoute: typeof AuthenticatedAdminSluzbyRoute
+  AuthenticatedAdminUrlopyRoute: typeof AuthenticatedAdminUrlopyRoute
   AuthenticatedAdminUzytkownicyRoute: typeof AuthenticatedAdminUzytkownicyRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminOgloszeniaRoute: AuthenticatedAdminOgloszeniaRoute,
   AuthenticatedAdminPojazdyRoute: AuthenticatedAdminPojazdyRoute,
+  AuthenticatedAdminRaportyRoute: AuthenticatedAdminRaportyRoute,
   AuthenticatedAdminSluzbyRoute: AuthenticatedAdminSluzbyRoute,
+  AuthenticatedAdminUrlopyRoute: AuthenticatedAdminUrlopyRoute,
   AuthenticatedAdminUzytkownicyRoute: AuthenticatedAdminUzytkownicyRoute,
 }
 
@@ -366,16 +468,22 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedDyspozycyjnoscRoute: typeof AuthenticatedDyspozycyjnoscRoute
   AuthenticatedGrafikRoute: typeof AuthenticatedGrafikRoute
   AuthenticatedOgloszeniaRoute: typeof AuthenticatedOgloszeniaRoute
   AuthenticatedPulpitRoute: typeof AuthenticatedPulpitRoute
+  AuthenticatedStatystykiRoute: typeof AuthenticatedStatystykiRoute
+  AuthenticatedUrlopyRoute: typeof AuthenticatedUrlopyRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedDyspozycyjnoscRoute: AuthenticatedDyspozycyjnoscRoute,
   AuthenticatedGrafikRoute: AuthenticatedGrafikRoute,
   AuthenticatedOgloszeniaRoute: AuthenticatedOgloszeniaRoute,
   AuthenticatedPulpitRoute: AuthenticatedPulpitRoute,
+  AuthenticatedStatystykiRoute: AuthenticatedStatystykiRoute,
+  AuthenticatedUrlopyRoute: AuthenticatedUrlopyRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { useMemo, useState } from "react";
 import { listAnnouncements } from "@/lib/portal.functions";
 import { Badge } from "@/components/ui/badge";
 
@@ -9,25 +10,54 @@ export const Route = createFileRoute("/_authenticated/ogloszenia")({
   component: OgloszeniaPage,
 });
 
-const CATEGORY_LABELS: Record<string, string> = {
-  operations: "Operacje",
-  service_changes: "Zmiany w kursowaniu",
-  events: "Wydarzenia",
-  training: "Szkolenia",
-  general: "Ogólne",
-};
+const CATEGORIES: { value: string; label: string }[] = [
+  { value: "all", label: "Wszystkie" },
+  { value: "operations", label: "Operacje" },
+  { value: "service_changes", label: "Zmiany w kursowaniu" },
+  { value: "events", label: "Wydarzenia" },
+  { value: "training", label: "Szkolenia" },
+  { value: "general", label: "Ogólne" },
+];
+
+const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
+  CATEGORIES.filter((c) => c.value !== "all").map((c) => [c.value, c.label]),
+);
 
 function OgloszeniaPage() {
   const fn = useServerFn(listAnnouncements);
   const { data } = useQuery({ queryKey: ["announcements"], queryFn: () => fn() });
-  const list = ((data ?? []) as any[]).filter((a) => !a.archived);
+  const [filter, setFilter] = useState<string>("all");
+
+  const list = useMemo(() => {
+    const base = ((data ?? []) as any[]).filter((a) => !a.archived);
+    return filter === "all" ? base : base.filter((a) => a.category === filter);
+  }, [data, filter]);
 
   return (
     <div className="space-y-4 max-w-3xl">
-      <h2 className="text-xl font-bold">Ogłoszenia firmowe</h2>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h2 className="text-xl font-bold">Ogłoszenia firmowe</h2>
+        <div className="flex flex-wrap gap-1">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c.value}
+              type="button"
+              onClick={() => setFilter(c.value)}
+              className={`text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md border transition ${
+                filter === c.value
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card text-muted-foreground border-border hover:text-foreground"
+              }`}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {list.length === 0 && (
         <div className="bg-card border border-border rounded-xl p-6 text-sm text-muted-foreground">
-          Brak ogłoszeń.
+          Brak ogłoszeń w wybranej kategorii.
         </div>
       )}
       {list.map((a) => (

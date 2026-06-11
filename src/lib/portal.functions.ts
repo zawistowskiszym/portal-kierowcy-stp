@@ -445,3 +445,264 @@ export const deleteVehicle = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ============ AVAILABILITY ============
+
+export const listMyAvailability = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { from: string; to: string }) =>
+    z.object({ from: z.string(), to: z.string() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { data: rows, error } = await context.supabase
+      .from("driver_availability")
+      .select("*")
+      .eq("user_id", context.userId)
+      .gte("day", data.from)
+      .lte("day", data.to)
+      .order("day", { ascending: true });
+    if (error) throw new Error(error.message);
+    return rows ?? [];
+  });
+
+export const setMyAvailability = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        day: z.string().min(10).max(10),
+        type: z.enum(["unavailable", "preferred"]).nullable(),
+        note: z.string().max(200).optional().nullable(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    if (data.type === null) {
+      const { error } = await context.supabase
+        .from("driver_availability")
+        .delete()
+        .eq("user_id", context.userId)
+        .eq("day", data.day);
+      if (error) throw new Error(error.message);
+      return { ok: true };
+    }
+    const { error } = await context.supabase
+      .from("driver_availability")
+      .upsert(
+        { user_id: context.userId, day: data.day, type: data.type, note: data.note ?? null },
+        { onConflict: "user_id,day" },
+      );
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// ============ VACATION REQUESTS ============
+
+export const listMyVacationRequests = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("vacation_requests")
+      .select("*")
+      .eq("user_id", context.userId)
+      .order("start_date", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const createVacationRequest = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        start_date: z.string().min(10).max(10),
+        end_date: z.string().min(10).max(10),
+        reason: z.string().max(500).optional().nullable(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    if (data.end_date < data.start_date) throw new Error("Data końca musi być po dacie początku");
+    const { error } = await context.supabase.from("vacation_requests").insert({
+      user_id: context.userId,
+      start_date: data.start_date,
+      end_date: data.end_date,
+      reason: data.reason ?? null,
+      status: "pending",
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const cancelVacationRequest = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("vacation_requests")
+      .delete()
+      .eq("id", data.id)
+      .eq("user_id", context.userId)
+      .eq("status", "pending");
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const listAllVacationRequests = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAdmin(context.supabase, context.userId);
+    const { data, error } = await context.supabase
+      .from("vacation_requests")
+      .select("*, profiles:user_id(full_name, employee_id, depot)")
+      .order("status", { ascending: true })
+      .order("start_date", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const decideVacationRequest = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        status: z.enum(["approved", "rejected"]),
+        admin_note: z.string().max(500).optional().nullable(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context.supabase, context.userId);
+    const { error } = await context.supabase
+      .from("vacation_requests")
+      .update({
+        status: data.status,
+        admin_note: data.admin_note ?? null,
+        decided_by: context.userId,
+        decided_at: new Date().toISOString(),
+      })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// ============ STATS / REPORTS ============
+
+const minutesBetween = (start: string, end: string) => {
+  const [sh, sm] = start.split(":").map(Number);
+  const [eh, em] = end.split(":").map(Number);
+  let diff = eh * 60 + em - (sh * 60 + sm);
+  if (diff < 0) diff += 24 * 60; // overnight
+  return diff;
+};
+
+export const getMyStats = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+    const yearStart = new Date(now.getFullYear(), 0, 1).toISOString().slice(0, 10);
+    const todayIso = now.toISOString().slice(0, 10);
+
+    const { data, error } = await context.supabase
+      .from("duties")
+      .select("duty_date, start_time, end_time")
+      .eq("assigned_to", context.userId)
+      .gte("duty_date", yearStart)
+      .lte("duty_date", todayIso);
+    if (error) throw new Error(error.message);
+
+    let monthCount = 0, monthMin = 0, yearCount = 0, yearMin = 0;
+    for (const row of data ?? []) {
+      const mins = minutesBetween(row.start_time as string, row.end_time as string);
+      yearCount++;
+      yearMin += mins;
+      if ((row.duty_date as string) >= monthStart) {
+        monthCount++;
+        monthMin += mins;
+      }
+    }
+    return {
+      month: { count: monthCount, minutes: monthMin },
+      year: { count: yearCount, minutes: yearMin },
+    };
+  });
+
+export const getAdminReports = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAdmin(context.supabase, context.userId);
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);
+    const todayIso = now.toISOString().slice(0, 10);
+
+    const [dutiesRes, profilesRes, vacRes, vehRes] = await Promise.all([
+      context.supabase
+        .from("duties")
+        .select("duty_date, start_time, end_time, assigned_to, depot")
+        .gte("duty_date", monthStart)
+        .lte("duty_date", monthEnd),
+      context.supabase.from("profiles").select("id, full_name, active"),
+      context.supabase
+        .from("vacation_requests")
+        .select("id, status, start_date, end_date")
+        .gte("end_date", todayIso),
+      context.supabase.from("vehicles").select("id, active, depot"),
+    ]);
+    if (dutiesRes.error) throw new Error(dutiesRes.error.message);
+    if (profilesRes.error) throw new Error(profilesRes.error.message);
+    if (vacRes.error) throw new Error(vacRes.error.message);
+    if (vehRes.error) throw new Error(vehRes.error.message);
+
+    const profilesById = new Map(
+      (profilesRes.data ?? []).map((p: any) => [p.id, p.full_name as string]),
+    );
+
+    const byDriver = new Map<string, { name: string; count: number; minutes: number }>();
+    const byDepot = new Map<string, number>();
+    let unassigned = 0;
+
+    for (const d of dutiesRes.data ?? []) {
+      const mins = minutesBetween(d.start_time as string, d.end_time as string);
+      const depot = (d.depot as string) ?? "—";
+      byDepot.set(depot, (byDepot.get(depot) ?? 0) + 1);
+      if (!d.assigned_to) {
+        unassigned++;
+        continue;
+      }
+      const uid = d.assigned_to as string;
+      const cur = byDriver.get(uid) ?? {
+        name: profilesById.get(uid) ?? "Nieznany",
+        count: 0,
+        minutes: 0,
+      };
+      cur.count++;
+      cur.minutes += mins;
+      byDriver.set(uid, cur);
+    }
+
+    return {
+      duties: {
+        total: (dutiesRes.data ?? []).length,
+        unassigned,
+        byDepot: Array.from(byDepot, ([depot, count]) => ({ depot, count })),
+        topDrivers: Array.from(byDriver.values())
+          .sort((a, b) => b.minutes - a.minutes)
+          .slice(0, 10),
+      },
+      drivers: {
+        total: (profilesRes.data ?? []).length,
+        active: (profilesRes.data ?? []).filter((p: any) => p.active).length,
+      },
+      vacations: {
+        pending: (vacRes.data ?? []).filter((v: any) => v.status === "pending").length,
+        upcoming: (vacRes.data ?? []).filter((v: any) => v.status === "approved").length,
+      },
+      vehicles: {
+        total: (vehRes.data ?? []).length,
+        active: (vehRes.data ?? []).filter((v: any) => v.active).length,
+      },
+    };
+  });

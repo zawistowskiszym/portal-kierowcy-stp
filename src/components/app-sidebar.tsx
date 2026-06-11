@@ -7,6 +7,10 @@ import {
   Users,
   ClipboardList,
   Bus,
+  CalendarCheck2,
+  Plane,
+  BarChart3,
+  FileBarChart,
 } from "lucide-react";
 import {
   Sidebar,
@@ -22,6 +26,9 @@ import {
 const driverItems = [
   { title: "Pulpit", url: "/pulpit", icon: LayoutDashboard },
   { title: "Mój grafik", url: "/grafik", icon: CalendarRange },
+  { title: "Dyspozycyjność", url: "/dyspozycyjnosc", icon: CalendarCheck2 },
+  { title: "Urlopy", url: "/urlopy", icon: Plane },
+  { title: "Moje statystyki", url: "/statystyki", icon: BarChart3 },
   { title: "Ogłoszenia", url: "/ogloszenia", icon: Megaphone },
 ];
 
@@ -29,6 +36,8 @@ const adminItems = [
   { title: "Użytkownicy", url: "/admin/uzytkownicy", icon: Users },
   { title: "Planowanie służb", url: "/admin/sluzby", icon: ClipboardList },
   { title: "Tabor", url: "/admin/pojazdy", icon: Bus },
+  { title: "Wnioski urlopowe", url: "/admin/urlopy", icon: Plane },
+  { title: "Raporty", url: "/admin/raporty", icon: FileBarChart },
   { title: "Ogłoszenia (admin)", url: "/admin/ogloszenia", icon: Megaphone },
 ];
 
