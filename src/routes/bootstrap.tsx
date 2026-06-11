@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { bootstrapFirstAdmin } from "@/lib/portal.functions";
 
-export const Route = createFileRoute("/auth/bootstrap")({
+export const Route = createFileRoute("/bootstrap")({
   ssr: false,
   head: () => ({ meta: [{ title: "Pierwsze uruchomienie — Portal STP" }] }),
   component: BootstrapPage,
