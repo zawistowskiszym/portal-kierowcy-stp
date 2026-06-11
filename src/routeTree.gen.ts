@@ -30,6 +30,7 @@ import { Route as AuthenticatedAdminOgloszeniaRouteImport } from './routes/_auth
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as AuthenticatedSluzbaDutyIdRozkladRouteImport } from './routes/_authenticated/sluzba.$dutyId.rozklad'
 import { Route as AuthenticatedSluzbaDutyIdMapaRouteImport } from './routes/_authenticated/sluzba.$dutyId.mapa'
 
 const ZaproszenieRoute = ZaproszenieRouteImport.update({
@@ -144,6 +145,12 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedSluzbaDutyIdRozkladRoute =
+  AuthenticatedSluzbaDutyIdRozkladRouteImport.update({
+    id: '/sluzba/$dutyId/rozklad',
+    path: '/sluzba/$dutyId/rozklad',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedSluzbaDutyIdMapaRoute =
   AuthenticatedSluzbaDutyIdMapaRouteImport.update({
     id: '/sluzba/$dutyId/mapa',
@@ -170,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
   '/sluzba/$dutyId/mapa': typeof AuthenticatedSluzbaDutyIdMapaRoute
+  '/sluzba/$dutyId/rozklad': typeof AuthenticatedSluzbaDutyIdRozkladRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -193,6 +201,7 @@ export interface FileRoutesByTo {
   '/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
   '/sluzba/$dutyId/mapa': typeof AuthenticatedSluzbaDutyIdMapaRoute
+  '/sluzba/$dutyId/rozklad': typeof AuthenticatedSluzbaDutyIdRozkladRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -218,6 +227,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/_authenticated/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
   '/_authenticated/sluzba/$dutyId/mapa': typeof AuthenticatedSluzbaDutyIdMapaRoute
+  '/_authenticated/sluzba/$dutyId/rozklad': typeof AuthenticatedSluzbaDutyIdRozkladRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -243,6 +253,7 @@ export interface FileRouteTypes {
     | '/admin/urlopy'
     | '/admin/uzytkownicy'
     | '/sluzba/$dutyId/mapa'
+    | '/sluzba/$dutyId/rozklad'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -266,6 +277,7 @@ export interface FileRouteTypes {
     | '/admin/urlopy'
     | '/admin/uzytkownicy'
     | '/sluzba/$dutyId/mapa'
+    | '/sluzba/$dutyId/rozklad'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -290,6 +302,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/urlopy'
     | '/_authenticated/admin/uzytkownicy'
     | '/_authenticated/sluzba/$dutyId/mapa'
+    | '/_authenticated/sluzba/$dutyId/rozklad'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -455,6 +468,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/sluzba/$dutyId/rozklad': {
+      id: '/_authenticated/sluzba/$dutyId/rozklad'
+      path: '/sluzba/$dutyId/rozklad'
+      fullPath: '/sluzba/$dutyId/rozklad'
+      preLoaderRoute: typeof AuthenticatedSluzbaDutyIdRozkladRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/sluzba/$dutyId/mapa': {
       id: '/_authenticated/sluzba/$dutyId/mapa'
       path: '/sluzba/$dutyId/mapa'
@@ -495,6 +515,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedStatystykiRoute: typeof AuthenticatedStatystykiRoute
   AuthenticatedUrlopyRoute: typeof AuthenticatedUrlopyRoute
   AuthenticatedSluzbaDutyIdMapaRoute: typeof AuthenticatedSluzbaDutyIdMapaRoute
+  AuthenticatedSluzbaDutyIdRozkladRoute: typeof AuthenticatedSluzbaDutyIdRozkladRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -506,6 +527,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedStatystykiRoute: AuthenticatedStatystykiRoute,
   AuthenticatedUrlopyRoute: AuthenticatedUrlopyRoute,
   AuthenticatedSluzbaDutyIdMapaRoute: AuthenticatedSluzbaDutyIdMapaRoute,
+  AuthenticatedSluzbaDutyIdRozkladRoute: AuthenticatedSluzbaDutyIdRozkladRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
