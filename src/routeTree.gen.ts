@@ -9,38 +9,176 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthBootstrapRouteImport } from './routes/auth.bootstrap'
+import { Route as AuthenticatedPulpitRouteImport } from './routes/_authenticated/pulpit'
+import { Route as AuthenticatedOgloszeniaRouteImport } from './routes/_authenticated/ogloszenia'
+import { Route as AuthenticatedGrafikRouteImport } from './routes/_authenticated/grafik'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAdminUzytkownicyRouteImport } from './routes/_authenticated/admin/uzytkownicy'
+import { Route as AuthenticatedAdminSluzbyRouteImport } from './routes/_authenticated/admin/sluzby'
+import { Route as AuthenticatedAdminOgloszeniaRouteImport } from './routes/_authenticated/admin/ogloszenia'
 
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthBootstrapRoute = AuthBootstrapRouteImport.update({
+  id: '/bootstrap',
+  path: '/bootstrap',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthenticatedPulpitRoute = AuthenticatedPulpitRouteImport.update({
+  id: '/pulpit',
+  path: '/pulpit',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedOgloszeniaRoute = AuthenticatedOgloszeniaRouteImport.update({
+  id: '/ogloszenia',
+  path: '/ogloszenia',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedGrafikRoute = AuthenticatedGrafikRouteImport.update({
+  id: '/grafik',
+  path: '/grafik',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdminUzytkownicyRoute =
+  AuthenticatedAdminUzytkownicyRouteImport.update({
+    id: '/uzytkownicy',
+    path: '/uzytkownicy',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminSluzbyRoute =
+  AuthenticatedAdminSluzbyRouteImport.update({
+    id: '/sluzby',
+    path: '/sluzby',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminOgloszeniaRoute =
+  AuthenticatedAdminOgloszeniaRouteImport.update({
+    id: '/ogloszenia',
+    path: '/ogloszenia',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/grafik': typeof AuthenticatedGrafikRoute
+  '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
+  '/pulpit': typeof AuthenticatedPulpitRoute
+  '/auth/bootstrap': typeof AuthBootstrapRoute
+  '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
+  '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
+  '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRouteWithChildren
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/grafik': typeof AuthenticatedGrafikRoute
+  '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
+  '/pulpit': typeof AuthenticatedPulpitRoute
+  '/auth/bootstrap': typeof AuthBootstrapRoute
+  '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
+  '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
+  '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/auth': typeof AuthRouteWithChildren
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/grafik': typeof AuthenticatedGrafikRoute
+  '/_authenticated/ogloszenia': typeof AuthenticatedOgloszeniaRoute
+  '/_authenticated/pulpit': typeof AuthenticatedPulpitRoute
+  '/auth/bootstrap': typeof AuthBootstrapRoute
+  '/_authenticated/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
+  '/_authenticated/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
+  '/_authenticated/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/admin'
+    | '/grafik'
+    | '/ogloszenia'
+    | '/pulpit'
+    | '/auth/bootstrap'
+    | '/admin/ogloszenia'
+    | '/admin/sluzby'
+    | '/admin/uzytkownicy'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/admin'
+    | '/grafik'
+    | '/ogloszenia'
+    | '/pulpit'
+    | '/auth/bootstrap'
+    | '/admin/ogloszenia'
+    | '/admin/sluzby'
+    | '/admin/uzytkownicy'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/admin'
+    | '/_authenticated/grafik'
+    | '/_authenticated/ogloszenia'
+    | '/_authenticated/pulpit'
+    | '/auth/bootstrap'
+    | '/_authenticated/admin/ogloszenia'
+    | '/_authenticated/admin/sluzby'
+    | '/_authenticated/admin/uzytkownicy'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  AuthRoute: typeof AuthRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +186,113 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/bootstrap': {
+      id: '/auth/bootstrap'
+      path: '/bootstrap'
+      fullPath: '/auth/bootstrap'
+      preLoaderRoute: typeof AuthBootstrapRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_authenticated/pulpit': {
+      id: '/_authenticated/pulpit'
+      path: '/pulpit'
+      fullPath: '/pulpit'
+      preLoaderRoute: typeof AuthenticatedPulpitRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/ogloszenia': {
+      id: '/_authenticated/ogloszenia'
+      path: '/ogloszenia'
+      fullPath: '/ogloszenia'
+      preLoaderRoute: typeof AuthenticatedOgloszeniaRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/grafik': {
+      id: '/_authenticated/grafik'
+      path: '/grafik'
+      fullPath: '/grafik'
+      preLoaderRoute: typeof AuthenticatedGrafikRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/uzytkownicy': {
+      id: '/_authenticated/admin/uzytkownicy'
+      path: '/uzytkownicy'
+      fullPath: '/admin/uzytkownicy'
+      preLoaderRoute: typeof AuthenticatedAdminUzytkownicyRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/sluzby': {
+      id: '/_authenticated/admin/sluzby'
+      path: '/sluzby'
+      fullPath: '/admin/sluzby'
+      preLoaderRoute: typeof AuthenticatedAdminSluzbyRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/ogloszenia': {
+      id: '/_authenticated/admin/ogloszenia'
+      path: '/ogloszenia'
+      fullPath: '/admin/ogloszenia'
+      preLoaderRoute: typeof AuthenticatedAdminOgloszeniaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminOgloszeniaRoute: typeof AuthenticatedAdminOgloszeniaRoute
+  AuthenticatedAdminSluzbyRoute: typeof AuthenticatedAdminSluzbyRoute
+  AuthenticatedAdminUzytkownicyRoute: typeof AuthenticatedAdminUzytkownicyRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminOgloszeniaRoute: AuthenticatedAdminOgloszeniaRoute,
+  AuthenticatedAdminSluzbyRoute: AuthenticatedAdminSluzbyRoute,
+  AuthenticatedAdminUzytkownicyRoute: AuthenticatedAdminUzytkownicyRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedGrafikRoute: typeof AuthenticatedGrafikRoute
+  AuthenticatedOgloszeniaRoute: typeof AuthenticatedOgloszeniaRoute
+  AuthenticatedPulpitRoute: typeof AuthenticatedPulpitRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedGrafikRoute: AuthenticatedGrafikRoute,
+  AuthenticatedOgloszeniaRoute: AuthenticatedOgloszeniaRoute,
+  AuthenticatedPulpitRoute: AuthenticatedPulpitRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
+interface AuthRouteChildren {
+  AuthBootstrapRoute: typeof AuthBootstrapRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthBootstrapRoute: AuthBootstrapRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  AuthRoute: AuthRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
