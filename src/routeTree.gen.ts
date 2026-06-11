@@ -9,10 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as BootstrapRouteImport } from './routes/bootstrap'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthBootstrapRouteImport } from './routes/auth.bootstrap'
 import { Route as AuthenticatedPulpitRouteImport } from './routes/_authenticated/pulpit'
 import { Route as AuthenticatedOgloszeniaRouteImport } from './routes/_authenticated/ogloszenia'
 import { Route as AuthenticatedGrafikRouteImport } from './routes/_authenticated/grafik'
@@ -25,6 +25,11 @@ import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/e
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 
+const BootstrapRoute = BootstrapRouteImport.update({
+  id: '/bootstrap',
+  path: '/bootstrap',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -38,11 +43,6 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthBootstrapRoute = AuthBootstrapRouteImport.update({
-  id: '/bootstrap',
-  path: '/bootstrap',
-  getParentRoute: () => AuthRoute,
 } as any)
 const AuthenticatedPulpitRoute = AuthenticatedPulpitRouteImport.update({
   id: '/pulpit',
@@ -107,12 +107,12 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/bootstrap': typeof BootstrapRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/grafik': typeof AuthenticatedGrafikRoute
   '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/pulpit': typeof AuthenticatedPulpitRoute
-  '/auth/bootstrap': typeof AuthBootstrapRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
@@ -123,12 +123,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/bootstrap': typeof BootstrapRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/grafik': typeof AuthenticatedGrafikRoute
   '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/pulpit': typeof AuthenticatedPulpitRoute
-  '/auth/bootstrap': typeof AuthBootstrapRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
@@ -141,12 +141,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/auth': typeof AuthRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/bootstrap': typeof BootstrapRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/grafik': typeof AuthenticatedGrafikRoute
   '/_authenticated/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/_authenticated/pulpit': typeof AuthenticatedPulpitRoute
-  '/auth/bootstrap': typeof AuthBootstrapRoute
   '/_authenticated/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/_authenticated/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/_authenticated/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
@@ -160,11 +160,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/bootstrap'
     | '/admin'
     | '/grafik'
     | '/ogloszenia'
     | '/pulpit'
-    | '/auth/bootstrap'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
     | '/admin/sluzby'
@@ -176,11 +176,11 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/bootstrap'
     | '/admin'
     | '/grafik'
     | '/ogloszenia'
     | '/pulpit'
-    | '/auth/bootstrap'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
     | '/admin/sluzby'
@@ -193,11 +193,11 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/bootstrap'
     | '/_authenticated/admin'
     | '/_authenticated/grafik'
     | '/_authenticated/ogloszenia'
     | '/_authenticated/pulpit'
-    | '/auth/bootstrap'
     | '/_authenticated/admin/ogloszenia'
     | '/_authenticated/admin/pojazdy'
     | '/_authenticated/admin/sluzby'
@@ -210,7 +210,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
-  AuthRoute: typeof AuthRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  BootstrapRoute: typeof BootstrapRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -218,6 +219,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/bootstrap': {
+      id: '/bootstrap'
+      path: '/bootstrap'
+      fullPath: '/bootstrap'
+      preLoaderRoute: typeof BootstrapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -238,13 +246,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/auth/bootstrap': {
-      id: '/auth/bootstrap'
-      path: '/bootstrap'
-      fullPath: '/auth/bootstrap'
-      preLoaderRoute: typeof AuthBootstrapRouteImport
-      parentRoute: typeof AuthRoute
     }
     '/_authenticated/pulpit': {
       id: '/_authenticated/pulpit'
@@ -361,20 +362,11 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
-interface AuthRouteChildren {
-  AuthBootstrapRoute: typeof AuthBootstrapRoute
-}
-
-const AuthRouteChildren: AuthRouteChildren = {
-  AuthBootstrapRoute: AuthBootstrapRoute,
-}
-
-const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
-  AuthRoute: AuthRouteWithChildren,
+  AuthRoute: AuthRoute,
+  BootstrapRoute: BootstrapRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
@@ -382,13 +374,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
