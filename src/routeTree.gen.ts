@@ -22,6 +22,7 @@ import { Route as AuthenticatedGrafikRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedDyspozycyjnoscRouteImport } from './routes/_authenticated/dyspozycyjnosc'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminUzytkownicyRouteImport } from './routes/_authenticated/admin/uzytkownicy'
+import { Route as AuthenticatedAdminUrlopyRouteImport } from './routes/_authenticated/admin/urlopy'
 import { Route as AuthenticatedAdminSluzbyRouteImport } from './routes/_authenticated/admin/sluzby'
 import { Route as AuthenticatedAdminPojazdyRouteImport } from './routes/_authenticated/admin/pojazdy'
 import { Route as AuthenticatedAdminOgloszeniaRouteImport } from './routes/_authenticated/admin/ogloszenia'
@@ -95,6 +96,12 @@ const AuthenticatedAdminUzytkownicyRoute =
     path: '/uzytkownicy',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminUrlopyRoute =
+  AuthenticatedAdminUrlopyRouteImport.update({
+    id: '/urlopy',
+    path: '/urlopy',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminSluzbyRoute =
   AuthenticatedAdminSluzbyRouteImport.update({
     id: '/sluzby',
@@ -145,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
+  '/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -165,6 +173,7 @@ export interface FileRoutesByTo {
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
+  '/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -187,6 +196,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/_authenticated/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/_authenticated/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
+  '/_authenticated/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/_authenticated/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
     | '/admin/sluzby'
+    | '/admin/urlopy'
     | '/admin/uzytkownicy'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
     | '/admin/sluzby'
+    | '/admin/urlopy'
     | '/admin/uzytkownicy'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -250,6 +262,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/ogloszenia'
     | '/_authenticated/admin/pojazdy'
     | '/_authenticated/admin/sluzby'
+    | '/_authenticated/admin/urlopy'
     | '/_authenticated/admin/uzytkownicy'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -360,6 +373,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUzytkownicyRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/urlopy': {
+      id: '/_authenticated/admin/urlopy'
+      path: '/urlopy'
+      fullPath: '/admin/urlopy'
+      preLoaderRoute: typeof AuthenticatedAdminUrlopyRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/sluzby': {
       id: '/_authenticated/admin/sluzby'
       path: '/sluzby'
@@ -409,6 +429,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminOgloszeniaRoute: typeof AuthenticatedAdminOgloszeniaRoute
   AuthenticatedAdminPojazdyRoute: typeof AuthenticatedAdminPojazdyRoute
   AuthenticatedAdminSluzbyRoute: typeof AuthenticatedAdminSluzbyRoute
+  AuthenticatedAdminUrlopyRoute: typeof AuthenticatedAdminUrlopyRoute
   AuthenticatedAdminUzytkownicyRoute: typeof AuthenticatedAdminUzytkownicyRoute
 }
 
@@ -416,6 +437,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminOgloszeniaRoute: AuthenticatedAdminOgloszeniaRoute,
   AuthenticatedAdminPojazdyRoute: AuthenticatedAdminPojazdyRoute,
   AuthenticatedAdminSluzbyRoute: AuthenticatedAdminSluzbyRoute,
+  AuthenticatedAdminUrlopyRoute: AuthenticatedAdminUrlopyRoute,
   AuthenticatedAdminUzytkownicyRoute: AuthenticatedAdminUzytkownicyRoute,
 }
 
