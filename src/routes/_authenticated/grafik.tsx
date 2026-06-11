@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { getMyDutiesInRange } from "@/lib/portal.functions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Map as MapIcon, CalendarDays, FileText, AlertTriangle, Bus, Hash, Clock, StickyNote, Building2 } from "lucide-react";
+import { MapPin, CalendarDays, FileText, AlertTriangle, Bus, Hash, Clock, StickyNote, Building2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/grafik")({
   head: () => ({ meta: [{ title: "Mój grafik — Portal STP" }] }),
