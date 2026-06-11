@@ -28,7 +28,8 @@ const driverItems = [
 const adminItems = [
   { title: "Użytkownicy", url: "/admin/uzytkownicy", icon: Users },
   { title: "Planowanie służb", url: "/admin/sluzby", icon: ClipboardList },
-  { title: "Ogłoszenia (admin)", url: "/admin/ogloszenia", icon: Bus },
+  { title: "Tabor", url: "/admin/pojazdy", icon: Bus },
+  { title: "Ogłoszenia (admin)", url: "/admin/ogloszenia", icon: Megaphone },
 ];
 
 export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
