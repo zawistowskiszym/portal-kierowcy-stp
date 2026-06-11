@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { listUsers, createUser, updateUser, resetUserPassword, deleteUser } from "@/lib/portal.functions";
+import { listUsers, inviteUser, updateUser, resetUserPassword, deleteUser } from "@/lib/portal.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/uzytkownicy")({
   head: () => ({ meta: [{ title: "Użytkownicy — Admin STP" }] }),
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/admin/uzytkownicy")({
 function AdminUsersPage() {
   const qc = useQueryClient();
   const listFn = useServerFn(listUsers);
-  const createFn = useServerFn(createUser);
+  const inviteFn = useServerFn(inviteUser);
   const updateFn = useServerFn(updateUser);
   const resetFn = useServerFn(resetUserPassword);
   const delFn = useServerFn(deleteUser);
@@ -27,17 +27,25 @@ function AdminUsersPage() {
   const { data } = useQuery({ queryKey: ["admin", "users"], queryFn: () => listFn() });
   const users = (data ?? []) as any[];
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "", full_name: "", employee_id: "", depot: "", role: "driver" as "admin" | "driver" });
+  const [form, setForm] = useState({ email: "", role: "driver" as "admin" | "driver" });
 
   const refresh = () => qc.invalidateQueries({ queryKey: ["admin", "users"] });
 
-  const onCreate = async (e: React.FormEvent) => {
+  const onInvite = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createFn({ data: form });
-      toast.success("Konto utworzone");
+      await inviteFn({
+        data: {
+          email: form.email,
+          role: form.role,
+          redirectTo: `${window.location.origin}/zaproszenie`,
+        },
+      });
+      toast.success("Zaproszenie wysłane", {
+        description: `Wiadomość trafi na adres ${form.email}.`,
+      });
       setOpen(false);
-      setForm({ email: "", password: "", full_name: "", employee_id: "", depot: "", role: "driver" });
+      setForm({ email: "", role: "driver" });
       refresh();
     } catch (err: any) {
       toast.error("Błąd", { description: err?.message });
@@ -75,18 +83,27 @@ function AdminUsersPage() {
         <h2 className="text-xl font-bold">Zarządzanie użytkownikami</h2>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button>+ Dodaj pracownika</Button>
+            <Button>+ Zaproś pracownika</Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogHeader><DialogTitle>Nowe konto pracownika</DialogTitle></DialogHeader>
-            <form onSubmit={onCreate} className="space-y-3">
-              <div className="space-y-1"><Label>Imię i nazwisko</Label><Input required value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} /></div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1"><Label>Nr służbowy</Label><Input value={form.employee_id} onChange={(e) => setForm({ ...form, employee_id: e.target.value })} /></div>
-                <div className="space-y-1"><Label>Zajezdnia</Label><Input value={form.depot} onChange={(e) => setForm({ ...form, depot: e.target.value })} /></div>
+            <DialogHeader>
+              <DialogTitle>Zaproś nowego pracownika</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={onInvite} className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Wyślemy na podany adres link do założenia konta. Pracownik sam ustawi hasło
+                oraz uzupełni dane osobowe.
+              </p>
+              <div className="space-y-1">
+                <Label>Adres e-mail</Label>
+                <Input
+                  type="email"
+                  required
+                  autoFocus
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
               </div>
-              <div className="space-y-1"><Label>E-mail</Label><Input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
-              <div className="space-y-1"><Label>Hasło tymczasowe</Label><Input type="text" required minLength={8} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} /></div>
               <div className="space-y-1">
                 <Label>Rola</Label>
                 <Select value={form.role} onValueChange={(v) => setForm({ ...form, role: v as any })}>
@@ -97,7 +114,9 @@ function AdminUsersPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <DialogFooter><Button type="submit">Utwórz</Button></DialogFooter>
+              <DialogFooter>
+                <Button type="submit">Wyślij zaproszenie</Button>
+              </DialogFooter>
             </form>
           </DialogContent>
         </Dialog>
@@ -131,7 +150,7 @@ function AdminUsersPage() {
                 <td className="px-6 py-3">
                   {u.active
                     ? <Badge className="bg-status-ok text-status-ok-foreground">Aktywne</Badge>
-                    : <Badge variant="outline">Zablokowane</Badge>}
+                    : <Badge variant="outline">Zaproszenie wysłane</Badge>}
                 </td>
                 <td className="px-6 py-3 text-right space-x-2">
                   <Button variant="ghost" size="sm" onClick={() => onToggleActive(u)}>
