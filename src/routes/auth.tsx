@@ -70,9 +70,7 @@ function AuthPage() {
       <div className="flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-sm space-y-8">
           <div className="lg:hidden flex items-center gap-3 mb-8">
-            <div className="size-9 bg-brand rounded-md flex items-center justify-center">
-              <span className="text-brand-accent font-bold text-xs">STP</span>
-            </div>
+            <img src={stpLogo.url} alt="STP" className="size-9" />
             <span className="font-bold tracking-tight">Portal Kierowcy</span>
           </div>
 
