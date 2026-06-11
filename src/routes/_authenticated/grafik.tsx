@@ -54,8 +54,6 @@ function GrafikPage() {
   const [selectedIso, setSelectedIso] = useState<string>(isoDate(today));
   const selectedDuties = byDate.get(selectedIso) ?? [];
 
-  const notImplemented = (label: string) => () =>
-    toast.info(`${label} — funkcja wkrótce dostępna`);
 
   return (
     <div className="space-y-6">
