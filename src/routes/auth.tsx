@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { bootstrapStatus, bootstrapFirstAdmin } from "@/lib/portal.functions";
+import stpLogo from "@/assets/stp-logo.png.asset.json";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -45,9 +46,7 @@ function AuthPage() {
     <div className="min-h-screen grid lg:grid-cols-2 bg-brand-surface">
       <div className="hidden lg:flex flex-col justify-between bg-brand text-brand-foreground p-12">
         <div className="flex items-center gap-3">
-          <div className="size-10 bg-brand-accent rounded-md flex items-center justify-center text-brand font-bold">
-            STP
-          </div>
+          <img src={stpLogo.url} alt="STP" className="size-10 invert" />
           <div>
             <div className="font-bold tracking-tight">Portal Kierowcy</div>
             <div className="text-[11px] uppercase tracking-widest text-brand-foreground/50">
@@ -72,9 +71,7 @@ function AuthPage() {
       <div className="flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-sm space-y-8">
           <div className="lg:hidden flex items-center gap-3 mb-8">
-            <div className="size-9 bg-brand rounded-md flex items-center justify-center">
-              <span className="text-brand-accent font-bold text-xs">STP</span>
-            </div>
+            <img src={stpLogo.url} alt="STP" className="size-9" />
             <span className="font-bold tracking-tight">Portal Kierowcy</span>
           </div>
 

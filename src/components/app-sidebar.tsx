@@ -1,4 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
+import stpLogo from "@/assets/stp-logo.png.asset.json";
 import {
   LayoutDashboard,
   CalendarRange,
@@ -38,9 +39,7 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
     <Sidebar collapsible="icon" className="border-r-0">
       <SidebarContent className="bg-sidebar text-sidebar-foreground">
         <div className="flex items-center gap-3 px-4 pt-5 pb-6">
-          <div className="size-9 bg-brand-accent rounded-md flex items-center justify-center text-brand font-bold text-xs tracking-tighter">
-            STP
-          </div>
+          <img src={stpLogo.url} alt="STP" className="size-9 invert" />
           <div className="leading-tight">
             <div className="font-bold text-sm tracking-tight">Portal Kierowcy</div>
             <div className="text-[10px] uppercase tracking-widest text-sidebar-foreground/40">
