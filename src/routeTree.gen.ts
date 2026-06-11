@@ -19,6 +19,7 @@ import { Route as AuthenticatedGrafikRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminUzytkownicyRouteImport } from './routes/_authenticated/admin/uzytkownicy'
 import { Route as AuthenticatedAdminSluzbyRouteImport } from './routes/_authenticated/admin/sluzby'
+import { Route as AuthenticatedAdminPojazdyRouteImport } from './routes/_authenticated/admin/pojazdy'
 import { Route as AuthenticatedAdminOgloszeniaRouteImport } from './routes/_authenticated/admin/ogloszenia'
 
 const AuthRoute = AuthRouteImport.update({
@@ -72,6 +73,12 @@ const AuthenticatedAdminSluzbyRoute =
     path: '/sluzby',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminPojazdyRoute =
+  AuthenticatedAdminPojazdyRouteImport.update({
+    id: '/pojazdy',
+    path: '/pojazdy',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminOgloszeniaRoute =
   AuthenticatedAdminOgloszeniaRouteImport.update({
     id: '/ogloszenia',
@@ -88,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/pulpit': typeof AuthenticatedPulpitRoute
   '/auth/bootstrap': typeof AuthBootstrapRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
+  '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
   '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
 }
@@ -100,6 +108,7 @@ export interface FileRoutesByTo {
   '/pulpit': typeof AuthenticatedPulpitRoute
   '/auth/bootstrap': typeof AuthBootstrapRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
+  '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
   '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
 }
@@ -114,6 +123,7 @@ export interface FileRoutesById {
   '/_authenticated/pulpit': typeof AuthenticatedPulpitRoute
   '/auth/bootstrap': typeof AuthBootstrapRoute
   '/_authenticated/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
+  '/_authenticated/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/_authenticated/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
   '/_authenticated/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
 }
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/pulpit'
     | '/auth/bootstrap'
     | '/admin/ogloszenia'
+    | '/admin/pojazdy'
     | '/admin/sluzby'
     | '/admin/uzytkownicy'
   fileRoutesByTo: FileRoutesByTo
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/pulpit'
     | '/auth/bootstrap'
     | '/admin/ogloszenia'
+    | '/admin/pojazdy'
     | '/admin/sluzby'
     | '/admin/uzytkownicy'
   id:
@@ -153,6 +165,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pulpit'
     | '/auth/bootstrap'
     | '/_authenticated/admin/ogloszenia'
+    | '/_authenticated/admin/pojazdy'
     | '/_authenticated/admin/sluzby'
     | '/_authenticated/admin/uzytkownicy'
   fileRoutesById: FileRoutesById
@@ -235,6 +248,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSluzbyRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/pojazdy': {
+      id: '/_authenticated/admin/pojazdy'
+      path: '/pojazdy'
+      fullPath: '/admin/pojazdy'
+      preLoaderRoute: typeof AuthenticatedAdminPojazdyRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/ogloszenia': {
       id: '/_authenticated/admin/ogloszenia'
       path: '/ogloszenia'
@@ -247,12 +267,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminOgloszeniaRoute: typeof AuthenticatedAdminOgloszeniaRoute
+  AuthenticatedAdminPojazdyRoute: typeof AuthenticatedAdminPojazdyRoute
   AuthenticatedAdminSluzbyRoute: typeof AuthenticatedAdminSluzbyRoute
   AuthenticatedAdminUzytkownicyRoute: typeof AuthenticatedAdminUzytkownicyRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminOgloszeniaRoute: AuthenticatedAdminOgloszeniaRoute,
+  AuthenticatedAdminPojazdyRoute: AuthenticatedAdminPojazdyRoute,
   AuthenticatedAdminSluzbyRoute: AuthenticatedAdminSluzbyRoute,
   AuthenticatedAdminUzytkownicyRoute: AuthenticatedAdminUzytkownicyRoute,
 }
@@ -296,3 +318,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
