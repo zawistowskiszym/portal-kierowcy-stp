@@ -10,9 +10,30 @@ export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
     const { supabase } = await import("@/integrations/supabase/client");
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) throw redirect({ to: "/auth" });
-    return { user: data.user };
+    // Cheap local check first — no network, no transient failures.
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (!sessionData.session) throw redirect({ to: "/auth" });
+
+    // Validate session with the Auth server, but tolerate transient errors
+    // (e.g. "context canceled" / 500s) so we don't bounce the user to /auth
+    // on a flaky network round-trip. Retry once before giving up.
+    let user = null as Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"];
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const { data, error } = await supabase.auth.getUser();
+      if (data?.user) {
+        user = data.user;
+        break;
+      }
+      // Only a definitive "no user" (no error) means logged out.
+      if (!error) {
+        throw redirect({ to: "/auth" });
+      }
+      // Transient error — wait briefly and retry once.
+      await new Promise((r) => setTimeout(r, 150));
+    }
+    // If we still have no user but a valid local session exists, trust the
+    // session for this navigation rather than redirecting on a flaky API.
+    return { user: user ?? sessionData.session.user };
   },
   component: AuthedLayout,
 });
