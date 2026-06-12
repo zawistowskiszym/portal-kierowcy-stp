@@ -1,20 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useMemo } from "react";
-import { toast } from "sonner";
 import { getMyDutiesInRange } from "@/lib/portal.functions";
-import { setMyDutyStatus, setMyPresence } from "@/lib/ops.functions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import {
   MapPin,
   CalendarDays,
@@ -25,213 +15,12 @@ import {
   Clock,
   StickyNote,
   Building2,
-  Play,
-  Square,
-  Coffee,
-  Gamepad2,
-  CheckCircle2,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/grafik")({
   head: () => ({ meta: [{ title: "Mój grafik — Portal STP" }] }),
   component: GrafikPage,
 });
-
-const PL_DOW = ["Nd", "Pn", "Wt", "Śr", "Cz", "Pt", "Sb"];
-const PL_MONTHS_SHORT = [
-  "sty", "lut", "mar", "kwi", "maj", "cze",
-  "lip", "sie", "wrz", "paź", "lis", "gru",
-];
-
-const pad = (n: number) => String(n).padStart(2, "0");
-const isoDate = (d: Date) =>
-  `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-
-function durationLabel(start?: string | null, end?: string | null) {
-  if (!start || !end) return null;
-  const [sh, sm] = start.split(":").map(Number);
-  const [eh, em] = end.split(":").map(Number);
-  let mins = eh * 60 + em - (sh * 60 + sm);
-  if (mins < 0) mins += 24 * 60;
-  const h = Math.floor(mins / 60);
-  const m = mins % 60;
-  return m === 0 ? `${h} h` : `${h} h ${m} min`;
-}
-
-// ── Roblox PIS dialog ──────────────────────────────────────────────────────
-
-function RobloxPISDialog({
-  duty,
-  open,
-  onOpenChange,
-}: {
-  duty: any;
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
-}) {
-  const qc = useQueryClient();
-  const setStatusFn = useServerFn(setMyDutyStatus);
-  const setPresenceFn = useServerFn(setMyPresence);
-  const [busy, setBusy] = useState(false);
-  const [started, setStarted] = useState(false);
-
-  const handleStart = async () => {
-    setBusy(true);
-    try {
-      await Promise.all([
-        setStatusFn({
-          data: {
-            duty_id: duty.id,
-            live_status: "on_route",
-            note: `Trasa ${duty.route} — wyjazd o ${duty.start_time?.slice(0, 5)}`,
-          },
-        }),
-        setPresenceFn({ data: { status: "active" } }),
-      ]);
-      qc.invalidateQueries({ queryKey: ["grafik-7d"] });
-      setStarted(true);
-      toast.success("Służba rozpoczęta — status zaktualizowany");
-    } catch (err: any) {
-      toast.error("Błąd", { description: err?.message });
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const handleEnd = async () => {
-    setBusy(true);
-    try {
-      await Promise.all([
-        setStatusFn({
-          data: {
-            duty_id: duty.id,
-            live_status: "completed",
-            note: null,
-          },
-        }),
-        setPresenceFn({ data: { status: "offline" } }),
-      ]);
-      qc.invalidateQueries({ queryKey: ["grafik-7d"] });
-      toast.success("Służba zakończona");
-      onOpenChange(false);
-      setStarted(false);
-    } catch (err: any) {
-      toast.error("Błąd", { description: err?.message });
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const pisCommand = `/pis ${duty.route} ${duty.start_time?.slice(0, 5) ?? ""}`;
-
-  return (
-    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) setStarted(false); }}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Gamepad2 className="size-5 text-brand" />
-            Roblox — integracja PIS
-          </DialogTitle>
-          <DialogDescription>
-            Służba <span className="font-mono font-bold">{duty.duty_number}</span>
-            {" · "}linia <span className="font-mono font-bold">{duty.route}</span>
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="space-y-4">
-          {/* Step 1 — start portal */}
-          <div className={`rounded-xl border p-4 space-y-2 transition-colors ${started ? "border-emerald-500/40 bg-emerald-500/5" : "border-border bg-card"}`}>
-            <div className="flex items-center gap-2">
-              <span className={`size-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${started ? "bg-emerald-500 text-white" : "bg-brand text-brand-foreground"}`}>
-                {started ? "✓" : "1"}
-              </span>
-              <span className="font-semibold text-sm">Potwierdź wyjazd w portalu</span>
-            </div>
-            <p className="text-xs text-muted-foreground pl-8">
-              Kliknij poniżej, aby ustawić status służby na <strong>„W trasie"</strong> i powiadomić dyspozytora.
-            </p>
-            {!started ? (
-              <div className="pl-8">
-                <Button
-                  size="sm"
-                  onClick={handleStart}
-                  disabled={busy}
-                  className="gap-2"
-                >
-                  <Play className="size-3.5" />
-                  {busy ? "Uruchamianie…" : "Rozpocznij służbę"}
-                </Button>
-              </div>
-            ) : (
-              <div className="pl-8 flex items-center gap-2 text-xs text-emerald-600 font-semibold">
-                <CheckCircle2 className="size-4" /> Status zaktualizowany
-              </div>
-            )}
-          </div>
-
-          {/* Step 2 — in-game PIS */}
-          <div className="rounded-xl border border-border bg-card p-4 space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="size-6 rounded-full bg-muted flex items-center justify-center text-xs font-bold shrink-0">2</span>
-              <span className="font-semibold text-sm">Aktywuj PIS w grze Roblox</span>
-            </div>
-            <p className="text-xs text-muted-foreground pl-8">
-              W pojeździe na Roblox użyj kontrolera PIS i wpisz trasę oraz godzinę odjazdu. Możesz też skopiować poniższe dane:
-            </p>
-            <div className="pl-8 space-y-2">
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="bg-muted/40 rounded-md px-3 py-2">
-                  <div className="text-muted-foreground mb-0.5">Linia</div>
-                  <div className="font-mono font-bold text-base">{duty.route}</div>
-                </div>
-                <div className="bg-muted/40 rounded-md px-3 py-2">
-                  <div className="text-muted-foreground mb-0.5">Odjazd</div>
-                  <div className="font-mono font-bold text-base">{duty.start_time?.slice(0, 5) ?? "—"}</div>
-                </div>
-                <div className="bg-muted/40 rounded-md px-3 py-2 col-span-2">
-                  <div className="text-muted-foreground mb-0.5">Zajezdnia</div>
-                  <div className="font-mono font-bold">{duty.depot}</div>
-                </div>
-              </div>
-              {duty.vehicle_label && (
-                <div className="bg-muted/40 rounded-md px-3 py-2 text-xs">
-                  <div className="text-muted-foreground mb-0.5">Pojazd</div>
-                  <div className="font-mono font-bold">{duty.vehicle_label}</div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Notes */}
-          {duty.notes && (
-            <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-xs flex gap-2">
-              <StickyNote className="size-3.5 text-amber-500 shrink-0 mt-0.5" />
-              <span>{duty.notes}</span>
-            </div>
-          )}
-        </div>
-
-        <DialogFooter className="flex-col sm:flex-row gap-2">
-          {started && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={handleEnd}
-              disabled={busy}
-              className="gap-2"
-            >
-              <Square className="size-3.5" />
-              Zakończ służbę
-            </Button>
-          )}
-          <Button variant="outline" size="sm" onClick={() => { onOpenChange(false); setStarted(false); }}>
-            Zamknij
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 // ── Main page ──────────────────────────────────────────────────────────────
 
