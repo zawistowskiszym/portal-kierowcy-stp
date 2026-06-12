@@ -48,20 +48,30 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
   const isActive = (url: string) => pathname === url || pathname.startsWith(url + "/");
 
   return (
-    <Sidebar collapsible="icon" className="border-r-0">
-      <SidebarContent className="bg-sidebar text-sidebar-foreground">
-        <div className="flex items-center gap-3 px-4 pt-5 pb-6">
-          <img src={stpLogo.url} alt="STP" className="size-9 invert" />
-          <div className="leading-tight">
-            <div className="font-bold text-sm tracking-tight">Portal Kierowcy</div>
-            <div className="text-[10px] uppercase tracking-widest text-sidebar-foreground/40">
+    <Sidebar collapsible="icon" className="border-r-0 bg-transparent">
+      <SidebarContent
+        className="m-3 rounded-3xl glass-strong text-sidebar-foreground"
+      >
+        <div className="flex items-center gap-3 px-4 pt-5 pb-4">
+          <div
+            className="size-10 rounded-2xl grid place-items-center shrink-0"
+            style={{
+              background:
+                "linear-gradient(135deg, var(--color-primary), color-mix(in oklab, var(--color-primary) 55%, var(--color-brand-accent)))",
+            }}
+          >
+            <img src={stpLogo.url} alt="STP" className="size-6 brightness-0 invert" />
+          </div>
+          <div className="leading-tight min-w-0">
+            <div className="font-display text-lg tracking-tight truncate">Portal STP</div>
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
               Skuszawyjińsk
             </div>
           </div>
         </div>
 
         <SidebarGroup>
-          <SidebarGroupLabel className="text-sidebar-foreground/40 text-[10px] uppercase tracking-widest">
+          <SidebarGroupLabel className="text-muted-foreground text-[10px] uppercase tracking-widest">
             Kierowca
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -71,7 +81,7 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
                   <SidebarMenuButton
                     asChild
                     isActive={isActive(item.url)}
-                    className="data-[active=true]:bg-white/10 data-[active=true]:text-sidebar-foreground hover:bg-white/5 text-sidebar-foreground/70 hover:text-sidebar-foreground"
+                    className="rounded-xl data-[active=true]:bg-primary/12 data-[active=true]:text-primary data-[active=true]:font-semibold hover:bg-glass text-foreground/70 hover:text-foreground"
                   >
                     <Link to={item.url}>
                       <item.icon className="size-4" />
@@ -86,7 +96,7 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
 
         {isAdmin && (
           <SidebarGroup>
-            <SidebarGroupLabel className="text-sidebar-foreground/40 text-[10px] uppercase tracking-widest">
+            <SidebarGroupLabel className="text-muted-foreground text-[10px] uppercase tracking-widest">
               Administracja
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -96,7 +106,7 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
                     <SidebarMenuButton
                       asChild
                       isActive={isActive(item.url)}
-                      className="data-[active=true]:bg-white/10 data-[active=true]:text-sidebar-foreground hover:bg-white/5 text-sidebar-foreground/70 hover:text-sidebar-foreground"
+                      className="rounded-xl data-[active=true]:bg-primary/12 data-[active=true]:text-primary data-[active=true]:font-semibold hover:bg-glass text-foreground/70 hover:text-foreground"
                     >
                       <Link to={item.url}>
                         <item.icon className="size-4" />

@@ -2,6 +2,7 @@ import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppHeader } from "@/components/app-header";
+import { BottomTabBar } from "@/components/bottom-tab-bar";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -19,17 +20,20 @@ function AuthedLayout() {
   const { profile, isAdmin, loading } = useAuth();
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-brand-surface">
-        <AppSidebar isAdmin={isAdmin} />
+      <div className="aurora-canvas min-h-screen flex w-full">
+        <div className="hidden md:block">
+          <AppSidebar isAdmin={isAdmin} />
+        </div>
         <div className="flex-1 flex flex-col min-w-0">
           <AppHeader profile={profile} />
-          <main className="flex-1 p-4 md:p-8">
+          <main className="flex-1 px-3 md:px-6 pt-4 pb-28 md:pb-10 space-y-4">
             {loading ? (
               <div className="text-sm text-muted-foreground">Ładowanie…</div>
             ) : (
               <Outlet />
             )}
           </main>
+          <BottomTabBar isAdmin={isAdmin} />
         </div>
       </div>
     </SidebarProvider>
