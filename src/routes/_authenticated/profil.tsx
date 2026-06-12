@@ -124,10 +124,6 @@ function ProfilePage() {
       toast.error("Nr służbowy musi składać się z 4 cyfr");
       return;
     }
-    if (!form.roblox_username.trim()) {
-      toast.error("Nazwa użytkownika Roblox jest wymagana");
-      return;
-    }
     setSaving(true);
     try {
       await updateFn({
@@ -135,7 +131,7 @@ function ProfilePage() {
           full_name: form.full_name.trim(),
           employee_id: form.employee_id || null,
           depot: form.depot || null,
-          roblox_username: form.roblox_username.trim(),
+          roblox_username: form.roblox_username.trim() || null,
           discord_username: form.discord_username.trim() || null,
           phone: form.phone.trim() || null,
           bio: form.bio.trim() || null,
@@ -237,15 +233,6 @@ function ProfilePage() {
             <Input
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            />
-          </div>
-          <div className="space-y-1">
-            <Label>Nazwa użytkownika Roblox *</Label>
-            <Input
-              required
-              maxLength={40}
-              value={form.roblox_username}
-              onChange={(e) => setForm({ ...form, roblox_username: e.target.value })}
             />
           </div>
           <div className="space-y-1">

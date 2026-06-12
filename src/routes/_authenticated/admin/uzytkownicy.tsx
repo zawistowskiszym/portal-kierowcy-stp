@@ -206,7 +206,7 @@ function AdminUsersPage() {
               <th className="px-6 py-3">Pracownik</th>
               <th className="px-6 py-3">Nr służbowy</th>
               <th className="px-6 py-3">Zajezdnia</th>
-              <th className="px-6 py-3">Roblox / Discord</th>
+              <th className="px-6 py-3">Discord</th>
               <th className="px-6 py-3">Rola</th>
               <th className="px-6 py-3">Status</th>
               <th className="px-6 py-3">Urlopy ({new Date().getFullYear()})</th>
@@ -224,8 +224,7 @@ function AdminUsersPage() {
                 <td className="px-6 py-3 font-mono text-xs">{u.employee_id ?? "—"}</td>
                 <td className="px-6 py-3 text-muted-foreground">{u.depot ?? "—"}</td>
                 <td className="px-6 py-3 text-xs">
-                  <div className="font-mono">{u.roblox_username ?? "—"}</div>
-                  <div className="text-muted-foreground">{u.discord_username ?? ""}</div>
+                  <div className="text-muted-foreground">{u.discord_username ?? "—"}</div>
                 </td>
                 <td className="px-6 py-3">
                   {u.roles.map((r: string) => (
@@ -321,13 +320,6 @@ function AdminUsersPage() {
                       <SelectItem value="admin">Administrator</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-                <div className="space-y-1">
-                  <Label>Roblox</Label>
-                  <Input
-                    value={edit.roblox_username}
-                    onChange={(e) => setEdit({ ...edit, roblox_username: e.target.value })}
-                  />
                 </div>
                 <div className="space-y-1">
                   <Label>Discord</Label>
