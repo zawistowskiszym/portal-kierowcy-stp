@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { getDispatcherDashboard } from "@/lib/ops.functions";
 import { Badge } from "@/components/ui/badge";
 import {
-  AlertTriangle, Bus, Users, ClipboardList, Activity, Coffee, Wrench, FileWarning,
+  AlertTriangle, Bus, Users, ClipboardList, Activity, Coffee, Wrench, FileWarning, Plane, FileBarChart,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/dashboard")({
@@ -36,6 +36,13 @@ function DashboardPage() {
       <div className="flex items-baseline justify-between">
         <h1 className="text-2xl font-bold">Pulpit dyspozytora</h1>
         <p className="text-xs text-muted-foreground">Aktualizacja co 15s</p>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <QuickLink to="/admin/monitor" icon={Activity} label="Monitor służb" />
+        <QuickLink to="/admin/incydenty" icon={AlertTriangle} label="Incydenty" />
+        <QuickLink to="/admin/raporty" icon={FileBarChart} label="Centrum raportów" />
+        <QuickLink to="/admin/urlopy" icon={Plane} label="Wnioski urlopowe" />
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -120,4 +127,18 @@ function Section({ title, link, children }: any) {
 
 function Empty({ children }: any) {
   return <div className="px-4 py-6 text-sm text-muted-foreground text-center">{children}</div>;
+}
+
+function QuickLink({ to, icon: Icon, label }: any) {
+  return (
+    <Link
+      to={to}
+      className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-sm hover:bg-muted/40 transition-colors"
+    >
+      <div className="size-9 rounded-lg bg-primary/10 text-primary grid place-items-center">
+        <Icon className="size-4" />
+      </div>
+      <span className="text-sm font-semibold">{label}</span>
+    </Link>
+  );
 }
