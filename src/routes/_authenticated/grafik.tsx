@@ -145,7 +145,7 @@ function GrafikPage() {
                 </div>
 
                 <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-6">
-                  <Field icon={Hash} label="Linia / służba" value={`${d.route} / ${d.duty_number}`} mono />
+                  <Field icon={Hash} label="LINIA / BRYGADA" value={`${d.route} / ${d.duty_number}`} mono />
                   <Field icon={Bus} label="Pojazd" value={d.vehicle_label ?? "—"} mono />
                   <Field icon={Building2} label="Zajezdnia" value={d.depot} />
                   <Field icon={Clock} label="Czas służby" value={duration ?? "—"} />
