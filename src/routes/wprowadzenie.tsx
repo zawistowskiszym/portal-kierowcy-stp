@@ -114,7 +114,7 @@ function IntroPage() {
         <section className="space-y-4">
           <h1 className="font-display text-3xl md:text-4xl tracking-tight">Witaj w STP</h1>
           <p className="text-muted-foreground leading-relaxed">
-            Cieszymy się, że chcesz dołączyć do Skuszawyjickiego Towarzystwa Przewozowego.
+            Cieszymy się, że chcesz dołączyć do Skuszawyjińskiego Transportu Publicznego.
             Zanim zaczniesz służbę, poświęć chwilę na obejrzenie pięciu krótkich filmów
             wprowadzających. Dowiesz się z nich, czym jest nasze miasto, jak działa STP,
             czego od Ciebie oczekujemy oraz jak korzystać z portalu kierowcy.
