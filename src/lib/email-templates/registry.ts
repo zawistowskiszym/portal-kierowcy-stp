@@ -2,6 +2,7 @@ import type { ComponentType } from 'react'
 import { template as newMessageTemplate } from './new-message'
 import { template as newAnnouncementTemplate } from './new-announcement'
 import { template as quizInviteTemplate } from './quiz-invite'
+import { template as introInviteTemplate } from './intro-invite'
 
 export interface TemplateEntry {
   component: ComponentType<any>
@@ -16,4 +17,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'new-message': newMessageTemplate,
   'new-announcement': newAnnouncementTemplate,
   'quiz-invite': quizInviteTemplate,
+  'intro-invite': introInviteTemplate,
 }

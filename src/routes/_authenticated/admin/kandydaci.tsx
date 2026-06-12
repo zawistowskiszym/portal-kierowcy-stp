@@ -20,6 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { sendIntro } from "@/lib/recruitment.functions";
 
 type Status = "new" | "reviewing" | "accepted" | "rejected";
 
@@ -33,6 +35,8 @@ type Application = {
   status: Status;
   reviewer_notes: string | null;
   created_at: string;
+  intro_token: string | null;
+  intro_sent_at: string | null;
 };
 
 const STATUS_LABEL: Record<Status, string> = {
@@ -74,6 +78,8 @@ function AdminCandidatesPage() {
   const [notes, setNotes] = useState("");
   const [status, setStatus] = useState<Status>("new");
   const [saving, setSaving] = useState(false);
+  const [sendingIntro, setSendingIntro] = useState(false);
+  const sendIntroFn = useServerFn(sendIntro);
 
   const { data } = useQuery({
     queryKey: ["admin", "recruitment", filter],
@@ -134,6 +140,21 @@ function AdminCandidatesPage() {
     toast.success("Usunięto");
     setSelected(null);
     refresh();
+  };
+
+  const sendIntroEmail = async () => {
+    if (!selected) return;
+    setSendingIntro(true);
+    try {
+      await sendIntroFn({ data: { applicationId: selected.id } });
+      toast.success("Wysłano email z wprowadzeniem");
+      refresh();
+      setSelected(null);
+    } catch (err: any) {
+      toast.error(err?.message ?? "Nie udało się wysłać");
+    } finally {
+      setSendingIntro(false);
+    }
   };
 
   const apps = data ?? [];
@@ -268,10 +289,31 @@ function AdminCandidatesPage() {
                   onChange={(e) => setNotes(e.target.value)}
                 />
               </div>
+
+              <div className="rounded-lg border border-border/60 bg-muted/20 p-3 text-xs space-y-1">
+                <div className="font-medium text-foreground">Wprowadzenie</div>
+                <div className="text-muted-foreground">
+                  {selected.intro_sent_at
+                    ? `Wysłano: ${new Date(selected.intro_sent_at).toLocaleString("pl-PL")}`
+                    : "Jeszcze nie wysłano."}
+                </div>
+                {selected.intro_token && (
+                  <div className="text-muted-foreground break-all">
+                    Link: /wprowadzenie/{selected.intro_token}
+                  </div>
+                )}
+              </div>
             </div>
           )}
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 flex-wrap">
             <Button variant="destructive" onClick={remove}>Usuń</Button>
+            <Button variant="secondary" onClick={sendIntroEmail} disabled={sendingIntro}>
+              {sendingIntro
+                ? "Wysyłanie..."
+                : selected?.intro_sent_at
+                  ? "Wyślij wprowadzenie ponownie"
+                  : "Wyślij wprowadzenie"}
+            </Button>
             <Button variant="outline" onClick={() => setSelected(null)}>Anuluj</Button>
             <Button onClick={save} disabled={saving}>
               {saving ? "Zapisywanie..." : "Zapisz"}

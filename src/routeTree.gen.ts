@@ -17,6 +17,7 @@ import { Route as BootstrapRouteImport } from './routes/bootstrap'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WprowadzenieTokenRouteImport } from './routes/wprowadzenie.$token'
 import { Route as QuizTokenRouteImport } from './routes/quiz.$token'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as AuthenticatedZdarzenieRouteImport } from './routes/_authenticated/zdarzenie'
@@ -105,6 +106,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const WprowadzenieTokenRoute = WprowadzenieTokenRouteImport.update({
+  id: '/$token',
+  path: '/$token',
+  getParentRoute: () => WprowadzenieRoute,
 } as any)
 const QuizTokenRoute = QuizTokenRouteImport.update({
   id: '/quiz/$token',
@@ -385,7 +391,7 @@ export interface FileRoutesByFullPath {
   '/bootstrap': typeof BootstrapRoute
   '/rekrutacja': typeof RekrutacjaRoute
   '/unsubscribe': typeof UnsubscribeRoute
-  '/wprowadzenie': typeof WprowadzenieRoute
+  '/wprowadzenie': typeof WprowadzenieRouteWithChildren
   '/zaproszenie': typeof ZaproszenieRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
@@ -399,6 +405,7 @@ export interface FileRoutesByFullPath {
   '/zdarzenie': typeof AuthenticatedZdarzenieRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/quiz/$token': typeof QuizTokenRoute
+  '/wprowadzenie/$token': typeof WprowadzenieTokenRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -443,7 +450,7 @@ export interface FileRoutesByTo {
   '/bootstrap': typeof BootstrapRoute
   '/rekrutacja': typeof RekrutacjaRoute
   '/unsubscribe': typeof UnsubscribeRoute
-  '/wprowadzenie': typeof WprowadzenieRoute
+  '/wprowadzenie': typeof WprowadzenieRouteWithChildren
   '/zaproszenie': typeof ZaproszenieRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
@@ -457,6 +464,7 @@ export interface FileRoutesByTo {
   '/zdarzenie': typeof AuthenticatedZdarzenieRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/quiz/$token': typeof QuizTokenRoute
+  '/wprowadzenie/$token': typeof WprowadzenieTokenRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -502,7 +510,7 @@ export interface FileRoutesById {
   '/bootstrap': typeof BootstrapRoute
   '/rekrutacja': typeof RekrutacjaRoute
   '/unsubscribe': typeof UnsubscribeRoute
-  '/wprowadzenie': typeof WprowadzenieRoute
+  '/wprowadzenie': typeof WprowadzenieRouteWithChildren
   '/zaproszenie': typeof ZaproszenieRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
@@ -516,6 +524,7 @@ export interface FileRoutesById {
   '/_authenticated/zdarzenie': typeof AuthenticatedZdarzenieRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/quiz/$token': typeof QuizTokenRoute
+  '/wprowadzenie/$token': typeof WprowadzenieTokenRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/_authenticated/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -576,6 +585,7 @@ export interface FileRouteTypes {
     | '/zdarzenie'
     | '/email/unsubscribe'
     | '/quiz/$token'
+    | '/wprowadzenie/$token'
     | '/admin/dashboard'
     | '/admin/dziennik'
     | '/admin/incydenty'
@@ -634,6 +644,7 @@ export interface FileRouteTypes {
     | '/zdarzenie'
     | '/email/unsubscribe'
     | '/quiz/$token'
+    | '/wprowadzenie/$token'
     | '/admin/dashboard'
     | '/admin/dziennik'
     | '/admin/incydenty'
@@ -692,6 +703,7 @@ export interface FileRouteTypes {
     | '/_authenticated/zdarzenie'
     | '/email/unsubscribe'
     | '/quiz/$token'
+    | '/wprowadzenie/$token'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/dziennik'
     | '/_authenticated/admin/incydenty'
@@ -738,7 +750,7 @@ export interface RootRouteChildren {
   BootstrapRoute: typeof BootstrapRoute
   RekrutacjaRoute: typeof RekrutacjaRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
-  WprowadzenieRoute: typeof WprowadzenieRoute
+  WprowadzenieRoute: typeof WprowadzenieRouteWithChildren
   ZaproszenieRoute: typeof ZaproszenieRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   QuizTokenRoute: typeof QuizTokenRoute
@@ -813,6 +825,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/wprowadzenie/$token': {
+      id: '/wprowadzenie/$token'
+      path: '/$token'
+      fullPath: '/wprowadzenie/$token'
+      preLoaderRoute: typeof WprowadzenieTokenRouteImport
+      parentRoute: typeof WprowadzenieRoute
     }
     '/quiz/$token': {
       id: '/quiz/$token'
@@ -1268,6 +1287,18 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface WprowadzenieRouteChildren {
+  WprowadzenieTokenRoute: typeof WprowadzenieTokenRoute
+}
+
+const WprowadzenieRouteChildren: WprowadzenieRouteChildren = {
+  WprowadzenieTokenRoute: WprowadzenieTokenRoute,
+}
+
+const WprowadzenieRouteWithChildren = WprowadzenieRoute._addFileChildren(
+  WprowadzenieRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
@@ -1275,7 +1306,7 @@ const rootRouteChildren: RootRouteChildren = {
   BootstrapRoute: BootstrapRoute,
   RekrutacjaRoute: RekrutacjaRoute,
   UnsubscribeRoute: UnsubscribeRoute,
-  WprowadzenieRoute: WprowadzenieRoute,
+  WprowadzenieRoute: WprowadzenieRouteWithChildren,
   ZaproszenieRoute: ZaproszenieRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   QuizTokenRoute: QuizTokenRoute,

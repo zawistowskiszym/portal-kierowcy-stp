@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
+import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 
 const APP_URL = 'https://panel.skuszawyjice.eu'
 
@@ -12,9 +13,15 @@ function genToken(): string {
 }
 
 export const requestQuiz = createServerFn({ method: 'POST' })
-  .inputValidator((data: { email: string }) =>
+  .inputValidator((data: { email?: string; introToken?: string }) =>
     z
-      .object({ email: z.string().trim().email().max(255) })
+      .object({
+        email: z.string().trim().email().max(255).optional(),
+        introToken: z.string().min(8).max(128).optional(),
+      })
+      .refine((v) => v.email || v.introToken, {
+        message: 'email or introToken required',
+      })
       .parse(data),
   )
   .handler(async ({ data }) => {
@@ -22,7 +29,20 @@ export const requestQuiz = createServerFn({ method: 'POST' })
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const { notifyByEmail } = await import('./email/notify.server')
 
-    const email = data.email.toLowerCase()
+    let email = data.email?.toLowerCase() ?? ''
+
+    if (data.introToken) {
+      const { data: app, error: appErr } = await supabaseAdmin
+        .from('recruitment_applications')
+        .select('email')
+        .eq('intro_token', data.introToken)
+        .maybeSingle()
+      if (appErr || !app) throw new Error('Nieprawidłowy link wprowadzenia')
+      email = String(app.email).toLowerCase()
+    }
+
+    if (!email) throw new Error('Brak adresu email')
+
     const questions = pickQuizQuestions()
     const token = genToken()
 
@@ -45,7 +65,7 @@ export const requestQuiz = createServerFn({ method: 'POST' })
       idempotencyKey: `quiz-invite-${token}`,
     })
 
-    return { ok: true }
+    return { ok: true, email }
   })
 
 export const getQuizAttempt = createServerFn({ method: 'GET' })
@@ -102,4 +122,74 @@ export const submitQuiz = createServerFn({ method: 'POST' })
       .eq('id', row.id)
     if (error) throw new Error('Nie udało się zapisać odpowiedzi')
     return { ok: true }
+  })
+
+/** Public — resolves an intro token to the candidate's email for prefill display. */
+export const getIntroByToken = createServerFn({ method: 'GET' })
+  .inputValidator((data: { token: string }) =>
+    z.object({ token: z.string().min(8).max(128) }).parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: row, error } = await supabaseAdmin
+      .from('recruitment_applications')
+      .select('email, roblox_username')
+      .eq('intro_token', data.token)
+      .maybeSingle()
+    if (error) throw new Error('Błąd serwera')
+    if (!row) return { found: false as const }
+    return {
+      found: true as const,
+      candidateEmail: row.email as string,
+      robloxUsername: row.roblox_username as string,
+    }
+  })
+
+/** Admin — generates an intro token for a candidate and sends them the personalized intro email. */
+export const sendIntro = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { applicationId: string }) =>
+    z.object({ applicationId: z.string().uuid() }).parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { notifyByEmail } = await import('./email/notify.server')
+
+    const { data: isAdmin } = await context.supabase.rpc('has_role', {
+      _user_id: context.userId,
+      _role: 'admin',
+    })
+    if (!isAdmin) throw new Error('Brak uprawnień')
+
+    const { data: app, error: appErr } = await supabaseAdmin
+      .from('recruitment_applications')
+      .select('id, email, intro_token')
+      .eq('id', data.applicationId)
+      .maybeSingle()
+    if (appErr || !app) throw new Error('Nie znaleziono kandydata')
+
+    const token = app.intro_token ?? genToken()
+    if (!app.intro_token) {
+      const { error: upErr } = await supabaseAdmin
+        .from('recruitment_applications')
+        .update({ intro_token: token })
+        .eq('id', app.id)
+      if (upErr) throw new Error('Nie udało się zapisać tokenu')
+    }
+
+    const email = String(app.email).toLowerCase()
+    const introUrl = `${APP_URL}/wprowadzenie/${token}`
+    await notifyByEmail({
+      templateName: 'intro-invite',
+      recipientEmail: email,
+      templateData: { introUrl, candidateEmail: email },
+      idempotencyKey: `intro-invite-${token}`,
+    })
+
+    await supabaseAdmin
+      .from('recruitment_applications')
+      .update({ intro_sent_at: new Date().toISOString() })
+      .eq('id', app.id)
+
+    return { ok: true, introUrl }
   })
