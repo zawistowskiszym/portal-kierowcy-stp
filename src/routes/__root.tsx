@@ -88,8 +88,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:title", content: "Portal Kierowcy STP" },
       { name: "twitter:description", content: "Portal pracowniczy Skuszawyjińskiego Transportu Publicznego." },
-      { property: "og:image", content: "https://panel.skuszawyjice.eu/__l5e/assets-v1/e354d00a-e752-4fd1-87d1-da66f4008033/stp-logo.png" },
-      { name: "twitter:image", content: "https://panel.skuszawyjice.eu/__l5e/assets-v1/e354d00a-e752-4fd1-87d1-da66f4008033/stp-logo.png" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/tbZtyRSek7dxALll8yU35v8yNcl2/social-images/social-1781282206673-038ff0f6722d06ed46fe2aa939c37bed.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/tbZtyRSek7dxALll8yU35v8yNcl2/social-images/social-1781282206673-038ff0f6722d06ed46fe2aa939c37bed.webp" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
