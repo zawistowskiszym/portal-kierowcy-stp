@@ -33,19 +33,23 @@ const driverItems = [
   { title: "Ogłoszenia", url: "/ogloszenia", icon: Megaphone },
 ];
 
-const adminItems = [
-  { title: "Użytkownicy", url: "/admin/uzytkownicy", icon: Users },
+const dispatcherItems = [
   { title: "Planowanie służb", url: "/admin/sluzby", icon: ClipboardList },
   { title: "Nieprzydzielone", url: "/admin/nieprzydzielone", icon: AlertTriangle },
   { title: "Tabor", url: "/admin/pojazdy", icon: Bus },
   { title: "Wnioski urlopowe", url: "/admin/urlopy", icon: Plane },
-  { title: "Raporty", url: "/admin/raporty", icon: FileBarChart },
   { title: "Ogłoszenia (admin)", url: "/admin/ogloszenia", icon: Megaphone },
 ];
 
-export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
+const adminOnlyItems = [
+  { title: "Użytkownicy", url: "/admin/uzytkownicy", icon: Users },
+  { title: "Raporty", url: "/admin/raporty", icon: FileBarChart },
+];
+
+export function AppSidebar({ isAdmin, isDispatcher }: { isAdmin: boolean; isDispatcher: boolean }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isActive = (url: string) => pathname === url || pathname.startsWith(url + "/");
+  const showDispatcher = isAdmin || isDispatcher;
 
   return (
     <Sidebar collapsible="icon" className="border-r-0 bg-transparent">
