@@ -78,6 +78,8 @@ function AdminCandidatesPage() {
   const [notes, setNotes] = useState("");
   const [status, setStatus] = useState<Status>("new");
   const [saving, setSaving] = useState(false);
+  const [sendingIntro, setSendingIntro] = useState(false);
+  const sendIntroFn = useServerFn(sendIntro);
 
   const { data } = useQuery({
     queryKey: ["admin", "recruitment", filter],
