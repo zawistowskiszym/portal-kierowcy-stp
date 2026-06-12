@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getDriverOps } from "@/lib/ops.functions";
 import { Badge } from "@/components/ui/badge";
+import { ResourcesTabs } from "@/components/resources-tabs";
 
 export const Route = createFileRoute("/_authenticated/admin/kierowcy")({
   ssr: false,
@@ -28,7 +29,10 @@ function DriversPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Centrum kierowców</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold">Kierowcy i tabor</h1>
+        <ResourcesTabs />
+      </div>
       <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
         <table className="w-full text-sm">
           <thead className="bg-muted/40 text-[10px] uppercase tracking-widest text-muted-foreground font-bold">

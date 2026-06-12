@@ -38,16 +38,10 @@ const driverItems = [
 
 const dispatcherItems = [
   { title: "Pulpit dyspozytora", url: "/admin/dashboard", icon: Gauge },
-  { title: "Monitor służb", url: "/admin/monitor", icon: Activity },
-  { title: "Incydenty", url: "/admin/incydenty", icon: AlertTriangle },
-  { title: "Centrum raportów", url: "/admin/raporty", icon: FileBarChart },
-  { title: "Kierowcy", url: "/admin/kierowcy", icon: Users },
+  { title: "Kierowcy i tabor", url: "/admin/kierowcy", icon: Users },
   { title: "Planowanie służb", url: "/admin/sluzby", icon: ClipboardList },
-  { title: "Nieprzydzielone", url: "/admin/nieprzydzielone", icon: AlertTriangle },
-  { title: "Tabor", url: "/admin/pojazdy", icon: Bus },
   { title: "Mapa operacyjna", url: "/admin/mapa", icon: MapIcon },
   { title: "Dziennik", url: "/admin/dziennik", icon: BookOpen },
-  { title: "Wnioski urlopowe", url: "/admin/urlopy", icon: Plane },
   { title: "Ogłoszenia (admin)", url: "/admin/ogloszenia", icon: Megaphone },
   { title: "Komunikaty pop-up", url: "/admin/komunikaty", icon: AlertTriangle },
 ];
