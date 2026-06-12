@@ -145,20 +145,18 @@ export async function lookupNotifiableEmails(
   if (userIds.length === 0) return []
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
 
-  // Pull profile preferences
   const { data: profiles } = await supabaseAdmin
     .from('profiles')
     .select('id, full_name, email_notifications')
     .in('id', userIds)
   const allow = new Map<string, { full_name: string | null; opted: boolean }>()
   for (const p of profiles ?? []) {
-    allow.set(p.id, {
+    allow.set(p.id as string, {
       full_name: (p as any).full_name ?? null,
       opted: (p as any).email_notifications !== false,
     })
   }
 
-  // Use admin auth API to fetch emails (batched per id)
   const out: Array<{ id: string; email: string; full_name: string | null }> = []
   await Promise.all(
     userIds.map(async (uid) => {
@@ -171,3 +169,21 @@ export async function lookupNotifiableEmails(
   )
   return out
 }
+
+/**
+ * All active users who haven't opted out of email notifications.
+ */
+export async function lookupAllNotifiableEmails(): Promise<
+  Array<{ id: string; email: string; full_name: string | null }>
+> {
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+  const { data: profiles } = await supabaseAdmin
+    .from('profiles')
+    .select('id, full_name, email_notifications, active')
+    .eq('active', true)
+  const ids = (profiles ?? [])
+    .filter((p: any) => p.email_notifications !== false)
+    .map((p: any) => p.id as string)
+  return lookupNotifiableEmails(ids)
+}
+
