@@ -406,9 +406,9 @@ export const getBlockTrips = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: any) => z.object({ block_id: z.string().uuid() }).parse(d))
   .handler(async ({ context, data }) => {
-    const { data } = (await context.supabase.from("vehicle_block_trips").select("*")
-      .eq("block_id", data.block_id).order("trip_order")) as any;
-    return data ?? [];
+    const { data: rows } = await context.supabase.from("vehicle_block_trips").select("*")
+      .eq("block_id", data.block_id).order("trip_order");
+    return rows ?? [];
   });
 
 // ============== DUTIES GENERATION (push to existing duties table) ==============
