@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/admin/komunikacja")({
 });
 
 const KINDS: Record<string, string> = {
-  announcement: "Ogłoszenie", urgent: "Alert pilny", service_change: "Zmiana w obsłudze", diversion: "Objazd",
+  announcement: "Ogłoszenie", urgent: "Alert pilny", service_change: "Zmiana w obsłudze", diversion: "Objazd", driver_message: "Od kierowcy",
 };
 
 function CommsPage() {
