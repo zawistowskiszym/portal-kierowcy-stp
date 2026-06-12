@@ -93,10 +93,15 @@ function RecruitmentPage() {
         </div>
 
         {submitted ? (
-          <div className="rounded-2xl border border-border/60 bg-card p-8 text-center">
-            <h2 className="font-display text-2xl mb-2">Dziękujemy!</h2>
+          <div className="rounded-2xl border border-border/60 bg-card p-8 text-center space-y-3">
+            <h2 className="font-display text-2xl">Dziękujemy!</h2>
             <p className="text-muted-foreground">
-              Twoje zgłoszenie zostało wysłane. Skontaktujemy się w ciągu kilku dni.
+              Twoje zgłoszenie zostało wysłane. Skontaktujemy się w ciągu kilku dni
+              — odpowiedź przyjdzie na podany adres email.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              <strong>Sprawdzaj folder Spam</strong> — wiadomości rekrutacyjne czasem
+              tam trafiają.
             </p>
           </div>
         ) : (

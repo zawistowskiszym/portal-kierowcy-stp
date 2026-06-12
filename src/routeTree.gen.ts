@@ -17,6 +17,7 @@ import { Route as BootstrapRouteImport } from './routes/bootstrap'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as QuizTokenRouteImport } from './routes/quiz.$token'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as AuthenticatedZdarzenieRouteImport } from './routes/_authenticated/zdarzenie'
 import { Route as AuthenticatedUrlopyRouteImport } from './routes/_authenticated/urlopy'
@@ -33,6 +34,7 @@ import { Route as AuthenticatedAdminUzytkownicyRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdminUrlopyRouteImport } from './routes/_authenticated/admin/urlopy'
 import { Route as AuthenticatedAdminSluzbyRouteImport } from './routes/_authenticated/admin/sluzby'
 import { Route as AuthenticatedAdminRaportyRouteImport } from './routes/_authenticated/admin/raporty'
+import { Route as AuthenticatedAdminQuizyRouteImport } from './routes/_authenticated/admin/quizy'
 import { Route as AuthenticatedAdminPojazdyRouteImport } from './routes/_authenticated/admin/pojazdy'
 import { Route as AuthenticatedAdminPlanowanieRouteImport } from './routes/_authenticated/admin/planowanie'
 import { Route as AuthenticatedAdminOgloszeniaRouteImport } from './routes/_authenticated/admin/ogloszenia'
@@ -102,6 +104,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuizTokenRoute = QuizTokenRouteImport.update({
+  id: '/quiz/$token',
+  path: '/quiz/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
@@ -189,6 +196,11 @@ const AuthenticatedAdminRaportyRoute =
     path: '/raporty',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminQuizyRoute = AuthenticatedAdminQuizyRouteImport.update({
+  id: '/quizy',
+  path: '/quizy',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 const AuthenticatedAdminPojazdyRoute =
   AuthenticatedAdminPojazdyRouteImport.update({
     id: '/pojazdy',
@@ -386,6 +398,7 @@ export interface FileRoutesByFullPath {
   '/urlopy': typeof AuthenticatedUrlopyRoute
   '/zdarzenie': typeof AuthenticatedZdarzenieRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/quiz/$token': typeof QuizTokenRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -398,6 +411,7 @@ export interface FileRoutesByFullPath {
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/planowanie': typeof AuthenticatedAdminPlanowanieRouteWithChildren
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
+  '/admin/quizy': typeof AuthenticatedAdminQuizyRoute
   '/admin/raporty': typeof AuthenticatedAdminRaportyRoute
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
   '/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
@@ -442,6 +456,7 @@ export interface FileRoutesByTo {
   '/urlopy': typeof AuthenticatedUrlopyRoute
   '/zdarzenie': typeof AuthenticatedZdarzenieRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/quiz/$token': typeof QuizTokenRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -453,6 +468,7 @@ export interface FileRoutesByTo {
   '/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
+  '/admin/quizy': typeof AuthenticatedAdminQuizyRoute
   '/admin/raporty': typeof AuthenticatedAdminRaportyRoute
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
   '/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
@@ -499,6 +515,7 @@ export interface FileRoutesById {
   '/_authenticated/urlopy': typeof AuthenticatedUrlopyRoute
   '/_authenticated/zdarzenie': typeof AuthenticatedZdarzenieRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/quiz/$token': typeof QuizTokenRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/_authenticated/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -511,6 +528,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/_authenticated/admin/planowanie': typeof AuthenticatedAdminPlanowanieRouteWithChildren
   '/_authenticated/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
+  '/_authenticated/admin/quizy': typeof AuthenticatedAdminQuizyRoute
   '/_authenticated/admin/raporty': typeof AuthenticatedAdminRaportyRoute
   '/_authenticated/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
   '/_authenticated/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
@@ -557,6 +575,7 @@ export interface FileRouteTypes {
     | '/urlopy'
     | '/zdarzenie'
     | '/email/unsubscribe'
+    | '/quiz/$token'
     | '/admin/dashboard'
     | '/admin/dziennik'
     | '/admin/incydenty'
@@ -569,6 +588,7 @@ export interface FileRouteTypes {
     | '/admin/ogloszenia'
     | '/admin/planowanie'
     | '/admin/pojazdy'
+    | '/admin/quizy'
     | '/admin/raporty'
     | '/admin/sluzby'
     | '/admin/urlopy'
@@ -613,6 +633,7 @@ export interface FileRouteTypes {
     | '/urlopy'
     | '/zdarzenie'
     | '/email/unsubscribe'
+    | '/quiz/$token'
     | '/admin/dashboard'
     | '/admin/dziennik'
     | '/admin/incydenty'
@@ -624,6 +645,7 @@ export interface FileRouteTypes {
     | '/admin/nieprzydzielone'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
+    | '/admin/quizy'
     | '/admin/raporty'
     | '/admin/sluzby'
     | '/admin/urlopy'
@@ -669,6 +691,7 @@ export interface FileRouteTypes {
     | '/_authenticated/urlopy'
     | '/_authenticated/zdarzenie'
     | '/email/unsubscribe'
+    | '/quiz/$token'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/dziennik'
     | '/_authenticated/admin/incydenty'
@@ -681,6 +704,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/ogloszenia'
     | '/_authenticated/admin/planowanie'
     | '/_authenticated/admin/pojazdy'
+    | '/_authenticated/admin/quizy'
     | '/_authenticated/admin/raporty'
     | '/_authenticated/admin/sluzby'
     | '/_authenticated/admin/urlopy'
@@ -717,6 +741,7 @@ export interface RootRouteChildren {
   WprowadzenieRoute: typeof WprowadzenieRoute
   ZaproszenieRoute: typeof ZaproszenieRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
+  QuizTokenRoute: typeof QuizTokenRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicRobloxAckRoute: typeof ApiPublicRobloxAckRoute
   ApiPublicRobloxDriverRoute: typeof ApiPublicRobloxDriverRoute
@@ -787,6 +812,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quiz/$token': {
+      id: '/quiz/$token'
+      path: '/quiz/$token'
+      fullPath: '/quiz/$token'
+      preLoaderRoute: typeof QuizTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/email/unsubscribe': {
@@ -899,6 +931,13 @@ declare module '@tanstack/react-router' {
       path: '/raporty'
       fullPath: '/admin/raporty'
       preLoaderRoute: typeof AuthenticatedAdminRaportyRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/quizy': {
+      id: '/_authenticated/admin/quizy'
+      path: '/quizy'
+      fullPath: '/admin/quizy'
+      preLoaderRoute: typeof AuthenticatedAdminQuizyRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/pojazdy': {
@@ -1158,6 +1197,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminOgloszeniaRoute: typeof AuthenticatedAdminOgloszeniaRoute
   AuthenticatedAdminPlanowanieRoute: typeof AuthenticatedAdminPlanowanieRouteWithChildren
   AuthenticatedAdminPojazdyRoute: typeof AuthenticatedAdminPojazdyRoute
+  AuthenticatedAdminQuizyRoute: typeof AuthenticatedAdminQuizyRoute
   AuthenticatedAdminRaportyRoute: typeof AuthenticatedAdminRaportyRoute
   AuthenticatedAdminSluzbyRoute: typeof AuthenticatedAdminSluzbyRoute
   AuthenticatedAdminUrlopyRoute: typeof AuthenticatedAdminUrlopyRoute
@@ -1179,6 +1219,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminPlanowanieRoute:
     AuthenticatedAdminPlanowanieRouteWithChildren,
   AuthenticatedAdminPojazdyRoute: AuthenticatedAdminPojazdyRoute,
+  AuthenticatedAdminQuizyRoute: AuthenticatedAdminQuizyRoute,
   AuthenticatedAdminRaportyRoute: AuthenticatedAdminRaportyRoute,
   AuthenticatedAdminSluzbyRoute: AuthenticatedAdminSluzbyRoute,
   AuthenticatedAdminUrlopyRoute: AuthenticatedAdminUrlopyRoute,
@@ -1237,6 +1278,7 @@ const rootRouteChildren: RootRouteChildren = {
   WprowadzenieRoute: WprowadzenieRoute,
   ZaproszenieRoute: ZaproszenieRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
+  QuizTokenRoute: QuizTokenRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicRobloxAckRoute: ApiPublicRobloxAckRoute,
   ApiPublicRobloxDriverRoute: ApiPublicRobloxDriverRoute,
