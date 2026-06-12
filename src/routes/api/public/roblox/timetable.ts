@@ -36,7 +36,7 @@ export const Route = createFileRoute("/api/public/roblox/timetable")({
         if (lineErr) return errorResponse(500, lineErr.message);
         if (!line) return errorResponse(404, "line not found");
 
-        const [stopsRes, ttRes, freqRes] = await Promise.all([
+        const [stopsRes, ttRes] = await Promise.all([
           supabaseAdmin
             .from("line_stops")
             .select("position, direction, travel_time_to_next_min, stop:stop_id(name, code)")
