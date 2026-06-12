@@ -162,6 +162,33 @@ function ProfilePage() {
         <p className="text-sm text-muted-foreground">Edytuj swoje dane i zdjęcie profilowe.</p>
       </div>
 
+      <div className="grid sm:grid-cols-2 gap-3">
+        <Link
+          to="/dyspozycyjnosc"
+          className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 hover:bg-muted/40 transition-colors"
+        >
+          <div className="size-10 rounded-xl bg-primary/10 text-primary grid place-items-center">
+            <CalendarCheck2 className="size-5" />
+          </div>
+          <div>
+            <div className="font-medium text-sm">Dyspozycyjność</div>
+            <div className="text-xs text-muted-foreground">Ustaw dostępność w grafiku</div>
+          </div>
+        </Link>
+        <Link
+          to="/statystyki"
+          className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 hover:bg-muted/40 transition-colors"
+        >
+          <div className="size-10 rounded-xl bg-primary/10 text-primary grid place-items-center">
+            <BarChart3 className="size-5" />
+          </div>
+          <div>
+            <div className="font-medium text-sm">Moje statystyki</div>
+            <div className="text-xs text-muted-foreground">Przebieg, godziny, służby</div>
+          </div>
+        </Link>
+      </div>
+
       <div className="bg-card border border-border rounded-2xl p-6 flex items-center gap-5">
         <Avatar className="size-20">
           {avatarUrl ? <AvatarImage src={avatarUrl} alt={form.full_name} /> : null}
