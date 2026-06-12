@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -7,27 +8,47 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { submitIncident } from "@/lib/ops.functions";
 
 export const Route = createFileRoute("/_authenticated/sluzba/$dutyId/zdarzenie")({
   head: () => ({ meta: [{ title: "Zgłoszenie zdarzenia drogowego — Portal STP" }] }),
   component: ZdarzeniePage,
 });
 
+const TYPE_MAP: Record<string, string> = {
+  kolizja: "collision", wypadek: "collision", potracenie: "passenger_emergency", szkoda: "collision", inne: "other",
+};
+
 function ZdarzeniePage() {
   const { dutyId } = Route.useParams();
   const navigate = useNavigate();
+  const submitFn = useServerFn(submitIncident);
+  const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({
     severity: "kolizja", location: "", occurred_at: "", participants: "1", description: "", injured: "nie",
   });
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.location.trim() || !form.description.trim()) {
       toast.error("Lokalizacja i opis zdarzenia są wymagane");
       return;
     }
-    toast.success("Zdarzenie zostało zgłoszone — dyspozytor został powiadomiony");
-    navigate({ to: "/grafik" });
+    setBusy(true);
+    try {
+      const priority = form.injured === "ciezko" ? "critical" : form.injured === "lekko" ? "high" : "medium";
+      await submitFn({ data: {
+        duty_id: dutyId,
+        type: (TYPE_MAP[form.severity] ?? "other") as any,
+        priority: priority as any,
+        location: form.location,
+        description: `${form.description}\n\nPoszkodowani: ${form.injured}, uczestnicy: ${form.participants}`,
+        occurred_at: form.occurred_at ? new Date(form.occurred_at).toISOString() : null,
+      } });
+      toast.success("Zdarzenie zostało zgłoszone — dyspozytor został powiadomiony");
+      navigate({ to: "/grafik" });
+    } catch (err: any) { toast.error("Błąd", { description: err?.message }); }
+    finally { setBusy(false); }
   };
 
   return (

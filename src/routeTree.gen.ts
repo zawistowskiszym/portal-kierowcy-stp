@@ -14,6 +14,7 @@ import { Route as BootstrapRouteImport } from './routes/bootstrap'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedWiadomosciRouteImport } from './routes/_authenticated/wiadomosci'
 import { Route as AuthenticatedUrlopyRouteImport } from './routes/_authenticated/urlopy'
 import { Route as AuthenticatedStatystykiRouteImport } from './routes/_authenticated/statystyki'
 import { Route as AuthenticatedPulpitRouteImport } from './routes/_authenticated/pulpit'
@@ -28,6 +29,13 @@ import { Route as AuthenticatedAdminRaportyRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminPojazdyRouteImport } from './routes/_authenticated/admin/pojazdy'
 import { Route as AuthenticatedAdminOgloszeniaRouteImport } from './routes/_authenticated/admin/ogloszenia'
 import { Route as AuthenticatedAdminNieprzydzieloneRouteImport } from './routes/_authenticated/admin/nieprzydzielone'
+import { Route as AuthenticatedAdminMonitorRouteImport } from './routes/_authenticated/admin/monitor'
+import { Route as AuthenticatedAdminMapaRouteImport } from './routes/_authenticated/admin/mapa'
+import { Route as AuthenticatedAdminKomunikacjaRouteImport } from './routes/_authenticated/admin/komunikacja'
+import { Route as AuthenticatedAdminKierowcyRouteImport } from './routes/_authenticated/admin/kierowcy'
+import { Route as AuthenticatedAdminIncydentyRouteImport } from './routes/_authenticated/admin/incydenty'
+import { Route as AuthenticatedAdminDziennikRouteImport } from './routes/_authenticated/admin/dziennik'
+import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -59,6 +67,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedWiadomosciRoute = AuthenticatedWiadomosciRouteImport.update({
+  id: '/wiadomosci',
+  path: '/wiadomosci',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedUrlopyRoute = AuthenticatedUrlopyRouteImport.update({
   id: '/urlopy',
@@ -138,6 +151,47 @@ const AuthenticatedAdminNieprzydzieloneRoute =
     path: '/nieprzydzielone',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminMonitorRoute =
+  AuthenticatedAdminMonitorRouteImport.update({
+    id: '/monitor',
+    path: '/monitor',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminMapaRoute = AuthenticatedAdminMapaRouteImport.update({
+  id: '/mapa',
+  path: '/mapa',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminKomunikacjaRoute =
+  AuthenticatedAdminKomunikacjaRouteImport.update({
+    id: '/komunikacja',
+    path: '/komunikacja',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminKierowcyRoute =
+  AuthenticatedAdminKierowcyRouteImport.update({
+    id: '/kierowcy',
+    path: '/kierowcy',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminIncydentyRoute =
+  AuthenticatedAdminIncydentyRouteImport.update({
+    id: '/incydenty',
+    path: '/incydenty',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminDziennikRoute =
+  AuthenticatedAdminDziennikRouteImport.update({
+    id: '/dziennik',
+    path: '/dziennik',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminDashboardRoute =
+  AuthenticatedAdminDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -191,6 +245,14 @@ export interface FileRoutesByFullPath {
   '/pulpit': typeof AuthenticatedPulpitRoute
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
+  '/wiadomosci': typeof AuthenticatedWiadomosciRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
+  '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
+  '/admin/kierowcy': typeof AuthenticatedAdminKierowcyRoute
+  '/admin/komunikacja': typeof AuthenticatedAdminKomunikacjaRoute
+  '/admin/mapa': typeof AuthenticatedAdminMapaRoute
+  '/admin/monitor': typeof AuthenticatedAdminMonitorRoute
   '/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
@@ -218,6 +280,14 @@ export interface FileRoutesByTo {
   '/pulpit': typeof AuthenticatedPulpitRoute
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
+  '/wiadomosci': typeof AuthenticatedWiadomosciRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
+  '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
+  '/admin/kierowcy': typeof AuthenticatedAdminKierowcyRoute
+  '/admin/komunikacja': typeof AuthenticatedAdminKomunikacjaRoute
+  '/admin/mapa': typeof AuthenticatedAdminMapaRoute
+  '/admin/monitor': typeof AuthenticatedAdminMonitorRoute
   '/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
@@ -247,6 +317,14 @@ export interface FileRoutesById {
   '/_authenticated/pulpit': typeof AuthenticatedPulpitRoute
   '/_authenticated/statystyki': typeof AuthenticatedStatystykiRoute
   '/_authenticated/urlopy': typeof AuthenticatedUrlopyRoute
+  '/_authenticated/wiadomosci': typeof AuthenticatedWiadomosciRoute
+  '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/_authenticated/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
+  '/_authenticated/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
+  '/_authenticated/admin/kierowcy': typeof AuthenticatedAdminKierowcyRoute
+  '/_authenticated/admin/komunikacja': typeof AuthenticatedAdminKomunikacjaRoute
+  '/_authenticated/admin/mapa': typeof AuthenticatedAdminMapaRoute
+  '/_authenticated/admin/monitor': typeof AuthenticatedAdminMonitorRoute
   '/_authenticated/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
   '/_authenticated/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/_authenticated/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
@@ -276,6 +354,14 @@ export interface FileRouteTypes {
     | '/pulpit'
     | '/statystyki'
     | '/urlopy'
+    | '/wiadomosci'
+    | '/admin/dashboard'
+    | '/admin/dziennik'
+    | '/admin/incydenty'
+    | '/admin/kierowcy'
+    | '/admin/komunikacja'
+    | '/admin/mapa'
+    | '/admin/monitor'
     | '/admin/nieprzydzielone'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
@@ -303,6 +389,14 @@ export interface FileRouteTypes {
     | '/pulpit'
     | '/statystyki'
     | '/urlopy'
+    | '/wiadomosci'
+    | '/admin/dashboard'
+    | '/admin/dziennik'
+    | '/admin/incydenty'
+    | '/admin/kierowcy'
+    | '/admin/komunikacja'
+    | '/admin/mapa'
+    | '/admin/monitor'
     | '/admin/nieprzydzielone'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
@@ -331,6 +425,14 @@ export interface FileRouteTypes {
     | '/_authenticated/pulpit'
     | '/_authenticated/statystyki'
     | '/_authenticated/urlopy'
+    | '/_authenticated/wiadomosci'
+    | '/_authenticated/admin/dashboard'
+    | '/_authenticated/admin/dziennik'
+    | '/_authenticated/admin/incydenty'
+    | '/_authenticated/admin/kierowcy'
+    | '/_authenticated/admin/komunikacja'
+    | '/_authenticated/admin/mapa'
+    | '/_authenticated/admin/monitor'
     | '/_authenticated/admin/nieprzydzielone'
     | '/_authenticated/admin/ogloszenia'
     | '/_authenticated/admin/pojazdy'
@@ -394,6 +496,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/wiadomosci': {
+      id: '/_authenticated/wiadomosci'
+      path: '/wiadomosci'
+      fullPath: '/wiadomosci'
+      preLoaderRoute: typeof AuthenticatedWiadomosciRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/urlopy': {
       id: '/_authenticated/urlopy'
@@ -493,6 +602,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminNieprzydzieloneRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/monitor': {
+      id: '/_authenticated/admin/monitor'
+      path: '/monitor'
+      fullPath: '/admin/monitor'
+      preLoaderRoute: typeof AuthenticatedAdminMonitorRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/mapa': {
+      id: '/_authenticated/admin/mapa'
+      path: '/mapa'
+      fullPath: '/admin/mapa'
+      preLoaderRoute: typeof AuthenticatedAdminMapaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/komunikacja': {
+      id: '/_authenticated/admin/komunikacja'
+      path: '/komunikacja'
+      fullPath: '/admin/komunikacja'
+      preLoaderRoute: typeof AuthenticatedAdminKomunikacjaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/kierowcy': {
+      id: '/_authenticated/admin/kierowcy'
+      path: '/kierowcy'
+      fullPath: '/admin/kierowcy'
+      preLoaderRoute: typeof AuthenticatedAdminKierowcyRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/incydenty': {
+      id: '/_authenticated/admin/incydenty'
+      path: '/incydenty'
+      fullPath: '/admin/incydenty'
+      preLoaderRoute: typeof AuthenticatedAdminIncydentyRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/dziennik': {
+      id: '/_authenticated/admin/dziennik'
+      path: '/dziennik'
+      fullPath: '/admin/dziennik'
+      preLoaderRoute: typeof AuthenticatedAdminDziennikRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/dashboard': {
+      id: '/_authenticated/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -546,6 +704,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
+  AuthenticatedAdminDziennikRoute: typeof AuthenticatedAdminDziennikRoute
+  AuthenticatedAdminIncydentyRoute: typeof AuthenticatedAdminIncydentyRoute
+  AuthenticatedAdminKierowcyRoute: typeof AuthenticatedAdminKierowcyRoute
+  AuthenticatedAdminKomunikacjaRoute: typeof AuthenticatedAdminKomunikacjaRoute
+  AuthenticatedAdminMapaRoute: typeof AuthenticatedAdminMapaRoute
+  AuthenticatedAdminMonitorRoute: typeof AuthenticatedAdminMonitorRoute
   AuthenticatedAdminNieprzydzieloneRoute: typeof AuthenticatedAdminNieprzydzieloneRoute
   AuthenticatedAdminOgloszeniaRoute: typeof AuthenticatedAdminOgloszeniaRoute
   AuthenticatedAdminPojazdyRoute: typeof AuthenticatedAdminPojazdyRoute
@@ -556,6 +721,13 @@ interface AuthenticatedAdminRouteChildren {
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
+  AuthenticatedAdminDziennikRoute: AuthenticatedAdminDziennikRoute,
+  AuthenticatedAdminIncydentyRoute: AuthenticatedAdminIncydentyRoute,
+  AuthenticatedAdminKierowcyRoute: AuthenticatedAdminKierowcyRoute,
+  AuthenticatedAdminKomunikacjaRoute: AuthenticatedAdminKomunikacjaRoute,
+  AuthenticatedAdminMapaRoute: AuthenticatedAdminMapaRoute,
+  AuthenticatedAdminMonitorRoute: AuthenticatedAdminMonitorRoute,
   AuthenticatedAdminNieprzydzieloneRoute:
     AuthenticatedAdminNieprzydzieloneRoute,
   AuthenticatedAdminOgloszeniaRoute: AuthenticatedAdminOgloszeniaRoute,
@@ -577,6 +749,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPulpitRoute: typeof AuthenticatedPulpitRoute
   AuthenticatedStatystykiRoute: typeof AuthenticatedStatystykiRoute
   AuthenticatedUrlopyRoute: typeof AuthenticatedUrlopyRoute
+  AuthenticatedWiadomosciRoute: typeof AuthenticatedWiadomosciRoute
   AuthenticatedSluzbaDutyIdMapaRoute: typeof AuthenticatedSluzbaDutyIdMapaRoute
   AuthenticatedSluzbaDutyIdRaportRoute: typeof AuthenticatedSluzbaDutyIdRaportRoute
   AuthenticatedSluzbaDutyIdRozkladRoute: typeof AuthenticatedSluzbaDutyIdRozkladRoute
@@ -591,6 +764,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPulpitRoute: AuthenticatedPulpitRoute,
   AuthenticatedStatystykiRoute: AuthenticatedStatystykiRoute,
   AuthenticatedUrlopyRoute: AuthenticatedUrlopyRoute,
+  AuthenticatedWiadomosciRoute: AuthenticatedWiadomosciRoute,
   AuthenticatedSluzbaDutyIdMapaRoute: AuthenticatedSluzbaDutyIdMapaRoute,
   AuthenticatedSluzbaDutyIdRaportRoute: AuthenticatedSluzbaDutyIdRaportRoute,
   AuthenticatedSluzbaDutyIdRozkladRoute: AuthenticatedSluzbaDutyIdRozkladRoute,
