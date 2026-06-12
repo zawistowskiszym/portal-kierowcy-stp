@@ -162,3 +162,19 @@ optional — defaults to today's day type (`weekday`, `saturday`, `sunday`).
   ]
 }
 ```
+
+### GET `/timetable` (no `route`) — all lines
+Omit `route` to fetch every line at once. The response uses a `lines: [...]`
+array; each item has the same `{ line, stops, timetable, frequency_windows }`
+shape as the single-line response.
+
+```json
+{
+  "ok": true,
+  "day_type": "weekday",
+  "lines": [
+    { "line": { "line_number": "178", ... }, "stops": [...],
+      "timetable": {...}, "frequency_windows": [...] }
+  ]
+}
+```
