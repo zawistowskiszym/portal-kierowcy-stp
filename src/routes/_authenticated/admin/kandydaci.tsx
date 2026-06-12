@@ -161,7 +161,7 @@ function AdminCandidatesPage() {
         </Select>
       </div>
 
-      <div className="rounded-2xl border border-border/60 bg-card overflow-hidden">
+      <div className="rounded-2xl border border-border/60 bg-card overflow-x-auto">
         {apps.length === 0 ? (
           <div className="p-8 text-center text-muted-foreground text-sm">
             Brak zgłoszeń.

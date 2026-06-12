@@ -15,6 +15,8 @@ import {
   BookOpen,
   Gauge,
   UserCircle,
+  Network,
+  UserPlus,
 } from "lucide-react";
 import { useState } from "react";
 import {
@@ -42,12 +44,14 @@ const driverMore: Item[] = [
 
 const dispatcherMore: Item[] = [
   { title: "Pulpit dyspozytora", url: "/admin/dashboard", icon: Gauge },
+  { title: "Planowanie sieci", url: "/admin/planowanie", icon: Network },
   { title: "Kierowcy i tabor", url: "/admin/kierowcy", icon: Users },
   { title: "Planowanie służb", url: "/admin/sluzby", icon: ClipboardList },
   { title: "Mapa operacyjna", url: "/admin/mapa", icon: MapIcon },
   { title: "Dziennik", url: "/admin/dziennik", icon: BookOpen },
   { title: "Ogłoszenia (admin)", url: "/admin/ogloszenia", icon: Megaphone },
   { title: "Komunikaty pop-up", url: "/admin/komunikaty", icon: AlertTriangle },
+  { title: "Kandydaci", url: "/admin/kandydaci", icon: UserPlus },
 ];
 
 const adminOnlyMore: Item[] = [
