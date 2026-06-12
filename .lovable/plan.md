@@ -1,81 +1,57 @@
-# Duty Planning Redesign — STP
+## Roblox HTTPS integration
 
-A full rebuild of `/admin/sluzby` into an enterprise transit-ops planning board, delivered in 4 phases. Each phase ends in a working app; you can stop after any phase.
+Bidirectional sync between the Roblox game and the STP portal, with driver identity resolved via `profiles.roblox_username`.
 
-## Phase 1 — Schema & server foundations (1 migration + portal.functions extensions)
+### Endpoints (public server routes under `/api/public/roblox/*`)
 
-**Migration:**
-- Add enum `vehicle_status` = `available | assigned | out_of_service | reserve`; add `vehicles.status` (default `available`).
-- Extend `duties`:
-  - `status` enum `duty_status` = `unassigned | pending | assigned` (auto-derived via trigger from `assigned_to`/`vehicle_id`).
-  - `vehicle_id uuid` FK → `vehicles(id)` (keep `vehicle_label` for legacy/free-text).
-  - `priority` enum = `low | normal | high` default `normal`.
-  - `division` text (used by bulk generator; e.g. depot or operational division).
-- New table `notifications`:
-  - `id, user_id, type, title, body, related_duty_id, read_at, created_at`.
-  - RLS: users select/update own; service_role full; trigger inserts on `duties.assigned_to` change.
-- Indexes: `duties(duty_date, start_time)`, `duties(assigned_to, duty_date)`, `vehicles(status)`, `notifications(user_id, read_at)`.
+All requests authenticated with a shared HMAC: header `x-roblox-signature = hex(hmac_sha256(ROBLOX_SHARED_SECRET, raw_body))` + `x-roblox-timestamp` (rejected if older than 5 min, prevents replay). Every request body carries `roblox_username` to identify the driver.
 
-**Server functions (`portal.functions.ts`):**
-- `getPlanningBoard({from, to, depot?})` → duties+driver+vehicle joined, drivers (with month hours), vehicles, availability — all admin queries in one round-trip.
-- `assignDriverToDuty({dutyId, driverId|null})` — runs conflict checks server-side.
-- `assignVehicleToDuty({dutyId, vehicleId|null})` — overlap check.
-- `bulkGenerateDuties({date, division, count, template})` — creates `N` duties named `<routes>/1..N`.
-- `listUnassignedDuties({from?, to?})`.
-- `getAdminAnalytics({date})` — today's tiles.
-- `listMyNotifications`, `markNotificationRead`.
+**Game → Portal (telemetry)**
 
-## Phase 2 — Planning board UI (`/admin/sluzby`)
+- `POST /api/public/roblox/duty` — duty lifecycle. Body: `{ roblox_username, event: "start"|"end"|"break_start"|"break_end", duty_number?, route?, vehicle_label?, at? }`. Effects: updates `duties.live_status` for the driver's active duty (today's by default, or matched by `duty_number`) and `driver_presence.status` (`active` / `break` / `offline`).
+- `POST /api/public/roblox/pis` — PIS / route telemetry. Body: `{ roblox_username, route, headsign?, current_stop?, next_stop?, delay_sec? }`. Stored on the active duty (new columns `pis_route`, `pis_headsign`, `pis_current_stop`, `pis_next_stop`, `pis_delay_sec`, `pis_updated_at`).
+- `POST /api/public/roblox/position` — periodic ping. Body: `{ roblox_username, x, y, z?, heading?, speed_kmh? }`. Upserts a row in new `driver_positions` table (one row per driver, updated_at).
+- `POST /api/public/roblox/incident` — in-game incident. Body: `{ roblox_username, kind, severity, summary, details?, location? }`. Inserts into `incidents` with `source = 'roblox'`.
 
-Rebuilt page with three panes:
+**Portal → Game (pull)**
 
-```text
-┌──────────── Drivers ───────────┐┌─────── Schedule Board ────────┐┌── Duty Details ──┐
-│ Filters: depot ▾  Active  Avail││ [Day][Week][Month]  < Jun 14 >││ Duty #151+190/1  │
-│                                ││                                ││ 14:30 → 22:15    │
-│ ● Jan Kowalski   D-1042   72h  ││  ┌─────────┐ ┌─────────┐       ││ Depot: Zaj. A    │
-│ ● Anna Nowak     D-1080  140h  ││  │14:30    │ │08:00    │       ││ Routes: 151,190  │
-│ ● Piotr Lis      D-1099   12h  ││  │22:15 ●  │ │16:00 ○  │       ││ Vehicle: 1925    │
-│                                ││  │151+190/1│ │24/2     │       ││ Driver: J. Kow.. │
-│ (drag onto duty →)             ││  └─────────┘ └─────────┘       ││ [Assign][Edit]   │
-└────────────────────────────────┘└────────────────────────────────┘└──────────────────┘
-```
+- `GET /api/public/roblox/driver?roblox_username=...` — returns the driver's active duty + dispatcher messages. Shape: `{ profile: { employee_id, full_name, depot }, active_duty: { duty_number, route, vehicle_label, start_time, end_time, live_status }|null, messages: [{ id, kind, title, body, sent_at }], commands: [{ id, type, payload }] }`. Game polls this every 15–30 s.
+- `POST /api/public/roblox/ack` — acks a delivered command/message so it stops being returned.
 
-- **Left:** drivers list with green/yellow/red dot (computed from availability + hours), filter chips, search. Draggable cards (`@dnd-kit`). Click → opens a sheet with profile + month duties.
-- **Center:** Day / Week / Month tabs. Week view = 7-column grid; Day view = vertical time axis; Month = compact cells. Each duty card shows number, time, routes, vehicle badge, color-coded border (green/yellow/red). Drop targets accept driver cards.
-- **Right:** selected duty details + actions (Assign/Change driver, Assign vehicle picker, Edit, Delete). Inline conflict warnings (driver unavailable, overlap, vehicle conflict).
+### Database changes (single migration)
 
-Toolbar: `+ Nowa służba`, `⚡ Generator zbiorczy`, date navigator, depot filter.
+- Add columns to `duties`: `pis_route text`, `pis_headsign text`, `pis_current_stop text`, `pis_next_stop text`, `pis_delay_sec int`, `pis_updated_at timestamptz`.
+- Add column `incidents.source text not null default 'portal'`.
+- New table `public.driver_positions` (`user_id uuid PK → profiles`, `x double precision`, `y double precision`, `z double precision`, `heading real`, `speed_kmh real`, `updated_at timestamptz`). GRANTs + RLS: drivers see/insert their own row, dispatchers/admins read all, service_role full.
+- New table `public.roblox_commands` (id, target_user_id, type text, payload jsonb, created_at, delivered_at, acked_at). GRANTs + RLS: target driver can read/ack own; admins/dispatchers can insert; service_role full.
 
-## Phase 3 — Bulk generator, unassigned dashboard, conflict engine
+### Files
 
-- **Bulk generator dialog:** date · division · template (start, end, route(s), depot, vehicle optional) · count → creates `route/1`…`route/N`. Preview list before commit.
-- **Unassigned dashboard** at `/admin/nieprzydzielone`: filter date range, sort by priority/date; one-click driver picker (uses same server fn as board).
-- **Conflict detection** (server side, surfaced inline):
-  - driver already assigned to overlapping duty,
-  - driver on approved leave or marked unavailable,
-  - vehicle assigned to overlapping duty,
-  - missing driver / missing vehicle (warnings, not blockers).
+- `src/lib/roblox-auth.server.ts` — HMAC verify + timestamp check helper.
+- `src/routes/api/public/roblox/duty.ts`
+- `src/routes/api/public/roblox/pis.ts`
+- `src/routes/api/public/roblox/position.ts`
+- `src/routes/api/public/roblox/incident.ts`
+- `src/routes/api/public/roblox/driver.ts`
+- `src/routes/api/public/roblox/ack.ts`
 
-## Phase 4 — Notifications & analytics
+Each handler: parse raw body, verify HMAC + timestamp, resolve `user_id` via `profiles.roblox_username` (case-insensitive), use `supabaseAdmin` (dynamic import in handler) for writes, return JSON with proper CORS headers + OPTIONS handler.
 
-- DB trigger on `duties`: when `assigned_to` changes, insert a notification for the new driver ("Przydzielono do służby <nr>") and for the previous driver if changed ("Służba <nr> przepisana").
-- Bell icon in `AppHeader` with unread count + dropdown (last 10, mark read).
-- Driver `/pulpit` shows notification card.
-- **Admin analytics** tiles on `/admin/raporty` (today): duties total · assigned · unassigned · drivers available · driver utilization % · vehicle utilization %.
+### Dispatcher UI additions (light)
 
-## Technical notes
-- DnD: `@dnd-kit/core` + `@dnd-kit/sortable` (install in Phase 2).
-- All status colors via existing brand tokens (`--brand`, semantic destructive/warning); no hard-coded hex.
-- Vehicle status auto-recomputed by trigger when duties insert/update/delete (so admin never edits it manually unless setting OOS/Reserve).
-- The redesigned page replaces the current `src/routes/_authenticated/admin/sluzby.tsx` table.
-- Existing `vehicle_label` field stays; new `vehicle_id` is preferred and we backfill labels from it.
+- On `/admin/monitor` (or `/admin/mapa`), show last `driver_positions.updated_at` and PIS fields per active duty.
+- On `/admin/komunikacja`, add a "Wyślij komendę do gry" action that inserts into `roblox_commands` (types: `force_end_service`, `recall_to_depot`, `custom_message`).
 
-## Out of scope (ask later if needed)
-- SMS / email push for notifications (in-portal only).
-- Driver self-swap requests.
-- Multi-week shift patterns / rotation templates.
+### Secrets
 
----
+- `ROBLOX_SHARED_SECRET` — added via `add_secret`, used server-side only for HMAC verification. Same value pasted into the Roblox game's `HttpService` script.
 
-Reply **"go phase 1"** to start with the migration + server functions, or pick a different starting phase.
+### Roblox-side reference (for the user, not built here)
+
+A short Markdown doc at `docs/roblox-integration.md` with: base URL, endpoint list, request/response examples, and a minimal Lua snippet showing how to sign requests with HMAC-SHA256 and how to poll `/driver`.
+
+### Out of scope (v1)
+
+- No per-driver tokens (identity = `roblox_username` + signed request).
+- No realtime WebSocket — game polls `/driver` and pushes telemetry on its own cadence.
+- No map tile rendering of in-game coords (just raw values shown to dispatcher).
