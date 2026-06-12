@@ -111,6 +111,38 @@ function CommsPage() {
       </form>
 
       <section>
+        <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-2">Wiadomości od kierowców</h2>
+        <div className="space-y-2">
+          {((inbox ?? []) as any[]).length === 0 && (
+            <div className="bg-card border border-border rounded-xl p-6 text-center text-sm text-muted-foreground">Brak wiadomości.</div>
+          )}
+          {((inbox ?? []) as any[]).map((r) => {
+            const m = r.message;
+            if (!m) return null;
+            return (
+              <article key={r.id} className={"bg-card border rounded-xl p-4 shadow-sm " + (r.read_at ? "border-border opacity-70" : "border-primary/40")}>
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                  <Badge variant={m.kind === "urgent" ? "destructive" : "secondary"}>{KINDS[m.kind] ?? m.kind}</Badge>
+                  <span className="text-xs text-muted-foreground">{new Date(m.created_at).toLocaleString("pl-PL")}</span>
+                  <span className="text-xs text-muted-foreground ml-auto">od {m.author?.full_name ?? "—"}</span>
+                </div>
+                <h3 className="font-bold mb-1">{m.subject}</h3>
+                <p className="text-sm whitespace-pre-wrap text-muted-foreground">{m.body}</p>
+                {!r.read_at && (
+                  <button
+                    className="mt-3 text-xs underline text-primary"
+                    onClick={async () => { await readFn({ data: { id: r.id } }); qc.invalidateQueries({ queryKey: ["msgs", "inbox"] }); }}
+                  >
+                    Oznacz jako przeczytane
+                  </button>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <section>
         <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-2">Historia wysłanych</h2>
         <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
           <table className="w-full text-sm">
