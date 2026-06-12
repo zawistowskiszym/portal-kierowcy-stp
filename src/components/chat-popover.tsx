@@ -23,6 +23,8 @@ type ProfileSummary = {
   roblox_username?: string | null;
 };
 
+const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? name;
+
 export function ChatPopover() {
   const qc = useQueryClient();
   const contactsFn = useServerFn(listChatContacts);
@@ -185,7 +187,7 @@ export function ChatPopover() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <p className="truncate text-sm font-medium">{contact.full_name}</p>
+                            <p className="truncate text-sm font-medium">{firstName(contact.full_name)}</p>
                             {(conversation?.unread_count ?? 0) > 0 && (
                               <Badge className="h-5 min-w-5 justify-center px-1.5">{conversation?.unread_count}</Badge>
                             )}
@@ -210,7 +212,7 @@ export function ChatPopover() {
             <div className="border-b border-border px-4 py-3">
               {selectedContact ? (
                 <div>
-                  <h3 className="text-sm font-semibold">{selectedContact.full_name}</h3>
+                  <h3 className="text-sm font-semibold">{firstName(selectedContact.full_name)}</h3>
                   <p className="text-[11px] text-muted-foreground">
                     {selectedContact.roblox_username ? `@${selectedContact.roblox_username}` : "Brak Roblox"}
                     {selectedContact.employee_id ? ` · ID ${selectedContact.employee_id}` : ""}
