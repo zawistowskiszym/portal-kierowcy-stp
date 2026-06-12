@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { sendMessage, listSentMessages, listAllDrivers } from "@/lib/ops.functions";
+import { sendMessage, listSentMessages, listAllDrivers, listMyInbox, markMessageRead } from "@/lib/ops.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/admin/komunikacja")({
 });
 
 const KINDS: Record<string, string> = {
-  announcement: "Ogłoszenie", urgent: "Alert pilny", service_change: "Zmiana w obsłudze", diversion: "Objazd",
+  announcement: "Ogłoszenie", urgent: "Alert pilny", service_change: "Zmiana w obsłudze", diversion: "Objazd", driver_message: "Od kierowcy",
 };
 
 function CommsPage() {
@@ -26,6 +26,8 @@ function CommsPage() {
   const sendFn = useServerFn(sendMessage);
   const listFn = useServerFn(listSentMessages);
   const driversFn = useServerFn(listAllDrivers);
+  const inboxFn = useServerFn(listMyInbox);
+  const readFn = useServerFn(markMessageRead);
 
   const [form, setForm] = useState({
     kind: "announcement", subject: "", body: "",
@@ -34,6 +36,7 @@ function CommsPage() {
 
   const { data: sent } = useQuery({ queryKey: ["msgs", "sent"], queryFn: () => listFn() });
   const { data: drivers } = useQuery({ queryKey: ["all-drivers"], queryFn: () => driversFn() });
+  const { data: inbox } = useQuery({ queryKey: ["msgs", "inbox"], queryFn: () => inboxFn(), refetchInterval: 30000 });
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,6 +109,38 @@ function CommsPage() {
           <Button type="submit" variant={form.kind === "urgent" ? "destructive" : "default"}>Wyślij komunikat</Button>
         </div>
       </form>
+
+      <section>
+        <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-2">Wiadomości od kierowców</h2>
+        <div className="space-y-2">
+          {((inbox ?? []) as any[]).length === 0 && (
+            <div className="bg-card border border-border rounded-xl p-6 text-center text-sm text-muted-foreground">Brak wiadomości.</div>
+          )}
+          {((inbox ?? []) as any[]).map((r) => {
+            const m = r.message;
+            if (!m) return null;
+            return (
+              <article key={r.id} className={"bg-card border rounded-xl p-4 shadow-sm " + (r.read_at ? "border-border opacity-70" : "border-primary/40")}>
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                  <Badge variant={m.kind === "urgent" ? "destructive" : "secondary"}>{KINDS[m.kind] ?? m.kind}</Badge>
+                  <span className="text-xs text-muted-foreground">{new Date(m.created_at).toLocaleString("pl-PL")}</span>
+                  <span className="text-xs text-muted-foreground ml-auto">od {m.author?.full_name ?? "—"}</span>
+                </div>
+                <h3 className="font-bold mb-1">{m.subject}</h3>
+                <p className="text-sm whitespace-pre-wrap text-muted-foreground">{m.body}</p>
+                {!r.read_at && (
+                  <button
+                    className="mt-3 text-xs underline text-primary"
+                    onClick={async () => { await readFn({ data: { id: r.id } }); qc.invalidateQueries({ queryKey: ["msgs", "inbox"] }); }}
+                  >
+                    Oznacz jako przeczytane
+                  </button>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      </section>
 
       <section>
         <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-2">Historia wysłanych</h2>

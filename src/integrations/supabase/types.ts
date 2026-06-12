@@ -905,7 +905,13 @@ export type Database = {
         | "routes"
         | "vehicles"
         | "divisions"
-      message_kind: "announcement" | "urgent" | "service_change" | "diversion"
+        | "dispatchers"
+      message_kind:
+        | "announcement"
+        | "urgent"
+        | "service_change"
+        | "diversion"
+        | "driver_message"
       report_category:
         | "operational"
         | "complaint"
@@ -1102,8 +1108,15 @@ export const Constants = {
         "routes",
         "vehicles",
         "divisions",
+        "dispatchers",
       ],
-      message_kind: ["announcement", "urgent", "service_change", "diversion"],
+      message_kind: [
+        "announcement",
+        "urgent",
+        "service_change",
+        "diversion",
+        "driver_message",
+      ],
       report_category: [
         "operational",
         "complaint",
