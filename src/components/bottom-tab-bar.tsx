@@ -40,6 +40,8 @@ const driverPrimary: Item[] = [
 const driverMore: Item[] = [
   { title: "Komunikacja", url: "/wiadomosci", icon: Radio },
   { title: "Urlopy", url: "/urlopy", icon: Plane },
+  { title: "Moje raporty", url: "/raporty", icon: FileBarChart },
+  { title: "Zgłoś zdarzenie", url: "/zdarzenie", icon: AlertTriangle },
   { title: "Moje statystyki", url: "/statystyki", icon: BarChart3 },
   { title: "Mój profil", url: "/profil", icon: UserCircle },
 ];

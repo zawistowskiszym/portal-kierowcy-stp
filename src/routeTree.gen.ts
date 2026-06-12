@@ -14,9 +14,11 @@ import { Route as BootstrapRouteImport } from './routes/bootstrap'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedZdarzenieRouteImport } from './routes/_authenticated/zdarzenie'
 import { Route as AuthenticatedWiadomosciRouteImport } from './routes/_authenticated/wiadomosci'
 import { Route as AuthenticatedUrlopyRouteImport } from './routes/_authenticated/urlopy'
 import { Route as AuthenticatedStatystykiRouteImport } from './routes/_authenticated/statystyki'
+import { Route as AuthenticatedRaportyRouteImport } from './routes/_authenticated/raporty'
 import { Route as AuthenticatedPulpitRouteImport } from './routes/_authenticated/pulpit'
 import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedOgloszeniaRouteImport } from './routes/_authenticated/ogloszenia'
@@ -75,6 +77,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedZdarzenieRoute = AuthenticatedZdarzenieRouteImport.update({
+  id: '/zdarzenie',
+  path: '/zdarzenie',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedWiadomosciRoute = AuthenticatedWiadomosciRouteImport.update({
   id: '/wiadomosci',
   path: '/wiadomosci',
@@ -88,6 +95,11 @@ const AuthenticatedUrlopyRoute = AuthenticatedUrlopyRouteImport.update({
 const AuthenticatedStatystykiRoute = AuthenticatedStatystykiRouteImport.update({
   id: '/statystyki',
   path: '/statystyki',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedRaportyRoute = AuthenticatedRaportyRouteImport.update({
+  id: '/raporty',
+  path: '/raporty',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedPulpitRoute = AuthenticatedPulpitRouteImport.update({
@@ -286,9 +298,11 @@ export interface FileRoutesByFullPath {
   '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/pulpit': typeof AuthenticatedPulpitRoute
+  '/raporty': typeof AuthenticatedRaportyRoute
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
   '/wiadomosci': typeof AuthenticatedWiadomosciRoute
+  '/zdarzenie': typeof AuthenticatedZdarzenieRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -328,9 +342,11 @@ export interface FileRoutesByTo {
   '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/profil': typeof AuthenticatedProfilRoute
   '/pulpit': typeof AuthenticatedPulpitRoute
+  '/raporty': typeof AuthenticatedRaportyRoute
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
   '/wiadomosci': typeof AuthenticatedWiadomosciRoute
+  '/zdarzenie': typeof AuthenticatedZdarzenieRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -372,9 +388,11 @@ export interface FileRoutesById {
   '/_authenticated/ogloszenia': typeof AuthenticatedOgloszeniaRoute
   '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/pulpit': typeof AuthenticatedPulpitRoute
+  '/_authenticated/raporty': typeof AuthenticatedRaportyRoute
   '/_authenticated/statystyki': typeof AuthenticatedStatystykiRoute
   '/_authenticated/urlopy': typeof AuthenticatedUrlopyRoute
   '/_authenticated/wiadomosci': typeof AuthenticatedWiadomosciRoute
+  '/_authenticated/zdarzenie': typeof AuthenticatedZdarzenieRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/_authenticated/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -416,9 +434,11 @@ export interface FileRouteTypes {
     | '/ogloszenia'
     | '/profil'
     | '/pulpit'
+    | '/raporty'
     | '/statystyki'
     | '/urlopy'
     | '/wiadomosci'
+    | '/zdarzenie'
     | '/admin/dashboard'
     | '/admin/dziennik'
     | '/admin/incydenty'
@@ -458,9 +478,11 @@ export interface FileRouteTypes {
     | '/ogloszenia'
     | '/profil'
     | '/pulpit'
+    | '/raporty'
     | '/statystyki'
     | '/urlopy'
     | '/wiadomosci'
+    | '/zdarzenie'
     | '/admin/dashboard'
     | '/admin/dziennik'
     | '/admin/incydenty'
@@ -501,9 +523,11 @@ export interface FileRouteTypes {
     | '/_authenticated/ogloszenia'
     | '/_authenticated/profil'
     | '/_authenticated/pulpit'
+    | '/_authenticated/raporty'
     | '/_authenticated/statystyki'
     | '/_authenticated/urlopy'
     | '/_authenticated/wiadomosci'
+    | '/_authenticated/zdarzenie'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/dziennik'
     | '/_authenticated/admin/incydenty'
@@ -587,6 +611,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/zdarzenie': {
+      id: '/_authenticated/zdarzenie'
+      path: '/zdarzenie'
+      fullPath: '/zdarzenie'
+      preLoaderRoute: typeof AuthenticatedZdarzenieRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/wiadomosci': {
       id: '/_authenticated/wiadomosci'
       path: '/wiadomosci'
@@ -606,6 +637,13 @@ declare module '@tanstack/react-router' {
       path: '/statystyki'
       fullPath: '/statystyki'
       preLoaderRoute: typeof AuthenticatedStatystykiRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/raporty': {
+      id: '/_authenticated/raporty'
+      path: '/raporty'
+      fullPath: '/raporty'
+      preLoaderRoute: typeof AuthenticatedRaportyRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/pulpit': {
@@ -887,9 +925,11 @@ interface AuthenticatedRouteChildren {
   AuthenticatedOgloszeniaRoute: typeof AuthenticatedOgloszeniaRoute
   AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedPulpitRoute: typeof AuthenticatedPulpitRoute
+  AuthenticatedRaportyRoute: typeof AuthenticatedRaportyRoute
   AuthenticatedStatystykiRoute: typeof AuthenticatedStatystykiRoute
   AuthenticatedUrlopyRoute: typeof AuthenticatedUrlopyRoute
   AuthenticatedWiadomosciRoute: typeof AuthenticatedWiadomosciRoute
+  AuthenticatedZdarzenieRoute: typeof AuthenticatedZdarzenieRoute
   AuthenticatedSluzbaDutyIdMapaRoute: typeof AuthenticatedSluzbaDutyIdMapaRoute
   AuthenticatedSluzbaDutyIdRaportRoute: typeof AuthenticatedSluzbaDutyIdRaportRoute
   AuthenticatedSluzbaDutyIdRozkladRoute: typeof AuthenticatedSluzbaDutyIdRozkladRoute
@@ -903,9 +943,11 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedOgloszeniaRoute: AuthenticatedOgloszeniaRoute,
   AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedPulpitRoute: AuthenticatedPulpitRoute,
+  AuthenticatedRaportyRoute: AuthenticatedRaportyRoute,
   AuthenticatedStatystykiRoute: AuthenticatedStatystykiRoute,
   AuthenticatedUrlopyRoute: AuthenticatedUrlopyRoute,
   AuthenticatedWiadomosciRoute: AuthenticatedWiadomosciRoute,
+  AuthenticatedZdarzenieRoute: AuthenticatedZdarzenieRoute,
   AuthenticatedSluzbaDutyIdMapaRoute: AuthenticatedSluzbaDutyIdMapaRoute,
   AuthenticatedSluzbaDutyIdRaportRoute: AuthenticatedSluzbaDutyIdRaportRoute,
   AuthenticatedSluzbaDutyIdRozkladRoute: AuthenticatedSluzbaDutyIdRozkladRoute,

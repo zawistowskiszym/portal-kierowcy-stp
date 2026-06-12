@@ -37,6 +37,8 @@ const driverItems = [
   { title: "Komunikacja", url: "/wiadomosci", icon: Radio },
   { title: "Dyspozycyjność", url: "/dyspozycyjnosc", icon: CalendarCheck2 },
   { title: "Urlopy", url: "/urlopy", icon: Plane },
+  { title: "Moje raporty", url: "/raporty", icon: FileBarChart },
+  { title: "Zgłoś zdarzenie", url: "/zdarzenie", icon: AlertTriangle },
   { title: "Moje statystyki", url: "/statystyki", icon: BarChart3 },
   { title: "Ogłoszenia", url: "/ogloszenia", icon: Megaphone },
   { title: "Mój profil", url: "/profil", icon: UserCircle },
