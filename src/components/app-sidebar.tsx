@@ -61,15 +61,7 @@ export function AppSidebar({ isAdmin, isDispatcher }: { isAdmin: boolean; isDisp
         className="m-3 rounded-3xl glass-strong text-sidebar-foreground"
       >
         <div className="flex items-center gap-3 px-4 pt-5 pb-4">
-          <div
-            className="size-10 rounded-2xl grid place-items-center shrink-0"
-            style={{
-              background:
-                "linear-gradient(135deg, var(--color-primary), color-mix(in oklab, var(--color-primary) 55%, var(--color-brand-accent)))",
-            }}
-          >
-            <img src={stpLogo.url} alt="STP" className="size-6 brightness-0 invert" />
-          </div>
+          <img src={stpLogo.url} alt="STP" className="size-10 object-contain shrink-0" />
           <div className="leading-tight min-w-0">
             <div className="font-display text-lg tracking-tight truncate">Portal STP</div>
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
