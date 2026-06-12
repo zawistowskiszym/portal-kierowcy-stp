@@ -12,7 +12,6 @@ import {
   Bus,
   FileBarChart,
   AlertTriangle,
-  Radio,
   Activity,
   Map as MapIcon,
   BookOpen,
@@ -38,7 +37,6 @@ const driverPrimary: Item[] = [
 ];
 
 const driverMore: Item[] = [
-  { title: "Komunikacja", url: "/wiadomosci", icon: Radio },
   { title: "Urlopy", url: "/urlopy", icon: Plane },
   { title: "Moje raporty", url: "/raporty", icon: FileBarChart },
   { title: "Zgłoś zdarzenie", url: "/zdarzenie", icon: AlertTriangle },
@@ -55,7 +53,6 @@ const dispatcherMore: Item[] = [
   { title: "Planowanie służb", url: "/admin/sluzby", icon: ClipboardList },
   { title: "Nieprzydzielone", url: "/admin/nieprzydzielone", icon: AlertTriangle },
   { title: "Tabor", url: "/admin/pojazdy", icon: Bus },
-  { title: "Komunikacja", url: "/admin/komunikacja", icon: Radio },
   { title: "Mapa operacyjna", url: "/admin/mapa", icon: MapIcon },
   { title: "Dziennik", url: "/admin/dziennik", icon: BookOpen },
   { title: "Wnioski urlopowe", url: "/admin/urlopy", icon: Plane },
