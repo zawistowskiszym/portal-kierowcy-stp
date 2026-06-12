@@ -224,8 +224,7 @@ function AdminUsersPage() {
                 <td className="px-6 py-3 font-mono text-xs">{u.employee_id ?? "—"}</td>
                 <td className="px-6 py-3 text-muted-foreground">{u.depot ?? "—"}</td>
                 <td className="px-6 py-3 text-xs">
-                  <div className="font-mono">{u.roblox_username ?? "—"}</div>
-                  <div className="text-muted-foreground">{u.discord_username ?? ""}</div>
+                  <div className="text-muted-foreground">{u.discord_username ?? "—"}</div>
                 </td>
                 <td className="px-6 py-3">
                   {u.roles.map((r: string) => (
