@@ -15,7 +15,6 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedZdarzenieRouteImport } from './routes/_authenticated/zdarzenie'
-import { Route as AuthenticatedWiadomosciRouteImport } from './routes/_authenticated/wiadomosci'
 import { Route as AuthenticatedUrlopyRouteImport } from './routes/_authenticated/urlopy'
 import { Route as AuthenticatedStatystykiRouteImport } from './routes/_authenticated/statystyki'
 import { Route as AuthenticatedRaportyRouteImport } from './routes/_authenticated/raporty'
@@ -34,7 +33,6 @@ import { Route as AuthenticatedAdminOgloszeniaRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminNieprzydzieloneRouteImport } from './routes/_authenticated/admin/nieprzydzielone'
 import { Route as AuthenticatedAdminMonitorRouteImport } from './routes/_authenticated/admin/monitor'
 import { Route as AuthenticatedAdminMapaRouteImport } from './routes/_authenticated/admin/mapa'
-import { Route as AuthenticatedAdminKomunikacjaRouteImport } from './routes/_authenticated/admin/komunikacja'
 import { Route as AuthenticatedAdminKierowcyRouteImport } from './routes/_authenticated/admin/kierowcy'
 import { Route as AuthenticatedAdminIncydentyRouteImport } from './routes/_authenticated/admin/incydenty'
 import { Route as AuthenticatedAdminDziennikRouteImport } from './routes/_authenticated/admin/dziennik'
@@ -80,11 +78,6 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedZdarzenieRoute = AuthenticatedZdarzenieRouteImport.update({
   id: '/zdarzenie',
   path: '/zdarzenie',
-  getParentRoute: () => AuthenticatedRoute,
-} as any)
-const AuthenticatedWiadomosciRoute = AuthenticatedWiadomosciRouteImport.update({
-  id: '/wiadomosci',
-  path: '/wiadomosci',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedUrlopyRoute = AuthenticatedUrlopyRouteImport.update({
@@ -186,12 +179,6 @@ const AuthenticatedAdminMapaRoute = AuthenticatedAdminMapaRouteImport.update({
   path: '/mapa',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
-const AuthenticatedAdminKomunikacjaRoute =
-  AuthenticatedAdminKomunikacjaRouteImport.update({
-    id: '/komunikacja',
-    path: '/komunikacja',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
 const AuthenticatedAdminKierowcyRoute =
   AuthenticatedAdminKierowcyRouteImport.update({
     id: '/kierowcy',
@@ -301,13 +288,11 @@ export interface FileRoutesByFullPath {
   '/raporty': typeof AuthenticatedRaportyRoute
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
-  '/wiadomosci': typeof AuthenticatedWiadomosciRoute
   '/zdarzenie': typeof AuthenticatedZdarzenieRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
   '/admin/kierowcy': typeof AuthenticatedAdminKierowcyRoute
-  '/admin/komunikacja': typeof AuthenticatedAdminKomunikacjaRoute
   '/admin/mapa': typeof AuthenticatedAdminMapaRoute
   '/admin/monitor': typeof AuthenticatedAdminMonitorRoute
   '/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
@@ -345,13 +330,11 @@ export interface FileRoutesByTo {
   '/raporty': typeof AuthenticatedRaportyRoute
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
-  '/wiadomosci': typeof AuthenticatedWiadomosciRoute
   '/zdarzenie': typeof AuthenticatedZdarzenieRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
   '/admin/kierowcy': typeof AuthenticatedAdminKierowcyRoute
-  '/admin/komunikacja': typeof AuthenticatedAdminKomunikacjaRoute
   '/admin/mapa': typeof AuthenticatedAdminMapaRoute
   '/admin/monitor': typeof AuthenticatedAdminMonitorRoute
   '/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
@@ -391,13 +374,11 @@ export interface FileRoutesById {
   '/_authenticated/raporty': typeof AuthenticatedRaportyRoute
   '/_authenticated/statystyki': typeof AuthenticatedStatystykiRoute
   '/_authenticated/urlopy': typeof AuthenticatedUrlopyRoute
-  '/_authenticated/wiadomosci': typeof AuthenticatedWiadomosciRoute
   '/_authenticated/zdarzenie': typeof AuthenticatedZdarzenieRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/_authenticated/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
   '/_authenticated/admin/kierowcy': typeof AuthenticatedAdminKierowcyRoute
-  '/_authenticated/admin/komunikacja': typeof AuthenticatedAdminKomunikacjaRoute
   '/_authenticated/admin/mapa': typeof AuthenticatedAdminMapaRoute
   '/_authenticated/admin/monitor': typeof AuthenticatedAdminMonitorRoute
   '/_authenticated/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
@@ -437,13 +418,11 @@ export interface FileRouteTypes {
     | '/raporty'
     | '/statystyki'
     | '/urlopy'
-    | '/wiadomosci'
     | '/zdarzenie'
     | '/admin/dashboard'
     | '/admin/dziennik'
     | '/admin/incydenty'
     | '/admin/kierowcy'
-    | '/admin/komunikacja'
     | '/admin/mapa'
     | '/admin/monitor'
     | '/admin/nieprzydzielone'
@@ -481,13 +460,11 @@ export interface FileRouteTypes {
     | '/raporty'
     | '/statystyki'
     | '/urlopy'
-    | '/wiadomosci'
     | '/zdarzenie'
     | '/admin/dashboard'
     | '/admin/dziennik'
     | '/admin/incydenty'
     | '/admin/kierowcy'
-    | '/admin/komunikacja'
     | '/admin/mapa'
     | '/admin/monitor'
     | '/admin/nieprzydzielone'
@@ -526,13 +503,11 @@ export interface FileRouteTypes {
     | '/_authenticated/raporty'
     | '/_authenticated/statystyki'
     | '/_authenticated/urlopy'
-    | '/_authenticated/wiadomosci'
     | '/_authenticated/zdarzenie'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/dziennik'
     | '/_authenticated/admin/incydenty'
     | '/_authenticated/admin/kierowcy'
-    | '/_authenticated/admin/komunikacja'
     | '/_authenticated/admin/mapa'
     | '/_authenticated/admin/monitor'
     | '/_authenticated/admin/nieprzydzielone'
@@ -616,13 +591,6 @@ declare module '@tanstack/react-router' {
       path: '/zdarzenie'
       fullPath: '/zdarzenie'
       preLoaderRoute: typeof AuthenticatedZdarzenieRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/wiadomosci': {
-      id: '/_authenticated/wiadomosci'
-      path: '/wiadomosci'
-      fullPath: '/wiadomosci'
-      preLoaderRoute: typeof AuthenticatedWiadomosciRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/urlopy': {
@@ -749,13 +717,6 @@ declare module '@tanstack/react-router' {
       path: '/mapa'
       fullPath: '/admin/mapa'
       preLoaderRoute: typeof AuthenticatedAdminMapaRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/komunikacja': {
-      id: '/_authenticated/admin/komunikacja'
-      path: '/komunikacja'
-      fullPath: '/admin/komunikacja'
-      preLoaderRoute: typeof AuthenticatedAdminKomunikacjaRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/kierowcy': {
@@ -885,7 +846,6 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminDziennikRoute: typeof AuthenticatedAdminDziennikRoute
   AuthenticatedAdminIncydentyRoute: typeof AuthenticatedAdminIncydentyRoute
   AuthenticatedAdminKierowcyRoute: typeof AuthenticatedAdminKierowcyRoute
-  AuthenticatedAdminKomunikacjaRoute: typeof AuthenticatedAdminKomunikacjaRoute
   AuthenticatedAdminMapaRoute: typeof AuthenticatedAdminMapaRoute
   AuthenticatedAdminMonitorRoute: typeof AuthenticatedAdminMonitorRoute
   AuthenticatedAdminNieprzydzieloneRoute: typeof AuthenticatedAdminNieprzydzieloneRoute
@@ -902,7 +862,6 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminDziennikRoute: AuthenticatedAdminDziennikRoute,
   AuthenticatedAdminIncydentyRoute: AuthenticatedAdminIncydentyRoute,
   AuthenticatedAdminKierowcyRoute: AuthenticatedAdminKierowcyRoute,
-  AuthenticatedAdminKomunikacjaRoute: AuthenticatedAdminKomunikacjaRoute,
   AuthenticatedAdminMapaRoute: AuthenticatedAdminMapaRoute,
   AuthenticatedAdminMonitorRoute: AuthenticatedAdminMonitorRoute,
   AuthenticatedAdminNieprzydzieloneRoute:
@@ -928,7 +887,6 @@ interface AuthenticatedRouteChildren {
   AuthenticatedRaportyRoute: typeof AuthenticatedRaportyRoute
   AuthenticatedStatystykiRoute: typeof AuthenticatedStatystykiRoute
   AuthenticatedUrlopyRoute: typeof AuthenticatedUrlopyRoute
-  AuthenticatedWiadomosciRoute: typeof AuthenticatedWiadomosciRoute
   AuthenticatedZdarzenieRoute: typeof AuthenticatedZdarzenieRoute
   AuthenticatedSluzbaDutyIdMapaRoute: typeof AuthenticatedSluzbaDutyIdMapaRoute
   AuthenticatedSluzbaDutyIdRaportRoute: typeof AuthenticatedSluzbaDutyIdRaportRoute
@@ -946,7 +904,6 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedRaportyRoute: AuthenticatedRaportyRoute,
   AuthenticatedStatystykiRoute: AuthenticatedStatystykiRoute,
   AuthenticatedUrlopyRoute: AuthenticatedUrlopyRoute,
-  AuthenticatedWiadomosciRoute: AuthenticatedWiadomosciRoute,
   AuthenticatedZdarzenieRoute: AuthenticatedZdarzenieRoute,
   AuthenticatedSluzbaDutyIdMapaRoute: AuthenticatedSluzbaDutyIdMapaRoute,
   AuthenticatedSluzbaDutyIdRaportRoute: AuthenticatedSluzbaDutyIdRaportRoute,
@@ -978,13 +935,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -13,10 +13,8 @@ import {
   FileBarChart,
   AlertTriangle,
   Activity,
-  Radio,
   BookOpen,
   Map as MapIcon,
-  Inbox,
   Gauge,
   UserCircle,
 } from "lucide-react";
@@ -34,7 +32,6 @@ import {
 const driverItems = [
   { title: "Pulpit", url: "/pulpit", icon: LayoutDashboard },
   { title: "Mój grafik", url: "/grafik", icon: CalendarRange },
-  { title: "Komunikacja", url: "/wiadomosci", icon: Radio },
   { title: "Dyspozycyjność", url: "/dyspozycyjnosc", icon: CalendarCheck2 },
   { title: "Urlopy", url: "/urlopy", icon: Plane },
   { title: "Moje raporty", url: "/raporty", icon: FileBarChart },
@@ -53,7 +50,6 @@ const dispatcherItems = [
   { title: "Planowanie służb", url: "/admin/sluzby", icon: ClipboardList },
   { title: "Nieprzydzielone", url: "/admin/nieprzydzielone", icon: AlertTriangle },
   { title: "Tabor", url: "/admin/pojazdy", icon: Bus },
-  { title: "Komunikacja", url: "/admin/komunikacja", icon: Radio },
   { title: "Mapa operacyjna", url: "/admin/mapa", icon: MapIcon },
   { title: "Dziennik", url: "/admin/dziennik", icon: BookOpen },
   { title: "Wnioski urlopowe", url: "/admin/urlopy", icon: Plane },

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { ChatPopover } from "@/components/chat-popover";
 import { NotificationBell } from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { signedAvatarUrl } from "@/lib/avatar";
@@ -70,6 +71,7 @@ export function AppHeader({
 
         <div className="flex items-center gap-1 md:gap-2">
           <ThemeToggle />
+          <ChatPopover />
           <NotificationBell />
           <div className="text-right hidden lg:block px-2">
             <p className="text-sm font-semibold leading-none truncate max-w-[160px]">
