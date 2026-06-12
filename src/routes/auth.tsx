@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { bootstrapStatus, bootstrapFirstAdmin } from "@/lib/portal.functions";
 import stpLogo from "@/assets/stp-logo.png.asset.json";
+import stpBus from "@/assets/stp-bus.png.asset.json";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -54,29 +55,36 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-brand-surface">
-      <div className="hidden lg:flex flex-col justify-between bg-brand text-brand-foreground p-12">
-        <div className="flex items-center gap-3">
+      <div className="hidden lg:flex relative flex-col justify-between bg-brand text-brand-foreground p-12 overflow-hidden">
+        <img
+          src={stpBus.url}
+          alt="STP autobus"
+          className="absolute inset-0 size-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-brand/80 via-brand/40 to-brand/90" />
+        <div className="relative flex items-center gap-3">
           <img src={stpLogo.url} alt="STP" className="size-10 invert" />
           <div>
             <div className="font-bold tracking-tight">Portal Kierowcy</div>
-            <div className="text-[11px] uppercase tracking-widest text-brand-foreground/50">
+            <div className="text-[11px] uppercase tracking-widest text-brand-foreground/70">
               SKUSZAWYJIŃSKI TRANSPORT PUBLICZNY
             </div>
           </div>
         </div>
-        <div className="space-y-6">
+        <div className="relative space-y-6">
           <h2 className="text-4xl font-bold leading-tight tracking-tight max-w-md">
             System dyspozytorski dla kierowców i administracji
           </h2>
-          <p className="text-brand-foreground/60 max-w-md text-sm leading-relaxed">
+          <p className="text-brand-foreground/80 max-w-md text-sm leading-relaxed">
             Dostęp wyłącznie dla pracowników. Konta są tworzone i zarządzane przez dyspozytora.
             W przypadku problemów z logowaniem skontaktuj się z administratorem.
           </p>
         </div>
-        <div className="text-[10px] uppercase tracking-widest text-brand-foreground/30 font-mono">
+        <div className="relative text-[10px] uppercase tracking-widest text-brand-foreground/50 font-mono">
           v1.0 &middot; Centrum Operacyjne STP
         </div>
       </div>
+
 
       <div className="flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-sm space-y-8">
