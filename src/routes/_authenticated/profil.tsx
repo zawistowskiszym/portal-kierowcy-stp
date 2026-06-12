@@ -131,7 +131,7 @@ function ProfilePage() {
           full_name: form.full_name.trim(),
           employee_id: form.employee_id || null,
           depot: form.depot || null,
-          roblox_username: form.roblox_username.trim(),
+          roblox_username: form.roblox_username.trim() || null,
           discord_username: form.discord_username.trim() || null,
           phone: form.phone.trim() || null,
           bio: form.bio.trim() || null,
