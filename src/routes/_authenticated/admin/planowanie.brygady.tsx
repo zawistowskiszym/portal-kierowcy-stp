@@ -102,6 +102,14 @@ function BlocksPage() {
         <div className="flex flex-wrap items-end gap-3">
           <div><Label className="text-xs">Od</Label><Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></div>
           <div><Label className="text-xs">Do</Label><Input type="date" value={to} onChange={(e) => setTo(e.target.value)} /></div>
+          <div>
+            <Label className="text-xs">Maks. czas służby (min)</Label>
+            <Input type="number" min={60} max={900} className="w-28" value={maxDutyMin} onChange={(e) => setMaxDutyMin(Number(e.target.value))} />
+          </div>
+          <div>
+            <Label className="text-xs">Przerwa między częściami (min)</Label>
+            <Input type="number" min={0} max={180} className="w-28" value={splitBreakMin} onChange={(e) => setSplitBreakMin(Number(e.target.value))} />
+          </div>
           <label className="flex items-center gap-2 pb-2">
             <Switch checked={replace} onCheckedChange={setReplace} />
             <span className="text-xs">Zastąp istniejące w zakresie</span>
@@ -111,7 +119,7 @@ function BlocksPage() {
           </Button>
         </div>
         <p className="text-xs text-muted-foreground">
-          Tworzy rekordy w tabeli służb (route=numer/numery linii, duty_number=numer brygady) dla wszystkich dni w zakresie pasujących do typu dnia.
+          Brygady dłuższe niż maksymalny czas służby zostaną podzielone na części (1a, 1b…) z zachowaniem przerwy między nimi, żeby jeden kierowca nie pracował całego dnia.
         </p>
       </div>
 
