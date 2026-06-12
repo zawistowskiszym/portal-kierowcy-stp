@@ -142,6 +142,21 @@ function AdminCandidatesPage() {
     refresh();
   };
 
+  const sendIntroEmail = async () => {
+    if (!selected) return;
+    setSendingIntro(true);
+    try {
+      await sendIntroFn({ data: { applicationId: selected.id } });
+      toast.success("Wysłano email z wprowadzeniem");
+      refresh();
+      setSelected(null);
+    } catch (err: any) {
+      toast.error(err?.message ?? "Nie udało się wysłać");
+    } finally {
+      setSendingIntro(false);
+    }
+  };
+
   const apps = data ?? [];
 
   return (
