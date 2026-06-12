@@ -60,13 +60,13 @@ function AuthPage() {
           <div>
             <div className="font-bold tracking-tight">Portal Kierowcy</div>
             <div className="text-[11px] uppercase tracking-widest text-brand-foreground/50">
-              Skuszawyjińsk Transport Publiczny
+              SKUSZAWYJIŃSKI TRANSPORT PUBLICZNY
             </div>
           </div>
         </div>
         <div className="space-y-6">
           <h2 className="text-4xl font-bold leading-tight tracking-tight max-w-md">
-            System dyspozytorski dla kierowców i administracji STP.
+            System dyspozytorski dla kierowców i administracji
           </h2>
           <p className="text-brand-foreground/60 max-w-md text-sm leading-relaxed">
             Dostęp wyłącznie dla pracowników. Konta są tworzone i zarządzane przez dyspozytora.
@@ -133,7 +133,7 @@ function AuthPage() {
           )}
 
           <p className="text-[11px] text-muted-foreground text-center">
-            Rejestracja jest wyłączona. Konta zakłada wyłącznie administrator.
+            Konta zakłada wyłącznie administrator.
           </p>
         </div>
       </div>
