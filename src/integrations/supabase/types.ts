@@ -83,13 +83,17 @@ export type Database = {
           created_at: string
           created_by: string | null
           depot: string
+          division: string | null
           duty_date: string
           duty_number: string
           end_time: string
           id: string
           notes: string | null
+          priority: Database["public"]["Enums"]["duty_priority"]
           route: string
           start_time: string
+          status: Database["public"]["Enums"]["duty_status"]
+          vehicle_id: string | null
           vehicle_label: string | null
         }
         Insert: {
@@ -97,13 +101,17 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           depot: string
+          division?: string | null
           duty_date: string
           duty_number: string
           end_time: string
           id?: string
           notes?: string | null
+          priority?: Database["public"]["Enums"]["duty_priority"]
           route: string
           start_time: string
+          status?: Database["public"]["Enums"]["duty_status"]
+          vehicle_id?: string | null
           vehicle_label?: string | null
         }
         Update: {
@@ -111,13 +119,17 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           depot?: string
+          division?: string | null
           duty_date?: string
           duty_number?: string
           end_time?: string
           id?: string
           notes?: string | null
+          priority?: Database["public"]["Enums"]["duty_priority"]
           route?: string
           start_time?: string
+          status?: Database["public"]["Enums"]["duty_status"]
+          vehicle_id?: string | null
           vehicle_label?: string | null
         }
         Relationships: [
@@ -126,6 +138,13 @@ export type Database = {
             columns: ["assigned_to"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "duties_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
             referencedColumns: ["id"]
           },
         ]
@@ -216,6 +235,47 @@ export type Database = {
           used_at?: string | null
         }
         Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          read_at: string | null
+          related_duty_id: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          related_duty_id?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          related_duty_id?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_related_duty_id_fkey"
+            columns: ["related_duty_id"]
+            isOneToOne: false
+            referencedRelation: "duties"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -342,6 +402,7 @@ export type Database = {
           model: string
           notes: string | null
           production_year: number | null
+          status: Database["public"]["Enums"]["vehicle_status"]
           updated_at: string
           vehicle_number: string
         }
@@ -355,6 +416,7 @@ export type Database = {
           model: string
           notes?: string | null
           production_year?: number | null
+          status?: Database["public"]["Enums"]["vehicle_status"]
           updated_at?: string
           vehicle_number: string
         }
@@ -368,6 +430,7 @@ export type Database = {
           model?: string
           notes?: string | null
           production_year?: number | null
+          status?: Database["public"]["Enums"]["vehicle_status"]
           updated_at?: string
           vehicle_number?: string
         }
@@ -421,6 +484,8 @@ export type Database = {
         | "general"
       app_role: "admin" | "driver"
       availability_type: "unavailable" | "preferred"
+      duty_priority: "low" | "normal" | "high"
+      duty_status: "unassigned" | "pending" | "assigned"
       fuel_type: "Diesel" | "Elektryczny" | "Hybrydowy" | "Wodorowy"
       leave_type:
         | "wypoczynkowy"
@@ -434,6 +499,7 @@ export type Database = {
         | "szkoleniowy"
         | "inny"
       vacation_status: "pending" | "approved" | "rejected"
+      vehicle_status: "available" | "assigned" | "out_of_service" | "reserve"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -570,6 +636,8 @@ export const Constants = {
       ],
       app_role: ["admin", "driver"],
       availability_type: ["unavailable", "preferred"],
+      duty_priority: ["low", "normal", "high"],
+      duty_status: ["unassigned", "pending", "assigned"],
       fuel_type: ["Diesel", "Elektryczny", "Hybrydowy", "Wodorowy"],
       leave_type: [
         "wypoczynkowy",
@@ -584,6 +652,7 @@ export const Constants = {
         "inny",
       ],
       vacation_status: ["pending", "approved", "rejected"],
+      vehicle_status: ["available", "assigned", "out_of_service", "reserve"],
     },
   },
 } as const

@@ -3,6 +3,7 @@ import { LogOut } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { NotificationBell } from "@/components/notification-bell";
 import type { AuthProfile } from "@/hooks/use-auth";
 
 const WEEKDAYS = ["Niedziela", "Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota"];
@@ -47,7 +48,8 @@ export function AppHeader({
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        <NotificationBell />
         <div className="text-right hidden sm:block">
           <p className="text-sm font-semibold leading-none">{profile?.full_name ?? "—"}</p>
           <p className="text-[11px] text-muted-foreground font-mono mt-1">

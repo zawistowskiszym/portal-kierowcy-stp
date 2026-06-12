@@ -87,8 +87,11 @@ const dutyInput = z.object({
   depot: z.string().min(1),
   route: z.string().min(1),
   vehicle_label: z.string().optional().nullable(),
+  vehicle_id: z.string().uuid().optional().nullable(),
   notes: z.string().optional().nullable(),
   assigned_to: z.string().uuid().optional().nullable(),
+  priority: z.enum(["low", "normal", "high"]).optional(),
+  division: z.string().optional().nullable(),
 });
 
 export const createDuty = createServerFn({ method: "POST" })
@@ -732,4 +735,256 @@ export const getAdminReports = createServerFn({ method: "GET" })
         active: (vehRes.data ?? []).filter((v: any) => v.active).length,
       },
     };
+  });
+
+// ============ PLANNING BOARD ============
+
+const timesOverlap = (aStart: string, aEnd: string, bStart: string, bEnd: string) => {
+  const toM = (t: string) => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
+  let aS = toM(aStart), aE = toM(aEnd); if (aE <= aS) aE += 24 * 60;
+  let bS = toM(bStart), bE = toM(bEnd); if (bE <= bS) bE += 24 * 60;
+  return aS < bE && bS < aE;
+};
+
+export const getPlanningBoard = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { from: string; to: string }) =>
+    z.object({ from: z.string(), to: z.string() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context.supabase, context.userId);
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);
+
+    const [dutiesRes, driversRes, vehiclesRes, monthDutiesRes, availRes, vacRes] = await Promise.all([
+      context.supabase.from("duties")
+        .select("*, profiles:assigned_to(full_name, employee_id, depot), vehicles:vehicle_id(vehicle_number, model, status)")
+        .gte("duty_date", data.from).lte("duty_date", data.to)
+        .order("duty_date").order("start_time"),
+      context.supabase.from("profiles").select("id, full_name, employee_id, depot, active").eq("active", true).order("full_name"),
+      context.supabase.from("vehicles").select("*").order("vehicle_number"),
+      context.supabase.from("duties").select("assigned_to, start_time, end_time").gte("duty_date", monthStart).lte("duty_date", monthEnd),
+      context.supabase.from("driver_availability").select("*").gte("day", data.from).lte("day", data.to),
+      context.supabase.from("vacation_requests").select("user_id, start_date, end_date").eq("status", "approved").lte("start_date", data.to).gte("end_date", data.from),
+    ]);
+    for (const r of [dutiesRes, driversRes, vehiclesRes, monthDutiesRes, availRes, vacRes]) {
+      if (r.error) throw new Error(r.error.message);
+    }
+
+    const hoursByDriver = new Map<string, number>();
+    for (const d of monthDutiesRes.data ?? []) {
+      if (!d.assigned_to) continue;
+      const mins = minutesBetween(d.start_time as string, d.end_time as string);
+      hoursByDriver.set(d.assigned_to as string, (hoursByDriver.get(d.assigned_to as string) ?? 0) + mins);
+    }
+
+    const unavailableByUser = new Map<string, Set<string>>();
+    for (const a of availRes.data ?? []) {
+      if ((a as any).type !== "unavailable") continue;
+      const set = unavailableByUser.get(a.user_id as string) ?? new Set();
+      set.add(a.day as string);
+      unavailableByUser.set(a.user_id as string, set);
+    }
+    for (const v of vacRes.data ?? []) {
+      const set = unavailableByUser.get(v.user_id as string) ?? new Set();
+      const s = new Date(v.start_date as string), e = new Date(v.end_date as string);
+      for (let dt = new Date(s); dt <= e; dt.setDate(dt.getDate() + 1)) set.add(dt.toISOString().slice(0, 10));
+      unavailableByUser.set(v.user_id as string, set);
+    }
+
+    const drivers = (driversRes.data ?? []).map((d: any) => {
+      const minutes = hoursByDriver.get(d.id) ?? 0;
+      const unavailableDays = Array.from(unavailableByUser.get(d.id) ?? []);
+      let availability: "available" | "limited" | "unavailable" = "available";
+      if (unavailableDays.length >= 5) availability = "unavailable";
+      else if (unavailableDays.length > 0 || minutes > 9000) availability = "limited";
+      return { ...d, month_minutes: minutes, unavailable_days: unavailableDays, availability };
+    });
+
+    return {
+      duties: dutiesRes.data ?? [],
+      drivers,
+      vehicles: vehiclesRes.data ?? [],
+    };
+  });
+
+const detectConflicts = async (supabase: any, duty: any, driverId: string | null, vehicleId: string | null, excludeId?: string) => {
+  const warnings: { kind: string; msg: string }[] = [];
+  if (driverId) {
+    const { data: dDuties } = await supabase.from("duties")
+      .select("id, duty_number, start_time, end_time")
+      .eq("assigned_to", driverId).eq("duty_date", duty.duty_date);
+    for (const d of dDuties ?? []) {
+      if (d.id === excludeId) continue;
+      if (timesOverlap(duty.start_time, duty.end_time, d.start_time, d.end_time)) {
+        warnings.push({ kind: "driver_overlap", msg: `Kierowca ma już służbę ${d.duty_number} w tym czasie` });
+      }
+    }
+    const { data: vac } = await supabase.from("vacation_requests")
+      .select("id, leave_type").eq("user_id", driverId).eq("status", "approved")
+      .lte("start_date", duty.duty_date).gte("end_date", duty.duty_date);
+    if ((vac ?? []).length) warnings.push({ kind: "driver_on_leave", msg: "Kierowca jest na urlopie w tym dniu" });
+    const { data: avail } = await supabase.from("driver_availability")
+      .select("type").eq("user_id", driverId).eq("day", duty.duty_date).maybeSingle();
+    if (avail?.type === "unavailable") warnings.push({ kind: "driver_unavailable", msg: "Kierowca oznaczył ten dzień jako niedostępny" });
+  }
+  if (vehicleId) {
+    const { data: vDuties } = await supabase.from("duties")
+      .select("id, duty_number, start_time, end_time")
+      .eq("vehicle_id", vehicleId).eq("duty_date", duty.duty_date);
+    for (const d of vDuties ?? []) {
+      if (d.id === excludeId) continue;
+      if (timesOverlap(duty.start_time, duty.end_time, d.start_time, d.end_time)) {
+        warnings.push({ kind: "vehicle_overlap", msg: `Pojazd używany w służbie ${d.duty_number}` });
+      }
+    }
+    const { data: veh } = await supabase.from("vehicles").select("status").eq("id", vehicleId).maybeSingle();
+    if (veh?.status === "out_of_service") warnings.push({ kind: "vehicle_oos", msg: "Pojazd wycofany z eksploatacji" });
+  }
+  return warnings;
+};
+
+export const assignDriverToDuty = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ dutyId: z.string().uuid(), driverId: z.string().uuid().nullable(), force: z.boolean().optional() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context.supabase, context.userId);
+    const { data: duty, error: dErr } = await context.supabase.from("duties").select("*").eq("id", data.dutyId).single();
+    if (dErr || !duty) throw new Error(dErr?.message ?? "Brak służby");
+    const warnings = data.driverId ? await detectConflicts(context.supabase, duty, data.driverId, null, data.dutyId) : [];
+    const blocking = warnings.filter(w => w.kind !== "driver_unavailable");
+    if (blocking.length && !data.force) return { ok: false, warnings };
+    const { error } = await context.supabase.from("duties").update({ assigned_to: data.driverId }).eq("id", data.dutyId);
+    if (error) throw new Error(error.message);
+    return { ok: true, warnings };
+  });
+
+export const assignVehicleToDuty = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ dutyId: z.string().uuid(), vehicleId: z.string().uuid().nullable(), force: z.boolean().optional() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context.supabase, context.userId);
+    const { data: duty, error: dErr } = await context.supabase.from("duties").select("*").eq("id", data.dutyId).single();
+    if (dErr || !duty) throw new Error(dErr?.message ?? "Brak służby");
+    const warnings = data.vehicleId ? await detectConflicts(context.supabase, duty, null, data.vehicleId, data.dutyId) : [];
+    if (warnings.length && !data.force) return { ok: false, warnings };
+    let label: string | null = null;
+    if (data.vehicleId) {
+      const { data: v } = await context.supabase.from("vehicles").select("vehicle_number").eq("id", data.vehicleId).maybeSingle();
+      label = v?.vehicle_number ?? null;
+    }
+    const { error } = await context.supabase.from("duties")
+      .update({ vehicle_id: data.vehicleId, vehicle_label: label }).eq("id", data.dutyId);
+    if (error) throw new Error(error.message);
+    return { ok: true, warnings };
+  });
+
+export const bulkGenerateDuties = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({
+      duty_date: z.string().min(10),
+      division: z.string().min(1),
+      depot: z.string().min(1),
+      route: z.string().min(1),
+      start_time: z.string().min(1),
+      end_time: z.string().min(1),
+      count: z.number().int().min(1).max(50),
+      priority: z.enum(["low", "normal", "high"]).optional(),
+    }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context.supabase, context.userId);
+    const rows = Array.from({ length: data.count }, (_, i) => ({
+      duty_number: `${data.route}/${i + 1}`,
+      duty_date: data.duty_date,
+      start_time: data.start_time,
+      end_time: data.end_time,
+      depot: data.depot,
+      route: data.route,
+      division: data.division,
+      priority: data.priority ?? "normal",
+      created_by: context.userId,
+    }));
+    const { error, data: inserted } = await context.supabase.from("duties").insert(rows).select("id");
+    if (error) throw new Error(error.message);
+    return { ok: true, count: inserted?.length ?? 0 };
+  });
+
+export const listUnassignedDuties = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ from: z.string().optional(), to: z.string().optional() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context.supabase, context.userId);
+    const today = new Date().toISOString().slice(0, 10);
+    let q = context.supabase.from("duties")
+      .select("*, vehicles:vehicle_id(vehicle_number)")
+      .is("assigned_to", null)
+      .gte("duty_date", data.from ?? today)
+      .order("priority", { ascending: false })
+      .order("duty_date").order("start_time").limit(500);
+    if (data.to) q = q.lte("duty_date", data.to);
+    const { data: rows, error } = await q;
+    if (error) throw new Error(error.message);
+    return rows ?? [];
+  });
+
+export const getAdminAnalytics = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ date: z.string().optional() }).parse(d))
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context.supabase, context.userId);
+    const today = data.date ?? new Date().toISOString().slice(0, 10);
+    const [duties, drivers, vehicles] = await Promise.all([
+      context.supabase.from("duties").select("id, assigned_to, vehicle_id, status, start_time, end_time").eq("duty_date", today),
+      context.supabase.from("profiles").select("id, active"),
+      context.supabase.from("vehicles").select("id, status, active"),
+    ]);
+    for (const r of [duties, drivers, vehicles]) if (r.error) throw new Error(r.error.message);
+    const total = (duties.data ?? []).length;
+    const assigned = (duties.data ?? []).filter((d: any) => d.assigned_to && d.vehicle_id).length;
+    const pending = (duties.data ?? []).filter((d: any) => d.status === "pending").length;
+    const unassigned = (duties.data ?? []).filter((d: any) => !d.assigned_to).length;
+    const activeDrivers = (drivers.data ?? []).filter((d: any) => d.active).length;
+    const busyDrivers = new Set((duties.data ?? []).filter((d: any) => d.assigned_to).map((d: any) => d.assigned_to)).size;
+    const activeVehicles = (vehicles.data ?? []).filter((v: any) => v.active).length;
+    const busyVehicles = new Set((duties.data ?? []).filter((d: any) => d.vehicle_id).map((d: any) => d.vehicle_id)).size;
+    return {
+      duties: { total, assigned, pending, unassigned },
+      drivers: { active: activeDrivers, available: Math.max(0, activeDrivers - busyDrivers), utilization: activeDrivers ? Math.round((busyDrivers / activeDrivers) * 100) : 0 },
+      vehicles: { active: activeVehicles, busy: busyVehicles, utilization: activeVehicles ? Math.round((busyVehicles / activeVehicles) * 100) : 0 },
+    };
+  });
+
+// ============ NOTIFICATIONS ============
+
+export const listMyNotifications = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("notifications").select("*")
+      .order("created_at", { ascending: false }).limit(30);
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const markNotificationRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ id: z.string().uuid().optional(), all: z.boolean().optional() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const now = new Date().toISOString();
+    let q = context.supabase.from("notifications").update({ read_at: now }).eq("user_id", context.userId).is("read_at", null);
+    if (!data.all && data.id) q = q.eq("id", data.id);
+    const { error } = await q;
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });

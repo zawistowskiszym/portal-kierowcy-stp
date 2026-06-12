@@ -27,6 +27,7 @@ import { Route as AuthenticatedAdminSluzbyRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminRaportyRouteImport } from './routes/_authenticated/admin/raporty'
 import { Route as AuthenticatedAdminPojazdyRouteImport } from './routes/_authenticated/admin/pojazdy'
 import { Route as AuthenticatedAdminOgloszeniaRouteImport } from './routes/_authenticated/admin/ogloszenia'
+import { Route as AuthenticatedAdminNieprzydzieloneRouteImport } from './routes/_authenticated/admin/nieprzydzielone'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -131,6 +132,12 @@ const AuthenticatedAdminOgloszeniaRoute =
     path: '/ogloszenia',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminNieprzydzieloneRoute =
+  AuthenticatedAdminNieprzydzieloneRouteImport.update({
+    id: '/nieprzydzielone',
+    path: '/nieprzydzielone',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -184,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/pulpit': typeof AuthenticatedPulpitRoute
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
+  '/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/admin/raporty': typeof AuthenticatedAdminRaportyRoute
@@ -210,6 +218,7 @@ export interface FileRoutesByTo {
   '/pulpit': typeof AuthenticatedPulpitRoute
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
+  '/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/admin/raporty': typeof AuthenticatedAdminRaportyRoute
@@ -238,6 +247,7 @@ export interface FileRoutesById {
   '/_authenticated/pulpit': typeof AuthenticatedPulpitRoute
   '/_authenticated/statystyki': typeof AuthenticatedStatystykiRoute
   '/_authenticated/urlopy': typeof AuthenticatedUrlopyRoute
+  '/_authenticated/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
   '/_authenticated/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/_authenticated/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/_authenticated/admin/raporty': typeof AuthenticatedAdminRaportyRoute
@@ -266,6 +276,7 @@ export interface FileRouteTypes {
     | '/pulpit'
     | '/statystyki'
     | '/urlopy'
+    | '/admin/nieprzydzielone'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
     | '/admin/raporty'
@@ -292,6 +303,7 @@ export interface FileRouteTypes {
     | '/pulpit'
     | '/statystyki'
     | '/urlopy'
+    | '/admin/nieprzydzielone'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
     | '/admin/raporty'
@@ -319,6 +331,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pulpit'
     | '/_authenticated/statystyki'
     | '/_authenticated/urlopy'
+    | '/_authenticated/admin/nieprzydzielone'
     | '/_authenticated/admin/ogloszenia'
     | '/_authenticated/admin/pojazdy'
     | '/_authenticated/admin/raporty'
@@ -473,6 +486,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminOgloszeniaRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/nieprzydzielone': {
+      id: '/_authenticated/admin/nieprzydzielone'
+      path: '/nieprzydzielone'
+      fullPath: '/admin/nieprzydzielone'
+      preLoaderRoute: typeof AuthenticatedAdminNieprzydzieloneRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -526,6 +546,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminNieprzydzieloneRoute: typeof AuthenticatedAdminNieprzydzieloneRoute
   AuthenticatedAdminOgloszeniaRoute: typeof AuthenticatedAdminOgloszeniaRoute
   AuthenticatedAdminPojazdyRoute: typeof AuthenticatedAdminPojazdyRoute
   AuthenticatedAdminRaportyRoute: typeof AuthenticatedAdminRaportyRoute
@@ -535,6 +556,8 @@ interface AuthenticatedAdminRouteChildren {
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminNieprzydzieloneRoute:
+    AuthenticatedAdminNieprzydzieloneRoute,
   AuthenticatedAdminOgloszeniaRoute: AuthenticatedAdminOgloszeniaRoute,
   AuthenticatedAdminPojazdyRoute: AuthenticatedAdminPojazdyRoute,
   AuthenticatedAdminRaportyRoute: AuthenticatedAdminRaportyRoute,
