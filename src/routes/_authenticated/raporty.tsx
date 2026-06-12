@@ -85,11 +85,19 @@ function RaportyPage() {
 
   return (
     <div className="space-y-6 max-w-3xl">
-      <div>
-        <h1 className="text-2xl font-bold">Moje raporty</h1>
-        <p className="text-sm text-muted-foreground">
-          Złóż raport ze służby. Pola opcjonalne pomagają dyspozytorowi szybciej zlokalizować zdarzenie.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Raporty i zdarzenia</h1>
+          <p className="text-sm text-muted-foreground">
+            Złóż raport ze służby lub szybko zgłoś zdarzenie awaryjne.
+          </p>
+        </div>
+        <Button asChild variant="destructive">
+          <Link to="/zdarzenie">
+            <AlertTriangle className="size-4" />
+            Zgłoś zdarzenie
+          </Link>
+        </Button>
       </div>
 
       <form
