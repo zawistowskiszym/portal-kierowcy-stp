@@ -95,7 +95,7 @@ export const listAllReports = createServerFn({ method: "POST" })
       .limit(300);
     if (!data.includeArchived) q = q.eq("archived", false);
     if (data.status && data.status !== "all") q = q.eq("status", data.status);
-    if (data.category) q = q.eq("category", data.category);
+    if ((data as any).category) q = q.eq("category", (data as any).category);
     const { data: rows, error } = await q;
     if (error) throw new Error(error.message);
     return rows ?? [];
