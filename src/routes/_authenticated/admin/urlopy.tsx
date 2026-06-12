@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { listAllVacationRequests, decideVacationRequest } from "@/lib/portal.functions";
+import { LEAVE_TYPE_LABEL } from "@/lib/leave-types";
+
 
 export const Route = createFileRoute("/_authenticated/admin/urlopy")({
   head: () => ({ meta: [{ title: "Urlopy — Admin STP" }] }),
