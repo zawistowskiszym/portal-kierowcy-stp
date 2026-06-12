@@ -261,103 +261,154 @@ export const generateBlocks = createServerFn({ method: "POST" })
   .handler(async ({ context, data }) => {
     await requireStaff(context.supabase, context.userId);
 
-    // Load line + stops + timetable + windows
-    const { data: line } = await context.supabase.from("lines").select("*").eq("id", data.line_id).single();
-    if (!line) throw new Error("Linia nie znaleziona");
-    const { data: stops } = await context.supabase.from("line_stops").select("*")
-      .eq("line_id", data.line_id);
-    if (!stops || stops.length === 0) throw new Error("Brak przystanków na linii");
+    // ----- Resolve line group (seed + interline partners if enabled) -----
+    const { data: seedLine } = await context.supabase
+      .from("lines").select("*").eq("id", data.line_id).single();
+    if (!seedLine) throw new Error("Linia nie znaleziona");
 
-    const tripDuration = (dir: "AB" | "BA") => {
-      const dirStops = stops.filter((s: any) => s.direction === dir).sort((a: any, b: any) => a.position - b.position);
-      if (dirStops.length < 2) return 0;
-      // sum travel_time except last stop
-      return dirStops.slice(0, -1).reduce((acc: number, s: any) => acc + (s.travel_time_to_next_min || 1), 0);
-    };
-    let durAB = tripDuration("AB");
-    let durBA = tripDuration("BA");
-    if (durAB === 0 && durBA === 0) throw new Error("Nie zdefiniowano kierunków");
-    if (durAB === 0) durAB = durBA;
-    if (durBA === 0) durBA = durAB;
-
-    const { data: tt } = await context.supabase.from("line_timetables").select("*")
-      .eq("line_id", data.line_id).eq("day_type", data.day_type).single();
-    if (!tt) throw new Error("Brak rozkładu dla wybranego typu dnia");
-
-    const { data: wins } = await context.supabase.from("line_frequency_windows").select("*")
-      .eq("timetable_id", tt.id).order("start_time");
-    if (!wins || wins.length === 0) throw new Error("Brak okien częstotliwości");
-
-    // Generate trips alternating AB/BA from terminal A
-    const first = toMin(tt.first_departure);
-    const last = toMin(tt.last_departure);
-    const layoverA = tt.layover_a_min ?? 5;
-    const layoverB = tt.layover_b_min ?? 5;
-
-    function headwayAt(minute: number): number | null {
-      for (const w of wins!) {
-        const s = toMin(w.start_time);
-        const e = toMin(w.end_time);
-        if (minute >= s && minute < e) return w.headway_min;
+    const groupLineIds: string[] = [seedLine.id];
+    let groupMinLayover = 0;
+    if (seedLine.interlining_enabled) {
+      const { data: pairs } = await context.supabase
+        .from("line_interline_pairs").select("*")
+        .or(`line_a_id.eq.${seedLine.id},line_b_id.eq.${seedLine.id}`);
+      for (const p of pairs ?? []) {
+        const other = p.line_a_id === seedLine.id ? p.line_b_id : p.line_a_id;
+        if (!groupLineIds.includes(other)) groupLineIds.push(other);
       }
-      return null;
+      groupMinLayover = seedLine.min_interline_layover_min ?? 0;
     }
 
-    // Departures from A
-    const depsA: number[] = [];
-    let t = first;
-    while (t <= last) {
-      depsA.push(t);
-      const h = headwayAt(t);
-      if (!h) break;
-      t += h;
-    }
+    const { data: groupLines } = await context.supabase
+      .from("lines").select("*").in("id", groupLineIds);
+    if (!groupLines || groupLines.length === 0) throw new Error("Brak linii w grupie");
 
-    // Build trip pool: each AB trip + a returning BA trip
+    // ----- Build trip pool across all group lines -----
+    type Trip = {
+      line_id: string; line_number: string;
+      direction: "AB" | "BA";
+      start_term: string; end_term: string;
+      departure_time: string; arrival_time: string;
+      duration_min: number;
+      layover_at_end: number;
+    };
     const trips: Trip[] = [];
-    for (const d of depsA) {
-      trips.push({
-        line_id: line.id, line_number: line.line_number, direction: "AB",
-        departure_time: toHHMM(d), arrival_time: toHHMM(d + durAB), duration_min: durAB,
-      });
-      trips.push({
-        line_id: line.id, line_number: line.line_number, direction: "BA",
-        departure_time: toHHMM(d + durAB + layoverB),
-        arrival_time: toHHMM(d + durAB + layoverB + durBA),
-        duration_min: durBA,
-      });
+    let referenceRT = 0;
+
+    for (const line of groupLines) {
+      const { data: stops } = await context.supabase.from("line_stops").select("*")
+        .eq("line_id", line.id);
+      if (!stops || stops.length === 0) continue;
+
+      const tripDuration = (dir: "AB" | "BA") => {
+        const dirStops = stops.filter((s: any) => s.direction === dir).sort((a: any, b: any) => a.position - b.position);
+        if (dirStops.length < 2) return 0;
+        return dirStops.slice(0, -1).reduce((acc: number, s: any) => acc + (s.travel_time_to_next_min || 1), 0);
+      };
+      let durAB = tripDuration("AB");
+      let durBA = tripDuration("BA");
+      if (durAB === 0 && durBA === 0) continue;
+      if (durAB === 0) durAB = durBA;
+      if (durBA === 0) durBA = durAB;
+
+      const { data: tt } = await context.supabase.from("line_timetables").select("*")
+        .eq("line_id", line.id).eq("day_type", data.day_type).maybeSingle();
+      if (!tt) continue;
+      const { data: wins } = await context.supabase.from("line_frequency_windows").select("*")
+        .eq("timetable_id", tt.id).order("start_time");
+      if (!wins || wins.length === 0) continue;
+
+      const first = toMin(tt.first_departure);
+      const last = toMin(tt.last_departure);
+      const layoverA = tt.layover_a_min ?? 5;
+      const layoverB = tt.layover_b_min ?? 5;
+
+      const headwayAt = (minute: number): number | null => {
+        for (const w of wins) {
+          const s = toMin(w.start_time);
+          const e = toMin(w.end_time);
+          if (minute >= s && minute < e) return w.headway_min;
+        }
+        return null;
+      };
+
+      const depsA: number[] = [];
+      let t = first;
+      while (t <= last) {
+        depsA.push(t);
+        const h = headwayAt(t);
+        if (!h) break;
+        t += h;
+      }
+
+      for (const d of depsA) {
+        trips.push({
+          line_id: line.id, line_number: line.line_number,
+          direction: "AB",
+          start_term: line.terminus_a, end_term: line.terminus_b,
+          departure_time: toHHMM(d), arrival_time: toHHMM(d + durAB),
+          duration_min: durAB, layover_at_end: layoverB,
+        });
+        trips.push({
+          line_id: line.id, line_number: line.line_number,
+          direction: "BA",
+          start_term: line.terminus_b, end_term: line.terminus_a,
+          departure_time: toHHMM(d + durAB + layoverB),
+          arrival_time: toHHMM(d + durAB + layoverB + durBA),
+          duration_min: durBA, layover_at_end: layoverA,
+        });
+      }
+      if (line.id === seedLine.id) referenceRT = durAB + durBA + layoverA + layoverB;
     }
+
+    if (trips.length === 0) throw new Error("Brak kursów do wygenerowania (sprawdź rozkłady i przystanki)");
     trips.sort((a, b) => toMin(a.departure_time) - toMin(b.departure_time));
 
-    // Greedy assignment into blocks
-    type Block = { trips: Trip[]; busyUntil: number; lastTerm: "A" | "B" };
+    // ----- Greedy packing into blocks, matching by terminus name -----
+    type Block = {
+      trips: Trip[]; busyUntil: number; lastTerm: string; lastLineId: string;
+      lineIds: Set<string>; lineNumbers: Set<string>; depots: Set<string>;
+    };
     const blocks: Block[] = [];
+    const norm = (s: string) => (s || "").trim().toLowerCase();
     for (const trip of trips) {
       const dep = toMin(trip.departure_time);
-      const needTerm = trip.direction === "AB" ? "A" : "B";
-      const reqLayover = needTerm === "A" ? layoverA : layoverB;
-      // find block whose lastTerm matches needTerm and busyUntil + layover <= dep
       let chosen = -1;
       for (let i = 0; i < blocks.length; i++) {
         const b = blocks[i];
-        if (b.lastTerm === needTerm && b.busyUntil + reqLayover <= dep) {
+        if (norm(b.lastTerm) !== norm(trip.start_term)) continue;
+        const sameLine = b.lastLineId === trip.line_id;
+        const reqLayover = sameLine
+          ? (b.trips[b.trips.length - 1].layover_at_end || 0)
+          : Math.max(groupMinLayover, b.trips[b.trips.length - 1].layover_at_end || 0);
+        if (b.busyUntil + reqLayover <= dep) {
           if (chosen === -1 || blocks[chosen].busyUntil < b.busyUntil) chosen = i;
         }
       }
       if (chosen === -1) {
-        blocks.push({ trips: [trip], busyUntil: toMin(trip.arrival_time), lastTerm: trip.direction === "AB" ? "B" : "A" });
+        const depotLine = groupLines.find((l: any) => l.id === trip.line_id);
+        blocks.push({
+          trips: [trip], busyUntil: toMin(trip.arrival_time),
+          lastTerm: trip.end_term, lastLineId: trip.line_id,
+          lineIds: new Set([trip.line_id]), lineNumbers: new Set([trip.line_number]),
+          depots: new Set([depotLine?.depot ?? "Zajezdnia Główna"]),
+        });
       } else {
-        blocks[chosen].trips.push(trip);
-        blocks[chosen].busyUntil = toMin(trip.arrival_time);
-        blocks[chosen].lastTerm = trip.direction === "AB" ? "B" : "A";
+        const b = blocks[chosen];
+        b.trips.push(trip);
+        b.busyUntil = toMin(trip.arrival_time);
+        b.lastTerm = trip.end_term;
+        b.lastLineId = trip.line_id;
+        b.lineIds.add(trip.line_id);
+        b.lineNumbers.add(trip.line_number);
       }
     }
 
-    // Delete prior blocks for this line+day_type
+    // ----- Delete prior blocks for any line in group + day_type -----
     await context.supabase.from("vehicle_blocks").delete()
-      .contains("line_ids", [line.id]).eq("day_type", data.day_type);
+      .overlaps("line_ids", groupLineIds).eq("day_type", data.day_type);
 
-    // Persist
+    // ----- Persist -----
     let blockNo = 0;
     const out: any[] = [];
     for (const b of blocks) {
@@ -365,13 +416,13 @@ export const generateBlocks = createServerFn({ method: "POST" })
       const startT = b.trips[0].departure_time;
       const endT = b.trips[b.trips.length - 1].arrival_time;
       const { data: blk, error: blkErr } = await context.supabase.from("vehicle_blocks").insert({
-        line_ids: [line.id],
-        line_numbers: [line.line_number],
+        line_ids: Array.from(b.lineIds),
+        line_numbers: Array.from(b.lineNumbers),
         block_number: blockNo,
         day_type: data.day_type,
         start_time: toTime(toMin(startT)),
         end_time: toTime(toMin(endT)),
-        depot: line.depot,
+        depot: Array.from(b.depots)[0] ?? seedLine.depot,
       }).select("*").single();
       if (blkErr) throw new Error(blkErr.message);
       await context.supabase.from("vehicle_block_trips").insert(
@@ -385,7 +436,13 @@ export const generateBlocks = createServerFn({ method: "POST" })
       );
       out.push(blk);
     }
-    return { blocks: out, count: blocks.length, round_trip_min: durAB + durBA + layoverA + layoverB };
+    return {
+      blocks: out,
+      count: blocks.length,
+      round_trip_min: referenceRT,
+      interlined: groupLineIds.length > 1,
+      lines_in_group: groupLineIds.length,
+    };
   });
 
 export const listBlocks = createServerFn({ method: "GET" })
