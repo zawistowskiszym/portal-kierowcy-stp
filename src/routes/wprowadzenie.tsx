@@ -38,7 +38,7 @@ type Lesson = {
 
 const lessons: Lesson[] = [
   { number: 1, title: "Czym są Skuszawyjice?", description: "Poznaj miasto, w którym działa STP — jego historię, układ i charakter." },
-  { number: 2, title: "Czym jest STP", description: "Skuszawyjickie Towarzystwo Przewozowe — kto za nim stoi, czym się zajmuje i jaką rolę pełni w mieście." },
+  { number: 2, title: "Czym jest STP", description: "Skuszawyjiński Transport Publiczny — kto za nim stoi, czym się zajmuje i jaką rolę pełni w mieście." },
   { number: 3, title: "Podstawowe wymagania dla kierowców", description: "Co musisz spełniać i wiedzieć zanim zasiądziesz za kierownicą autobusu STP." },
   { number: 4, title: "Korzystanie z portalu kierowcy", description: "Grafik, urlopy, ogłoszenia, raporty — przewodnik po Twoim głównym narzędziu pracy." },
   { number: 5, title: "Zgłaszanie zdarzeń", description: "Jak prawidłowo i sprawnie raportować incydenty oraz sytuacje na trasie." },
@@ -114,7 +114,7 @@ function IntroPage() {
         <section className="space-y-4">
           <h1 className="font-display text-3xl md:text-4xl tracking-tight">Witaj w STP</h1>
           <p className="text-muted-foreground leading-relaxed">
-            Cieszymy się, że chcesz dołączyć do Skuszawyjickiego Towarzystwa Przewozowego.
+            Cieszymy się, że chcesz dołączyć do Skuszawyjińskiego Transportu Publicznego.
             Zanim zaczniesz służbę, poświęć chwilę na obejrzenie pięciu krótkich filmów
             wprowadzających. Dowiesz się z nich, czym jest nasze miasto, jak działa STP,
             czego od Ciebie oczekujemy oraz jak korzystać z portalu kierowcy.
