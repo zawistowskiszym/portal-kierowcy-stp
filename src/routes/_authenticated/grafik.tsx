@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/grafik")({
-  head: () => ({ meta: [{ title: "Mój grafik — Portal STP" }] }),
+  head: () => ({ meta: [{ title: "Grafik — Portal STP" }] }),
   component: GrafikPage,
 });
 
@@ -82,9 +82,9 @@ function GrafikPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold mb-1">Mój grafik</h2>
+        <h2 className="text-xl font-bold mb-1">Grafik</h2>
         <p className="text-sm text-muted-foreground">
-          Najbliższe 7 dni — wybierz dzień, aby zobaczyć szczegóły służby.
+          Wybierz dzień, aby zobaczyć szczegóły służby.
         </p>
       </div>
 
