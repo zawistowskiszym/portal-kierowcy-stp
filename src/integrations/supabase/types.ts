@@ -1038,6 +1038,51 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_attempts: {
+        Row: {
+          answers: Json | null
+          candidate_email: string
+          created_at: string
+          id: string
+          questions: Json
+          reviewed_at: string | null
+          reviewed_by: string | null
+          reviewer_notes: string | null
+          started_at: string
+          status: string
+          submitted_at: string | null
+          token: string
+        }
+        Insert: {
+          answers?: Json | null
+          candidate_email: string
+          created_at?: string
+          id?: string
+          questions: Json
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_notes?: string | null
+          started_at?: string
+          status?: string
+          submitted_at?: string | null
+          token: string
+        }
+        Update: {
+          answers?: Json | null
+          candidate_email?: string
+          created_at?: string
+          id?: string
+          questions?: Json
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_notes?: string | null
+          started_at?: string
+          status?: string
+          submitted_at?: string | null
+          token?: string
+        }
+        Relationships: []
+      }
       recruitment_applications: {
         Row: {
           created_at: string
