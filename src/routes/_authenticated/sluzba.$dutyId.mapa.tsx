@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import routeMap from "@/assets/route-map-placeholder.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/sluzba/$dutyId/mapa")({
   head: () => ({ meta: [{ title: "Mapa trasy — Portal STP" }] }),
@@ -18,10 +19,15 @@ function MapaPage() {
           <h2 className="text-xl font-bold">Mapa trasy</h2>
         </div>
         <p className="text-sm text-muted-foreground">Służba ID: <span className="font-mono">{dutyId}</span></p>
-        <div className="aspect-video bg-muted/40 border border-dashed border-border rounded-lg flex items-center justify-center text-sm text-muted-foreground">
-          Tu pojawi się interaktywna mapa trasy (integracja z systemem GIS w przygotowaniu).
+        <div className="overflow-hidden rounded-lg border border-border bg-muted/20">
+          <img
+            src={routeMap.url}
+            alt="Mapa trasy"
+            className="w-full h-auto block"
+          />
         </div>
       </div>
     </div>
   );
 }
+
