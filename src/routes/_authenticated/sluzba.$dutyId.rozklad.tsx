@@ -96,22 +96,17 @@ function RozkladPage() {
                 const line = lineById.get(t.line_id);
                 const from = line ? (t.direction === "AB" ? line.terminus_a : line.terminus_b) : "?";
                 const to = line ? (t.direction === "AB" ? line.terminus_b : line.terminus_a) : "?";
+                const stops = (data?.stopsByLine?.[t.line_id]?.[t.direction as "AB" | "BA"] ?? []) as { name: string; travel_time_to_next_min: number }[];
                 return (
-                  <li key={t.id} className="flex items-center gap-3 px-3 py-2 text-sm">
-                    <span className="inline-flex items-center justify-center min-w-10 px-2 h-6 rounded-md bg-brand text-brand-foreground font-bold text-xs">
-                      {t.line_number}
-                    </span>
-                    <span className="font-mono text-muted-foreground w-12 tabular-nums">
-                      {String(t.departure_time).slice(0, 5)}
-                    </span>
-                    <span className="truncate flex-1">{from}</span>
-                    <ArrowRight className="size-3.5 text-muted-foreground shrink-0" />
-                    <span className="truncate flex-1">{to}</span>
-                    <span className="font-mono text-muted-foreground w-12 tabular-nums text-right hidden sm:inline">
-                      {String(t.arrival_time).slice(0, 5)}
-                    </span>
-                    <Clock className="size-3.5 text-muted-foreground hidden sm:inline" />
-                  </li>
+                  <TripRow
+                    key={t.id}
+                    lineNumber={t.line_number}
+                    departure={String(t.departure_time).slice(0, 5)}
+                    arrival={String(t.arrival_time).slice(0, 5)}
+                    from={from}
+                    to={to}
+                    stops={stops}
+                  />
                 );
               })}
             </ol>
