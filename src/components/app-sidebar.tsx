@@ -18,6 +18,7 @@ import {
   Map as MapIcon,
   Inbox,
   Gauge,
+  UserCircle,
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,6 +39,7 @@ const driverItems = [
   { title: "Urlopy", url: "/urlopy", icon: Plane },
   { title: "Moje statystyki", url: "/statystyki", icon: BarChart3 },
   { title: "Ogłoszenia", url: "/ogloszenia", icon: Megaphone },
+  { title: "Mój profil", url: "/profil", icon: UserCircle },
 ];
 
 const dispatcherItems = [

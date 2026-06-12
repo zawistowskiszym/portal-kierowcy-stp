@@ -18,6 +18,7 @@ import { Route as AuthenticatedWiadomosciRouteImport } from './routes/_authentic
 import { Route as AuthenticatedUrlopyRouteImport } from './routes/_authenticated/urlopy'
 import { Route as AuthenticatedStatystykiRouteImport } from './routes/_authenticated/statystyki'
 import { Route as AuthenticatedPulpitRouteImport } from './routes/_authenticated/pulpit'
+import { Route as AuthenticatedProfilRouteImport } from './routes/_authenticated/profil'
 import { Route as AuthenticatedOgloszeniaRouteImport } from './routes/_authenticated/ogloszenia'
 import { Route as AuthenticatedGrafikRouteImport } from './routes/_authenticated/grafik'
 import { Route as AuthenticatedDyspozycyjnoscRouteImport } from './routes/_authenticated/dyspozycyjnosc'
@@ -86,6 +87,11 @@ const AuthenticatedStatystykiRoute = AuthenticatedStatystykiRouteImport.update({
 const AuthenticatedPulpitRoute = AuthenticatedPulpitRouteImport.update({
   id: '/pulpit',
   path: '/pulpit',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedProfilRoute = AuthenticatedProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedOgloszeniaRoute = AuthenticatedOgloszeniaRouteImport.update({
@@ -242,6 +248,7 @@ export interface FileRoutesByFullPath {
   '/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
   '/grafik': typeof AuthenticatedGrafikRoute
   '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
+  '/profil': typeof AuthenticatedProfilRoute
   '/pulpit': typeof AuthenticatedPulpitRoute
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
@@ -277,6 +284,7 @@ export interface FileRoutesByTo {
   '/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
   '/grafik': typeof AuthenticatedGrafikRoute
   '/ogloszenia': typeof AuthenticatedOgloszeniaRoute
+  '/profil': typeof AuthenticatedProfilRoute
   '/pulpit': typeof AuthenticatedPulpitRoute
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
@@ -314,6 +322,7 @@ export interface FileRoutesById {
   '/_authenticated/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
   '/_authenticated/grafik': typeof AuthenticatedGrafikRoute
   '/_authenticated/ogloszenia': typeof AuthenticatedOgloszeniaRoute
+  '/_authenticated/profil': typeof AuthenticatedProfilRoute
   '/_authenticated/pulpit': typeof AuthenticatedPulpitRoute
   '/_authenticated/statystyki': typeof AuthenticatedStatystykiRoute
   '/_authenticated/urlopy': typeof AuthenticatedUrlopyRoute
@@ -351,6 +360,7 @@ export interface FileRouteTypes {
     | '/dyspozycyjnosc'
     | '/grafik'
     | '/ogloszenia'
+    | '/profil'
     | '/pulpit'
     | '/statystyki'
     | '/urlopy'
@@ -386,6 +396,7 @@ export interface FileRouteTypes {
     | '/dyspozycyjnosc'
     | '/grafik'
     | '/ogloszenia'
+    | '/profil'
     | '/pulpit'
     | '/statystyki'
     | '/urlopy'
@@ -422,6 +433,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dyspozycyjnosc'
     | '/_authenticated/grafik'
     | '/_authenticated/ogloszenia'
+    | '/_authenticated/profil'
     | '/_authenticated/pulpit'
     | '/_authenticated/statystyki'
     | '/_authenticated/urlopy'
@@ -523,6 +535,13 @@ declare module '@tanstack/react-router' {
       path: '/pulpit'
       fullPath: '/pulpit'
       preLoaderRoute: typeof AuthenticatedPulpitRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/profil': {
+      id: '/_authenticated/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof AuthenticatedProfilRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/ogloszenia': {
@@ -746,6 +765,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedDyspozycyjnoscRoute: typeof AuthenticatedDyspozycyjnoscRoute
   AuthenticatedGrafikRoute: typeof AuthenticatedGrafikRoute
   AuthenticatedOgloszeniaRoute: typeof AuthenticatedOgloszeniaRoute
+  AuthenticatedProfilRoute: typeof AuthenticatedProfilRoute
   AuthenticatedPulpitRoute: typeof AuthenticatedPulpitRoute
   AuthenticatedStatystykiRoute: typeof AuthenticatedStatystykiRoute
   AuthenticatedUrlopyRoute: typeof AuthenticatedUrlopyRoute
@@ -761,6 +781,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDyspozycyjnoscRoute: AuthenticatedDyspozycyjnoscRoute,
   AuthenticatedGrafikRoute: AuthenticatedGrafikRoute,
   AuthenticatedOgloszeniaRoute: AuthenticatedOgloszeniaRoute,
+  AuthenticatedProfilRoute: AuthenticatedProfilRoute,
   AuthenticatedPulpitRoute: AuthenticatedPulpitRoute,
   AuthenticatedStatystykiRoute: AuthenticatedStatystykiRoute,
   AuthenticatedUrlopyRoute: AuthenticatedUrlopyRoute,

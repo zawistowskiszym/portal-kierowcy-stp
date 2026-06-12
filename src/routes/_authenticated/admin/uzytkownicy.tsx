@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -26,6 +27,18 @@ export const Route = createFileRoute("/_authenticated/admin/uzytkownicy")({
   component: AdminUsersPage,
 });
 
+type EditState = {
+  id: string;
+  full_name: string;
+  employee_id: string;
+  depot: string;
+  roblox_username: string;
+  discord_username: string;
+  phone: string;
+  bio: string;
+  role: "admin" | "dyspozytor" | "driver";
+};
+
 function AdminUsersPage() {
   const qc = useQueryClient();
   const listFn = useServerFn(listUsers);
@@ -38,6 +51,8 @@ function AdminUsersPage() {
   const users = (data ?? []) as any[];
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ email: "", role: "driver" as "admin" | "dyspozytor" | "driver" });
+  const [edit, setEdit] = useState<EditState | null>(null);
+  const [savingEdit, setSavingEdit] = useState(false);
 
   const refresh = () => qc.invalidateQueries({ queryKey: ["admin", "users"] });
 
@@ -85,6 +100,57 @@ function AdminUsersPage() {
       toast.success("Konto usunięte");
       refresh();
     } catch (err: any) { toast.error(err?.message); }
+  };
+
+  const openEdit = (u: any) => {
+    const role: EditState["role"] = u.roles.includes("admin")
+      ? "admin"
+      : u.roles.includes("dyspozytor")
+      ? "dyspozytor"
+      : "driver";
+    setEdit({
+      id: u.id,
+      full_name: u.full_name ?? "",
+      employee_id: u.employee_id ?? "",
+      depot: u.depot ?? "",
+      roblox_username: u.roblox_username ?? "",
+      discord_username: u.discord_username ?? "",
+      phone: u.phone ?? "",
+      bio: u.bio ?? "",
+      role,
+    });
+  };
+
+  const saveEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!edit) return;
+    if (edit.employee_id && !/^\d{4}$/.test(edit.employee_id)) {
+      toast.error("Nr służbowy musi składać się z 4 cyfr");
+      return;
+    }
+    setSavingEdit(true);
+    try {
+      await updateFn({
+        data: {
+          id: edit.id,
+          full_name: edit.full_name.trim(),
+          employee_id: edit.employee_id || null,
+          depot: edit.depot || null,
+          roblox_username: edit.roblox_username.trim() || null,
+          discord_username: edit.discord_username.trim() || null,
+          phone: edit.phone.trim() || null,
+          bio: edit.bio.trim() || null,
+          role: edit.role,
+        },
+      });
+      toast.success("Profil zaktualizowany");
+      setEdit(null);
+      refresh();
+    } catch (err: any) {
+      toast.error("Błąd", { description: err?.message });
+    } finally {
+      setSavingEdit(false);
+    }
   };
 
   return (
@@ -140,6 +206,7 @@ function AdminUsersPage() {
               <th className="px-6 py-3">Pracownik</th>
               <th className="px-6 py-3">Nr służbowy</th>
               <th className="px-6 py-3">Zajezdnia</th>
+              <th className="px-6 py-3">Roblox / Discord</th>
               <th className="px-6 py-3">Rola</th>
               <th className="px-6 py-3">Status</th>
               <th className="px-6 py-3">Urlopy ({new Date().getFullYear()})</th>
@@ -156,6 +223,10 @@ function AdminUsersPage() {
                 <td className="px-6 py-3 font-semibold">{u.full_name}</td>
                 <td className="px-6 py-3 font-mono text-xs">{u.employee_id ?? "—"}</td>
                 <td className="px-6 py-3 text-muted-foreground">{u.depot ?? "—"}</td>
+                <td className="px-6 py-3 text-xs">
+                  <div className="font-mono">{u.roblox_username ?? "—"}</div>
+                  <div className="text-muted-foreground">{u.discord_username ?? ""}</div>
+                </td>
                 <td className="px-6 py-3">
                   {u.roles.map((r: string) => (
                     <Badge key={r} variant={r === "admin" ? "default" : r === "dyspozytor" ? "outline" : "secondary"} className="mr-1">
@@ -184,7 +255,8 @@ function AdminUsersPage() {
                     </div>
                   )}
                 </td>
-                <td className="px-6 py-3 text-right space-x-2">
+                <td className="px-6 py-3 text-right space-x-2 whitespace-nowrap">
+                  <Button variant="ghost" size="sm" onClick={() => openEdit(u)}>Edytuj</Button>
                   <Button variant="ghost" size="sm" onClick={() => onToggleActive(u)}>
                     {u.active ? "Zablokuj" : "Aktywuj"}
                   </Button>
@@ -195,12 +267,102 @@ function AdminUsersPage() {
               );
             })}
             {users.length === 0 && (
-              <tr><td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">Brak użytkowników.</td></tr>
+              <tr><td colSpan={8} className="px-6 py-8 text-center text-muted-foreground">Brak użytkowników.</td></tr>
             )}
 
           </tbody>
         </table>
       </div>
+
+      <Dialog open={!!edit} onOpenChange={(o) => !o && setEdit(null)}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Edycja profilu</DialogTitle>
+          </DialogHeader>
+          {edit && (
+            <form onSubmit={saveEdit} className="space-y-3">
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label>Imię i nazwisko</Label>
+                  <Input
+                    required
+                    value={edit.full_name}
+                    onChange={(e) => setEdit({ ...edit, full_name: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label>Nr służbowy</Label>
+                  <Input
+                    inputMode="numeric"
+                    maxLength={4}
+                    value={edit.employee_id}
+                    onChange={(e) =>
+                      setEdit({ ...edit, employee_id: e.target.value.replace(/\D/g, "").slice(0, 4) })
+                    }
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label>Zajezdnia</Label>
+                  <Select value={edit.depot} onValueChange={(v) => setEdit({ ...edit, depot: v })}>
+                    <SelectTrigger><SelectValue placeholder="Wybierz…" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Królewska">Królewska</SelectItem>
+                      <SelectItem value="Kijowska">Kijowska</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label>Rola</Label>
+                  <Select value={edit.role} onValueChange={(v) => setEdit({ ...edit, role: v as any })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="driver">Kierowca</SelectItem>
+                      <SelectItem value="dyspozytor">Dyspozytor</SelectItem>
+                      <SelectItem value="admin">Administrator</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label>Roblox</Label>
+                  <Input
+                    value={edit.roblox_username}
+                    onChange={(e) => setEdit({ ...edit, roblox_username: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label>Discord</Label>
+                  <Input
+                    value={edit.discord_username}
+                    onChange={(e) => setEdit({ ...edit, discord_username: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1 sm:col-span-2">
+                  <Label>Telefon</Label>
+                  <Input
+                    value={edit.phone}
+                    onChange={(e) => setEdit({ ...edit, phone: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1 sm:col-span-2">
+                  <Label>O pracowniku</Label>
+                  <Textarea
+                    rows={3}
+                    maxLength={500}
+                    value={edit.bio}
+                    onChange={(e) => setEdit({ ...edit, bio: e.target.value })}
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="button" variant="ghost" onClick={() => setEdit(null)}>Anuluj</Button>
+                <Button type="submit" disabled={savingEdit}>
+                  {savingEdit ? "Zapisywanie…" : "Zapisz"}
+                </Button>
+              </DialogFooter>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

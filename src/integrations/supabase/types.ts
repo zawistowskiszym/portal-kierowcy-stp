@@ -590,27 +590,42 @@ export type Database = {
       profiles: {
         Row: {
           active: boolean
+          avatar_url: string | null
+          bio: string | null
           created_at: string
           depot: string | null
+          discord_username: string | null
           employee_id: string | null
           full_name: string
           id: string
+          phone: string | null
+          roblox_username: string | null
         }
         Insert: {
           active?: boolean
+          avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           depot?: string | null
+          discord_username?: string | null
           employee_id?: string | null
           full_name: string
           id: string
+          phone?: string | null
+          roblox_username?: string | null
         }
         Update: {
           active?: boolean
+          avatar_url?: string | null
+          bio?: string | null
           created_at?: string
           depot?: string | null
+          discord_username?: string | null
           employee_id?: string | null
           full_name?: string
           id?: string
+          phone?: string | null
+          roblox_username?: string | null
         }
         Relationships: []
       }

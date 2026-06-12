@@ -127,7 +127,7 @@ export const updateDuty = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await requireAdmin(context.supabase, context.userId);
     const { id, ...patch } = data;
-    const { error } = await context.supabase.from("duties").update(patch).eq("id", id);
+    const { error } = await context.supabase.from("duties").update(patch as any).eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -184,7 +184,7 @@ export const updateAnnouncement = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await requireAdmin(context.supabase, context.userId);
     const { id, ...patch } = data;
-    const { error } = await context.supabase.from("announcements").update(patch).eq("id", id);
+    const { error } = await context.supabase.from("announcements").update(patch as any).eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -290,6 +290,8 @@ const completeInvitationInput = z.object({
   full_name: z.string().trim().min(1).max(120),
   employee_id: z.string().trim().max(40).optional().nullable(),
   depot: z.string().trim().max(80).optional().nullable(),
+  roblox_username: z.string().trim().min(1).max(40),
+  discord_username: z.string().trim().max(40).optional().nullable(),
 });
 
 export const completeInvitation = createServerFn({ method: "POST" })
@@ -305,10 +307,37 @@ export const completeInvitation = createServerFn({ method: "POST" })
           full_name: data.full_name,
           employee_id: data.employee_id ?? null,
           depot: data.depot ?? null,
+          roblox_username: data.roblox_username,
+          discord_username: data.discord_username || null,
           active: true,
         },
         { onConflict: "id" },
       );
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+const profileEditableFields = {
+  full_name: z.string().min(1).max(120).optional(),
+  employee_id: z.string().nullable().optional(),
+  depot: z.string().nullable().optional(),
+  roblox_username: z.string().min(1).max(40).nullable().optional(),
+  discord_username: z.string().max(40).nullable().optional(),
+  phone: z.string().max(40).nullable().optional(),
+  bio: z.string().max(500).nullable().optional(),
+  avatar_url: z.string().max(500).nullable().optional(),
+};
+
+export const updateMyProfile = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object(profileEditableFields).parse(d))
+  .handler(async ({ data, context }) => {
+    const patch = Object.fromEntries(Object.entries(data).filter(([, v]) => v !== undefined));
+    if (Object.keys(patch).length === 0) return { ok: true };
+    const { error } = await context.supabase
+      .from("profiles")
+      .update(patch as any)
+      .eq("id", context.userId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -318,9 +347,7 @@ export const updateUser = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) =>
     z.object({
       id: z.string().uuid(),
-      full_name: z.string().min(1).optional(),
-      employee_id: z.string().nullable().optional(),
-      depot: z.string().nullable().optional(),
+      ...profileEditableFields,
       active: z.boolean().optional(),
       role: z.enum(["admin", "dyspozytor", "driver"]).optional(),
     }).parse(d),
@@ -328,9 +355,10 @@ export const updateUser = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await requireSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { id, role, ...patch } = data;
+    const { id, role, ...rest } = data;
+    const patch = Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== undefined));
     if (Object.keys(patch).length > 0) {
-      const { error } = await supabaseAdmin.from("profiles").update(patch).eq("id", id);
+      const { error } = await supabaseAdmin.from("profiles").update(patch as any).eq("id", id);
       if (error) throw new Error(error.message);
     }
     if (role) {
@@ -469,7 +497,7 @@ export const updateVehicle = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await requireAdmin(context.supabase, context.userId);
     const { id, ...patch } = data;
-    const { error } = await context.supabase.from("vehicles").update(patch).eq("id", id);
+    const { error } = await context.supabase.from("vehicles").update(patch as any).eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

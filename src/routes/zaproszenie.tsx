@@ -32,6 +32,8 @@ function InvitePage() {
     full_name: "",
     employee_id: "",
     depot: "",
+    roblox_username: "",
+    discord_username: "",
     password: "",
     password2: "",
   });
@@ -69,6 +71,10 @@ function InvitePage() {
       toast.error("Wybierz zajezdnię");
       return;
     }
+    if (!form.roblox_username.trim()) {
+      toast.error("Podaj nazwę użytkownika Roblox");
+      return;
+    }
     if (form.password.length < 8) {
       toast.error("Hasło musi mieć co najmniej 8 znaków");
       return;
@@ -86,6 +92,8 @@ function InvitePage() {
           full_name: form.full_name,
           employee_id: form.employee_id,
           depot: form.depot,
+          roblox_username: form.roblox_username.trim(),
+          discord_username: form.discord_username.trim() || null,
         },
       });
       toast.success("Konto aktywowane");
@@ -168,6 +176,25 @@ function InvitePage() {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+          <div className="space-y-1">
+            <Label>Nazwa użytkownika Roblox *</Label>
+            <Input
+              required
+              maxLength={40}
+              placeholder="np. JanKowalski123"
+              value={form.roblox_username}
+              onChange={(e) => setForm({ ...form, roblox_username: e.target.value })}
+            />
+          </div>
+          <div className="space-y-1">
+            <Label>Discord (opcjonalnie)</Label>
+            <Input
+              maxLength={40}
+              placeholder="np. jan.kowalski"
+              value={form.discord_username}
+              onChange={(e) => setForm({ ...form, discord_username: e.target.value })}
+            />
           </div>
           <div className="space-y-1">
             <Label>Hasło</Label>

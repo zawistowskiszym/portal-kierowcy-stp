@@ -10,6 +10,7 @@ export interface AuthProfile {
   employee_id: string | null;
   depot: string | null;
   active: boolean;
+  avatar_url?: string | null;
 }
 
 interface AuthState {
@@ -34,7 +35,7 @@ export function useAuth(): AuthState {
 
     const loadExtras = async (uid: string) => {
       const [profileRes, rolesRes] = await Promise.all([
-        supabase.from("profiles").select("id, full_name, employee_id, depot, active").eq("id", uid).maybeSingle(),
+        supabase.from("profiles").select("id, full_name, employee_id, depot, active, avatar_url").eq("id", uid).maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", uid),
       ]);
       if (cancelled) return;
