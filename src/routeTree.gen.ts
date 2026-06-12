@@ -53,6 +53,7 @@ import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/l
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiPublicRobloxSpawnRouteImport } from './routes/api/public/roblox/spawn'
 import { Route as ApiPublicRobloxPositionRouteImport } from './routes/api/public/roblox/position'
 import { Route as ApiPublicRobloxPisRouteImport } from './routes/api/public/roblox/pis'
 import { Route as ApiPublicRobloxIncidentRouteImport } from './routes/api/public/roblox/incident'
@@ -306,6 +307,11 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicRobloxSpawnRoute = ApiPublicRobloxSpawnRouteImport.update({
+  id: '/api/public/roblox/spawn',
+  path: '/api/public/roblox/spawn',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicRobloxPositionRoute = ApiPublicRobloxPositionRouteImport.update({
   id: '/api/public/roblox/position',
   path: '/api/public/roblox/position',
@@ -430,6 +436,7 @@ export interface FileRoutesByFullPath {
   '/api/public/roblox/incident': typeof ApiPublicRobloxIncidentRoute
   '/api/public/roblox/pis': typeof ApiPublicRobloxPisRoute
   '/api/public/roblox/position': typeof ApiPublicRobloxPositionRoute
+  '/api/public/roblox/spawn': typeof ApiPublicRobloxSpawnRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -487,6 +494,7 @@ export interface FileRoutesByTo {
   '/api/public/roblox/incident': typeof ApiPublicRobloxIncidentRoute
   '/api/public/roblox/pis': typeof ApiPublicRobloxPisRoute
   '/api/public/roblox/position': typeof ApiPublicRobloxPositionRoute
+  '/api/public/roblox/spawn': typeof ApiPublicRobloxSpawnRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -547,6 +555,7 @@ export interface FileRoutesById {
   '/api/public/roblox/incident': typeof ApiPublicRobloxIncidentRoute
   '/api/public/roblox/pis': typeof ApiPublicRobloxPisRoute
   '/api/public/roblox/position': typeof ApiPublicRobloxPositionRoute
+  '/api/public/roblox/spawn': typeof ApiPublicRobloxSpawnRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -607,6 +616,7 @@ export interface FileRouteTypes {
     | '/api/public/roblox/incident'
     | '/api/public/roblox/pis'
     | '/api/public/roblox/position'
+    | '/api/public/roblox/spawn'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -664,6 +674,7 @@ export interface FileRouteTypes {
     | '/api/public/roblox/incident'
     | '/api/public/roblox/pis'
     | '/api/public/roblox/position'
+    | '/api/public/roblox/spawn'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -723,6 +734,7 @@ export interface FileRouteTypes {
     | '/api/public/roblox/incident'
     | '/api/public/roblox/pis'
     | '/api/public/roblox/position'
+    | '/api/public/roblox/spawn'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -749,6 +761,7 @@ export interface RootRouteChildren {
   ApiPublicRobloxIncidentRoute: typeof ApiPublicRobloxIncidentRoute
   ApiPublicRobloxPisRoute: typeof ApiPublicRobloxPisRoute
   ApiPublicRobloxPositionRoute: typeof ApiPublicRobloxPositionRoute
+  ApiPublicRobloxSpawnRoute: typeof ApiPublicRobloxSpawnRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -1066,6 +1079,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/roblox/spawn': {
+      id: '/api/public/roblox/spawn'
+      path: '/api/public/roblox/spawn'
+      fullPath: '/api/public/roblox/spawn'
+      preLoaderRoute: typeof ApiPublicRobloxSpawnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/roblox/position': {
       id: '/api/public/roblox/position'
       path: '/api/public/roblox/position'
@@ -1296,6 +1316,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicRobloxIncidentRoute: ApiPublicRobloxIncidentRoute,
   ApiPublicRobloxPisRoute: ApiPublicRobloxPisRoute,
   ApiPublicRobloxPositionRoute: ApiPublicRobloxPositionRoute,
+  ApiPublicRobloxSpawnRoute: ApiPublicRobloxSpawnRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,

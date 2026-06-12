@@ -56,6 +56,35 @@ Returns the driver's profile, today's active duty, pending dispatcher
 messages and pending in‑game commands. Poll every 15–30 s. Commands are
 marked `delivered_at` on this call.
 
+### GET `/spawn?roblox_username=DriverX` — vehicle the driver may spawn
+Called by the in‑game spawn GUI. Returns the vehicle assigned to today's
+duty so Roblox knows which model/number to spawn. `409` when the driver
+has no duty or no vehicle assigned, `404` when the username is unknown.
+
+```json
+{
+  "ok": true,
+  "can_spawn": true,
+  "driver": { "id": "...", "full_name": "...", "employee_id": "..." },
+  "duty":    { "id": "...", "duty_number": "12/01", "route": "175", "depot": "R-1" },
+  "vehicle": { "id": "...", "vehicle_number": "1234", "model": "Solaris U18",
+               "fuel": "Diesel", "depot": "R-1" }
+}
+```
+
+### POST `/spawn` — confirm the in‑game spawn
+Call after the GUI actually spawns the vehicle. Re‑validates the
+assignment server‑side, updates `driver_live` and writes an audit row
+to `dispatcher_log`.
+
+```json
+{ "roblox_username": "DriverX",
+  "vehicle_number": "1234",            // optional, must match assignment
+  "spawn_location": "Zajezdnia R-1" }  // optional
+```
+
+
+
 ### POST `/ack`
 ```json
 { "roblox_username": "DriverX",
