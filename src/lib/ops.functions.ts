@@ -632,14 +632,17 @@ export const listAllDrivers = createServerFn({ method: "GET" })
 export const listChatContacts = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
       .from("profiles")
       .select("id, full_name, employee_id, roblox_username")
       .neq("id", context.userId)
+      .eq("active", true)
       .order("full_name");
     if (error) throw new Error(error.message);
     return data ?? [];
   });
+
 
 export const listChatConversations = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
