@@ -640,6 +640,8 @@ export const sendDriverMessage = createServerFn({ method: "POST" })
     }).parse(d),
   )
   .handler(async ({ data, context }) => {
+    const messageId = crypto.randomUUID();
+
     // Resolve all dispatcher + admin recipient ids
     const { data: roles, error: rErr } = await context.supabase
       .from("user_roles")
@@ -651,6 +653,7 @@ export const sendDriverMessage = createServerFn({ method: "POST" })
     const { data: msg, error } = await context.supabase
       .from("internal_messages")
       .insert({
+        id: messageId,
         author_id: context.userId,
         kind: "driver_message" as any,
         subject: data.subject,
@@ -658,12 +661,11 @@ export const sendDriverMessage = createServerFn({ method: "POST" })
         audience_kind: "dispatchers" as any,
         audience: [],
       })
-      .select()
-      .single();
+      .select("id", { head: false, count: "exact" });
     if (error) throw new Error(error.message);
 
     if (recipientIds.length > 0) {
-      const rows = recipientIds.map((uid) => ({ message_id: msg.id, user_id: uid }));
+      const rows = recipientIds.map((uid) => ({ message_id: messageId, user_id: uid }));
       const { error: iErr } = await context.supabase.from("message_recipients").insert(rows);
       if (iErr) throw new Error(iErr.message);
     }
