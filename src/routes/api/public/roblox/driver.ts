@@ -20,10 +20,13 @@ export const Route = createFileRoute("/api/public/roblox/driver")({
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const today = new Date().toISOString().slice(0, 10);
 
-        const [dutyRes, msgsRes, cmdsRes] = await Promise.all([
+        const [dutyRes, liveRes, msgsRes, cmdsRes] = await Promise.all([
           supabaseAdmin.from("duties")
-            .select("id, duty_number, route, vehicle_label, depot, start_time, end_time, live_status, notes, pis_route, pis_headsign, pis_current_stop, pis_next_stop, pis_delay_sec")
+            .select("id, duty_number, duty_date, route, vehicle_id, vehicle_label, depot, start_time, end_time, live_status, notes, pis_route, pis_headsign, pis_current_stop, pis_next_stop, pis_delay_sec, vehicles:vehicle_id(id, vehicle_number, model, fuel, depot)")
             .eq("assigned_to", driver.id).eq("duty_date", today).maybeSingle(),
+          supabaseAdmin.from("driver_live")
+            .select("live_status, live_status_note, live_status_updated_at, pis_route, pis_headsign, pis_current_stop, pis_next_stop, pis_delay_sec, pis_updated_at, duty_number")
+            .eq("user_id", driver.id).maybeSingle(),
           supabaseAdmin.from("message_recipients")
             .select("read_at, internal_messages!inner(id, kind, title, body, created_at)")
             .eq("user_id", driver.id).is("read_at", null).limit(20),
@@ -39,6 +42,9 @@ export const Route = createFileRoute("/api/public/roblox/driver")({
             .in("id", undeliveredIds).is("delivered_at", null);
         }
 
+        const duty: any = dutyRes.data ?? null;
+        const vehicle = duty?.vehicles ?? null;
+
         return jsonResponse({
           profile: {
             id: driver.id,
@@ -46,7 +52,36 @@ export const Route = createFileRoute("/api/public/roblox/driver")({
             employee_id: driver.employee_id,
             depot: driver.depot,
           },
-          active_duty: dutyRes.data ?? null,
+          active_duty: duty
+            ? {
+                id: duty.id,
+                duty_number: duty.duty_number,
+                duty_date: duty.duty_date,
+                route: duty.route,
+                depot: duty.depot,
+                start_time: duty.start_time,
+                end_time: duty.end_time,
+                live_status: duty.live_status,
+                notes: duty.notes,
+                vehicle_id: duty.vehicle_id ?? null,
+                vehicle_label: duty.vehicle_label ?? vehicle?.vehicle_number ?? null,
+                vehicle: vehicle
+                  ? {
+                      id: vehicle.id,
+                      vehicle_number: vehicle.vehicle_number,
+                      model: vehicle.model,
+                      fuel: vehicle.fuel,
+                      depot: vehicle.depot,
+                    }
+                  : null,
+                pis_route: duty.pis_route,
+                pis_headsign: duty.pis_headsign,
+                pis_current_stop: duty.pis_current_stop,
+                pis_next_stop: duty.pis_next_stop,
+                pis_delay_sec: duty.pis_delay_sec,
+              }
+            : null,
+          live: liveRes.data ?? null,
           messages: (msgsRes.data ?? []).map((r: any) => r.internal_messages).filter(Boolean),
           commands: cmdsRes.data ?? [],
           server_time: new Date().toISOString(),
