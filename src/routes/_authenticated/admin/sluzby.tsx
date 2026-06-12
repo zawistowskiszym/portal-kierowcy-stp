@@ -248,7 +248,7 @@ function PlanningBoardPage() {
               duty={selectedDuty}
               vehicles={board.vehicles ?? []}
               drivers={board.drivers ?? []}
-              onAssignDriver={async (driverId, force) => {
+              onAssignDriver={async (driverId: string | null, force?: boolean) => {
                 if (!selectedDuty) return;
                 const res: any = await assignDriverFn({ data: { dutyId: selectedDuty.id, driverId, force } });
                 if (!res?.ok && res?.warnings?.length) {
@@ -260,7 +260,7 @@ function PlanningBoardPage() {
                 toast.success(driverId ? "Przydzielono" : "Usunięto przydział");
                 refresh();
               }}
-              onAssignVehicle={async (vehicleId, force) => {
+              onAssignVehicle={async (vehicleId: string | null, force?: boolean) => {
                 if (!selectedDuty) return;
                 const res: any = await assignVehicleFn({ data: { dutyId: selectedDuty.id, vehicleId, force } });
                 if (!res?.ok && res?.warnings?.length) {
@@ -272,7 +272,7 @@ function PlanningBoardPage() {
                 toast.success("Zaktualizowano pojazd");
                 refresh();
               }}
-              onUpdate={async (patch) => {
+              onUpdate={async (patch: any) => {
                 if (!selectedDuty) return;
                 await updateFn({ data: { id: selectedDuty.id, ...patch } });
                 toast.success("Zapisano");
@@ -302,7 +302,7 @@ function PlanningBoardPage() {
         open={createOpen}
         onOpenChange={setCreateOpen}
         vehicles={board.vehicles ?? []}
-        onSubmit={async (form) => {
+        onSubmit={async (form: any) => {
           await createFn({ data: form });
           toast.success("Utworzono służbę");
           setCreateOpen(false);
@@ -314,7 +314,7 @@ function PlanningBoardPage() {
         onOpenChange={setBulkOpen}
         defaultDate={isoDate(anchor)}
         depots={depots as string[]}
-        onSubmit={async (form) => {
+        onSubmit={async (form: any) => {
           const res: any = await bulkFn({ data: form });
           toast.success(`Wygenerowano ${res.count} służb`);
           setBulkOpen(false);
