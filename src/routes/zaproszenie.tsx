@@ -61,6 +61,14 @@ function InvitePage() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!/^\d{4}$/.test(form.employee_id)) {
+      toast.error("Nr służbowy musi składać się z 4 cyfr");
+      return;
+    }
+    if (!form.depot) {
+      toast.error("Wybierz zajezdnię");
+      return;
+    }
     if (form.password.length < 8) {
       toast.error("Hasło musi mieć co najmniej 8 znaków");
       return;
@@ -76,8 +84,8 @@ function InvitePage() {
       await completeFn({
         data: {
           full_name: form.full_name,
-          employee_id: form.employee_id || null,
-          depot: form.depot || null,
+          employee_id: form.employee_id,
+          depot: form.depot,
         },
       });
       toast.success("Konto aktywowane");
