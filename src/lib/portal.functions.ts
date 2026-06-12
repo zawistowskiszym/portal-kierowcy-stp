@@ -199,6 +199,55 @@ export const deleteAnnouncement = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// ============ ANNOUNCEMENT COMMENTS ============
+
+export const listAnnouncementComments = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { announcement_id: string }) =>
+    z.object({ announcement_id: z.string().uuid() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { data: rows, error } = await context.supabase
+      .from("announcement_comments")
+      .select("id, body, created_at, author_id, author:author_id(full_name, employee_id, avatar_url)")
+      .eq("announcement_id", data.announcement_id)
+      .order("created_at", { ascending: true });
+    if (error) throw new Error(error.message);
+    return rows ?? [];
+  });
+
+export const addAnnouncementComment = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({
+      announcement_id: z.string().uuid(),
+      body: z.string().trim().min(1).max(2000),
+    }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase.from("announcement_comments").insert({
+      announcement_id: data.announcement_id,
+      author_id: context.userId,
+      body: data.body,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteAnnouncementComment = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase
+      .from("announcement_comments")
+      .delete()
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+
+
 // ============ USERS / ADMIN ============
 
 export const listUsers = createServerFn({ method: "GET" })
