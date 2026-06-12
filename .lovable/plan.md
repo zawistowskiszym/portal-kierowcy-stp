@@ -1,78 +1,81 @@
-## Portal Kierowcy STP — Plan fazy 1
+# Duty Planning Redesign — STP
 
-Phase 1 scope: auth + roles + driver dashboard + driver timetable + announcements (read) + admin user management + admin duty creation/assignment. Vehicles (full module), availability editor, vacation requests, and statistics are intentionally deferred to Phase 2.
+A full rebuild of `/admin/sluzby` into an enterprise transit-ops planning board, delivered in 4 phases. Each phase ends in a working app; you can stop after any phase.
 
-UI is entirely in Polish. Visual direction: "Municipal modernist" ( `#CF2E30` +  `#F7F0D5` on `#FFFFFF`, Public Sans + JetBrains Mono, fixed dark sidebar + light content).
+## Phase 1 — Schema & server foundations (1 migration + portal.functions extensions)
 
-### Backend (Lovable Cloud)
+**Migration:**
+- Add enum `vehicle_status` = `available | assigned | out_of_service | reserve`; add `vehicles.status` (default `available`).
+- Extend `duties`:
+  - `status` enum `duty_status` = `unassigned | pending | assigned` (auto-derived via trigger from `assigned_to`/`vehicle_id`).
+  - `vehicle_id uuid` FK → `vehicles(id)` (keep `vehicle_label` for legacy/free-text).
+  - `priority` enum = `low | normal | high` default `normal`.
+  - `division` text (used by bulk generator; e.g. depot or operational division).
+- New table `notifications`:
+  - `id, user_id, type, title, body, related_duty_id, read_at, created_at`.
+  - RLS: users select/update own; service_role full; trigger inserts on `duties.assigned_to` change.
+- Indexes: `duties(duty_date, start_time)`, `duties(assigned_to, duty_date)`, `vehicles(status)`, `notifications(user_id, read_at)`.
 
-Enable Cloud, then create tables in one migration:
+**Server functions (`portal.functions.ts`):**
+- `getPlanningBoard({from, to, depot?})` → duties+driver+vehicle joined, drivers (with month hours), vehicles, availability — all admin queries in one round-trip.
+- `assignDriverToDuty({dutyId, driverId|null})` — runs conflict checks server-side.
+- `assignVehicleToDuty({dutyId, vehicleId|null})` — overlap check.
+- `bulkGenerateDuties({date, division, count, template})` — creates `N` duties named `<routes>/1..N`.
+- `listUnassignedDuties({from?, to?})`.
+- `getAdminAnalytics({date})` — today's tiles.
+- `listMyNotifications`, `markNotificationRead`.
 
-- `profiles` — id (FK auth.users), full_name, employee_id, depot, active, created_at
-- `user_roles` — id, user_id, role (`app_role` enum: `admin`, `driver`)
-- `duties` — id, duty_number, date, start_time, end_time, depot, route, notes, vehicle_label (free text for now), assigned_to (FK profiles), created_by, created_at
-- `announcements` — id, title, body, category (enum: `operations`, `service_changes`, `events`, `training`, `general`), published_at, author_id, archived
+## Phase 2 — Planning board UI (`/admin/sluzby`)
 
-RLS:
+Rebuilt page with three panes:
 
-- `has_role(uuid, app_role)` SECURITY DEFINER helper
-- profiles: user sees own row; admin sees/edits all
-- user_roles: admin-only writes, read by authenticated
-- duties: driver sees rows where `assigned_to = auth.uid()`; admin full access
-- announcements: all authenticated read non-archived; admin full access
-- All tables get `GRANT` to `authenticated` and `service_role`
-
-Auth: email + password only. Registration disabled in UI (no signup route). Admin creates accounts via a `createServerFn` calling `supabase.auth.admin.createUser` with `supabaseAdmin` (imported inside handler), then inserts profile + role row. Caller authorized via `requireSupabaseAuth` + `has_role(_, 'admin')` check.
-
-A migration seeds the `admin` and `driver` enum values and the `has_role` function only — no demo data per user request. After deploy the user will create the first admin via a one-time bootstrap server function (gated to run only when zero admins exist).
-
-### Routes (TanStack Start)
-
-```
-src/routes/
-  __root.tsx               (existing; add QueryClient + auth listener)
-  index.tsx                (redirect → /auth or /pulpit based on session)
-  auth.tsx                 (login form, Polish labels)
-  _authenticated/
-    route.tsx              (managed gate, ssr:false, redirect to /auth)
-    pulpit.tsx             (driver dashboard)
-    grafik.tsx             (driver timetable: list + month calendar toggle)
-    ogloszenia.tsx         (announcements list)
-    admin/
-      route.tsx            (gate: has_role admin, else redirect /pulpit)
-      uzytkownicy.tsx      (user management table + create/edit dialog)
-      sluzby.tsx           (duty list + create/assign dialog)
-      ogloszenia.tsx       (announcement create/edit/archive)
+```text
+┌──────────── Drivers ───────────┐┌─────── Schedule Board ────────┐┌── Duty Details ──┐
+│ Filters: depot ▾  Active  Avail││ [Day][Week][Month]  < Jun 14 >││ Duty #151+190/1  │
+│                                ││                                ││ 14:30 → 22:15    │
+│ ● Jan Kowalski   D-1042   72h  ││  ┌─────────┐ ┌─────────┐       ││ Depot: Zaj. A    │
+│ ● Anna Nowak     D-1080  140h  ││  │14:30    │ │08:00    │       ││ Routes: 151,190  │
+│ ● Piotr Lis      D-1099   12h  ││  │22:15 ●  │ │16:00 ○  │       ││ Vehicle: 1925    │
+│                                ││  │151+190/1│ │24/2     │       ││ Driver: J. Kow.. │
+│ (drag onto duty →)             ││  └─────────┘ └─────────┘       ││ [Assign][Edit]   │
+└────────────────────────────────┘└────────────────────────────────┘└──────────────────┘
 ```
 
-Driver dashboard (`/pulpit`) mirrors the chosen prototype exactly: header with greeting + date, large "Najbliższa służba" card (line/route, hours, vehicle, depot, action buttons), right-column "Ogłoszenia" list (3 most recent), bottom "Nadchodzące służby" table (next 7 days).
+- **Left:** drivers list with green/yellow/red dot (computed from availability + hours), filter chips, search. Draggable cards (`@dnd-kit`). Click → opens a sheet with profile + month duties.
+- **Center:** Day / Week / Month tabs. Week view = 7-column grid; Day view = vertical time axis; Month = compact cells. Each duty card shows number, time, routes, vehicle badge, color-coded border (green/yellow/red). Drop targets accept driver cards.
+- **Right:** selected duty details + actions (Assign/Change driver, Assign vehicle picker, Edit, Delete). Inline conflict warnings (driver unavailable, overlap, vehicle conflict).
 
-### Server functions
+Toolbar: `+ Nowa służba`, `⚡ Generator zbiorczy`, date navigator, depot filter.
 
-All in `src/lib/*.functions.ts` (client-safe path), `supabaseAdmin` only imported inside handlers when admin elevation needed:
+## Phase 3 — Bulk generator, unassigned dashboard, conflict engine
 
-- `getMyNextDuty`, `getMyUpcomingDuties`, `getMyDuties(range)` — `requireSupabaseAuth`, RLS-scoped
-- `getAnnouncements(limit)` — `requireSupabaseAuth`
-- `listUsers`, `createUser`, `updateUser`, `setUserActive`, `resetUserPassword` — admin-only (auth + `has_role` check)
-- `listDuties`, `createDuty`, `updateDuty`, `deleteDuty`, `assignDuty` — admin-only
-- `createAnnouncement`, `updateAnnouncement`, `archiveAnnouncement` — admin-only
-- `bootstrapFirstAdmin(email, password)` — only runs if `user_roles` has no admin
+- **Bulk generator dialog:** date · division · template (start, end, route(s), depot, vehicle optional) · count → creates `route/1`…`route/N`. Preview list before commit.
+- **Unassigned dashboard** at `/admin/nieprzydzielone`: filter date range, sort by priority/date; one-click driver picker (uses same server fn as board).
+- **Conflict detection** (server side, surfaced inline):
+  - driver already assigned to overlapping duty,
+  - driver on approved leave or marked unavailable,
+  - vehicle assigned to overlapping duty,
+  - missing driver / missing vehicle (warnings, not blockers).
 
-All inputs validated with zod.
+## Phase 4 — Notifications & analytics
 
-### Components & layout
+- DB trigger on `duties`: when `assigned_to` changes, insert a notification for the new driver ("Przydzielono do służby <nr>") and for the previous driver if changed ("Służba <nr> przepisana").
+- Bell icon in `AppHeader` with unread count + dropdown (last 10, mark read).
+- Driver `/pulpit` shows notification card.
+- **Admin analytics** tiles on `/admin/raporty` (today): duties total · assigned · unassigned · drivers available · driver utilization % · vehicle utilization %.
 
-- `AppSidebar` (shadcn sidebar, navy bg, amber STP mark) with sections "Kierowca" (Pulpit, Mój grafik, Ogłoszenia) and "Administracja" (Użytkownicy, Służby, Ogłoszenia) — admin section conditionally rendered via `has_role` check on profile context
-- `AppHeader` with user name, employee ID, sign-out
-- shadcn primitives: Dialog (create user / create duty), Form + zod, Table, Badge (role / status), Calendar (timetable month view), Tabs (list vs calendar)
-- Toaster (sonner) for action feedback in Polish
+## Technical notes
+- DnD: `@dnd-kit/core` + `@dnd-kit/sortable` (install in Phase 2).
+- All status colors via existing brand tokens (`--brand`, semantic destructive/warning); no hard-coded hex.
+- Vehicle status auto-recomputed by trigger when duties insert/update/delete (so admin never edits it manually unless setting OOS/Reserve).
+- The redesigned page replaces the current `src/routes/_authenticated/admin/sluzby.tsx` table.
+- Existing `vehicle_label` field stays; new `vehicle_id` is preferred and we backfill labels from it.
 
-Design tokens in `src/styles.css`: brand-primary `#0f172a`, brand-accent `#f59e0b`, brand-surface `#f8fafc`, fonts Public Sans (loaded via `<link>` in `__root.tsx` head) + JetBrains Mono. Both light and dark mode tokens defined; dark mode toggle in header.
+## Out of scope (ask later if needed)
+- SMS / email push for notifications (in-portal only).
+- Driver self-swap requests.
+- Multi-week shift patterns / rotation templates.
 
-### Out of scope (Phase 2, noted but not built)
+---
 
-Vehicle fleet records & images, availability weekly editor, vacation/exception requests, driver statistics dashboards, admin reports, announcement categories filtering UI (categories stored but not surfaced beyond a badge).
-
-### Verification
-
-After build: load `/auth`, sign in as bootstrapped admin, confirm sidebar shows admin section, create a driver account + a duty assigned to that driver, sign in as the driver in a private window, confirm `/pulpit` shows the duty in the hero card and upcoming list, and `/grafik` shows it in the table.
+Reply **"go phase 1"** to start with the migration + server functions, or pick a different starting phase.
