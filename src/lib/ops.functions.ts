@@ -628,3 +628,57 @@ export const listAllDrivers = createServerFn({ method: "GET" })
     const { data } = await context.supabase.from("profiles").select("id, full_name, employee_id, depot").in("id", ids).eq("active", true).order("full_name");
     return data ?? [];
   });
+
+// ============ DRIVER → DISPATCH MESSAGES ============
+
+export const sendDriverMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({
+      subject: z.string().trim().min(1).max(200),
+      body: z.string().trim().min(1).max(5000),
+    }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    // Resolve all dispatcher + admin recipient ids
+    const { data: roles, error: rErr } = await context.supabase
+      .from("user_roles")
+      .select("user_id, role")
+      .in("role", ["admin", "dyspozytor"]);
+    if (rErr) throw new Error(rErr.message);
+    const recipientIds = [...new Set((roles ?? []).map((r: any) => r.user_id as string))];
+
+    const { data: msg, error } = await context.supabase
+      .from("internal_messages")
+      .insert({
+        author_id: context.userId,
+        kind: "driver_message" as any,
+        subject: data.subject,
+        body: data.body,
+        audience_kind: "dispatchers" as any,
+        audience: [],
+      })
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+
+    if (recipientIds.length > 0) {
+      const rows = recipientIds.map((uid) => ({ message_id: msg.id, user_id: uid }));
+      const { error: iErr } = await context.supabase.from("message_recipients").insert(rows);
+      if (iErr) throw new Error(iErr.message);
+    }
+    return { ok: true, recipientCount: recipientIds.length };
+  });
+
+export const listMyOutbox = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("internal_messages")
+      .select("id, kind, subject, body, audience_kind, created_at")
+      .eq("author_id", context.userId)
+      .order("created_at", { ascending: false })
+      .limit(50);
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
