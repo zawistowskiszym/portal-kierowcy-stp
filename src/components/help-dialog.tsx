@@ -27,6 +27,36 @@ type Section = {
 
 const driverSections: Section[] = [
   {
+    q: "Cel i idea platformy STP (Wprowadzenie)",
+    a: (
+      <>
+        <p className="font-semibold text-foreground mb-2">
+          Witaj w STP! Nasz system to zaawansowany symulator prawdziwego przedsiębiorstwa komunikacyjnego.
+        </p>
+        <p className="mb-2">
+          Cała platforma łączy tę stronę internetową z rozgrywką bezpośrednio w grze Roblox. Nie jesteś tu zwykłym graczem — odwzorowujemy tu realną pracę kierowcy autobusu miejskiego oraz dyspozytorów ruchu:
+        </p>
+        <ul className="list-disc pl-5 space-y-1.5 mt-2 mb-3">
+          <li>
+            <strong>Realistyczny grafik i służby:</strong> Każda jazda w grze opiera się na konkretnej brygadzie, trasie i rozkładzie jazdy zaplanowanym przez dyspozytora.
+          </li>
+          <li>
+            <strong>Telemetria na żywo:</strong> Gdy jedziesz autobusem w Robloxie, Twoja pozycja, prędkość, opóźnienie (dane z systemu PIS) oraz status są przesyłane w czasie rzeczywistym do naszego panelu.
+          </li>
+          <li>
+            <strong>Komunikacja z Dyspozytornią:</strong> Dyspozytorzy widzą Cię na mapie operacyjnej, mogą wysyłać Ci bezpośrednie polecenia w grze oraz reagować na zgłaszane przez Ciebie zdarzenia drogowe czy awarie.
+          </li>
+          <li>
+            <strong>Dokumentacja i kariera:</strong> Po każdej służbie zdajesz raport z przebiegu, zużycia paliwa i ewentualnych uwag. Na tej podstawie budujesz swoją historię i reputację w firmie.
+          </li>
+        </ul>
+        <p className="text-xs text-muted-foreground">
+          Dzięki temu systemowi łączymy pasję do symulacji autobusów z profesjonalnym odwzorowaniem struktur rzeczywistego przewoźnika.
+        </p>
+      </>
+    ),
+  },
+  {
     q: "Pulpit",
     a: (
       <>
