@@ -15,7 +15,6 @@ import {
   Activity,
   BookOpen,
   Map as MapIcon,
-  Inbox,
   Gauge,
   UserCircle,
 } from "lucide-react";
