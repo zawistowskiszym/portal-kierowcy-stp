@@ -17,6 +17,7 @@ import { Route as BootstrapRouteImport } from './routes/bootstrap'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as QuizTokenRouteImport } from './routes/quiz.$token'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as AuthenticatedZdarzenieRouteImport } from './routes/_authenticated/zdarzenie'
 import { Route as AuthenticatedUrlopyRouteImport } from './routes/_authenticated/urlopy'
@@ -102,6 +103,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuizTokenRoute = QuizTokenRouteImport.update({
+  id: '/quiz/$token',
+  path: '/quiz/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
@@ -386,6 +392,7 @@ export interface FileRoutesByFullPath {
   '/urlopy': typeof AuthenticatedUrlopyRoute
   '/zdarzenie': typeof AuthenticatedZdarzenieRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/quiz/$token': typeof QuizTokenRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -442,6 +449,7 @@ export interface FileRoutesByTo {
   '/urlopy': typeof AuthenticatedUrlopyRoute
   '/zdarzenie': typeof AuthenticatedZdarzenieRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/quiz/$token': typeof QuizTokenRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -499,6 +507,7 @@ export interface FileRoutesById {
   '/_authenticated/urlopy': typeof AuthenticatedUrlopyRoute
   '/_authenticated/zdarzenie': typeof AuthenticatedZdarzenieRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
+  '/quiz/$token': typeof QuizTokenRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/_authenticated/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -557,6 +566,7 @@ export interface FileRouteTypes {
     | '/urlopy'
     | '/zdarzenie'
     | '/email/unsubscribe'
+    | '/quiz/$token'
     | '/admin/dashboard'
     | '/admin/dziennik'
     | '/admin/incydenty'
@@ -613,6 +623,7 @@ export interface FileRouteTypes {
     | '/urlopy'
     | '/zdarzenie'
     | '/email/unsubscribe'
+    | '/quiz/$token'
     | '/admin/dashboard'
     | '/admin/dziennik'
     | '/admin/incydenty'
@@ -669,6 +680,7 @@ export interface FileRouteTypes {
     | '/_authenticated/urlopy'
     | '/_authenticated/zdarzenie'
     | '/email/unsubscribe'
+    | '/quiz/$token'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/dziennik'
     | '/_authenticated/admin/incydenty'
@@ -717,6 +729,7 @@ export interface RootRouteChildren {
   WprowadzenieRoute: typeof WprowadzenieRoute
   ZaproszenieRoute: typeof ZaproszenieRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
+  QuizTokenRoute: typeof QuizTokenRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicRobloxAckRoute: typeof ApiPublicRobloxAckRoute
   ApiPublicRobloxDriverRoute: typeof ApiPublicRobloxDriverRoute
@@ -787,6 +800,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quiz/$token': {
+      id: '/quiz/$token'
+      path: '/quiz/$token'
+      fullPath: '/quiz/$token'
+      preLoaderRoute: typeof QuizTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/email/unsubscribe': {
@@ -1237,6 +1257,7 @@ const rootRouteChildren: RootRouteChildren = {
   WprowadzenieRoute: WprowadzenieRoute,
   ZaproszenieRoute: ZaproszenieRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
+  QuizTokenRoute: QuizTokenRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicRobloxAckRoute: ApiPublicRobloxAckRoute,
   ApiPublicRobloxDriverRoute: ApiPublicRobloxDriverRoute,
