@@ -9,11 +9,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+import { LEAVE_TYPES, LEAVE_TYPE_LABEL, type LeaveTypeValue } from "@/lib/leave-types";
 import {
   listMyVacationRequests,
   createVacationRequest,
   cancelVacationRequest,
 } from "@/lib/portal.functions";
+
 
 export const Route = createFileRoute("/_authenticated/urlopy")({
   head: () => ({ meta: [{ title: "Urlopy — Portal STP" }] }),
@@ -36,7 +40,12 @@ function VacationsPage() {
   const list = (data ?? []) as any[];
 
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ start_date: "", end_date: "", reason: "" });
+  const [form, setForm] = useState<{ start_date: string; end_date: string; leave_type: LeaveTypeValue; reason: string }>({
+    start_date: "",
+    end_date: "",
+    leave_type: "wypoczynkowy",
+    reason: "",
+  });
 
   const refresh = () => qc.invalidateQueries({ queryKey: ["my-vacations"] });
 
@@ -47,17 +56,19 @@ function VacationsPage() {
         data: {
           start_date: form.start_date,
           end_date: form.end_date,
+          leave_type: form.leave_type,
           reason: form.reason || null,
         },
       });
       toast.success("Wniosek złożony");
       setOpen(false);
-      setForm({ start_date: "", end_date: "", reason: "" });
+      setForm({ start_date: "", end_date: "", leave_type: "wypoczynkowy", reason: "" });
       refresh();
     } catch (err: any) {
       toast.error("Błąd", { description: err?.message });
     }
   };
+
 
   const onCancel = async (id: string) => {
     if (!confirm("Anulować wniosek?")) return;
@@ -76,6 +87,17 @@ function VacationsPage() {
           <DialogContent>
             <DialogHeader><DialogTitle>Nowy wniosek urlopowy</DialogTitle></DialogHeader>
             <form onSubmit={onSubmit} className="space-y-3">
+              <div className="space-y-1">
+                <Label>Rodzaj urlopu</Label>
+                <Select value={form.leave_type} onValueChange={(v) => setForm({ ...form, leave_type: v as LeaveTypeValue })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {LEAVE_TYPES.map((t) => (
+                      <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label>Od</Label>
@@ -96,11 +118,13 @@ function VacationsPage() {
         </Dialog>
       </div>
 
+
       <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
         <table className="w-full text-sm text-left">
           <thead className="bg-muted/40 border-b border-border text-muted-foreground font-bold uppercase text-[10px]">
             <tr>
               <th className="px-6 py-3">Okres</th>
+              <th className="px-6 py-3">Rodzaj</th>
               <th className="px-6 py-3">Uzasadnienie</th>
               <th className="px-6 py-3">Status</th>
               <th className="px-6 py-3">Decyzja</th>
@@ -111,7 +135,9 @@ function VacationsPage() {
             {list.map((v) => (
               <tr key={v.id}>
                 <td className="px-6 py-3 font-mono text-xs">{v.start_date} → {v.end_date}</td>
+                <td className="px-6 py-3 text-xs"><Badge variant="secondary">{LEAVE_TYPE_LABEL[v.leave_type] ?? v.leave_type}</Badge></td>
                 <td className="px-6 py-3 text-muted-foreground">{v.reason ?? "—"}</td>
+
                 <td className="px-6 py-3">
                   {v.status === "approved" && <Badge className="bg-status-ok text-status-ok-foreground">Zatwierdzone</Badge>}
                   {v.status === "rejected" && <Badge variant="destructive">Odrzucone</Badge>}
@@ -129,7 +155,7 @@ function VacationsPage() {
               </tr>
             ))}
             {list.length === 0 && (
-              <tr><td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">Brak wniosków.</td></tr>
+              <tr><td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">Brak wniosków.</td></tr>
             )}
           </tbody>
         </table>

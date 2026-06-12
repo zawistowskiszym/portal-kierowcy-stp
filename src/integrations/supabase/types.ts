@@ -294,6 +294,7 @@ export type Database = {
           decided_by: string | null
           end_date: string
           id: string
+          leave_type: Database["public"]["Enums"]["leave_type"]
           reason: string | null
           start_date: string
           status: Database["public"]["Enums"]["vacation_status"]
@@ -307,6 +308,7 @@ export type Database = {
           decided_by?: string | null
           end_date: string
           id?: string
+          leave_type?: Database["public"]["Enums"]["leave_type"]
           reason?: string | null
           start_date: string
           status?: Database["public"]["Enums"]["vacation_status"]
@@ -320,6 +322,7 @@ export type Database = {
           decided_by?: string | null
           end_date?: string
           id?: string
+          leave_type?: Database["public"]["Enums"]["leave_type"]
           reason?: string | null
           start_date?: string
           status?: Database["public"]["Enums"]["vacation_status"]
@@ -419,6 +422,17 @@ export type Database = {
       app_role: "admin" | "driver"
       availability_type: "unavailable" | "preferred"
       fuel_type: "Diesel" | "Elektryczny" | "Hybrydowy" | "Wodorowy"
+      leave_type:
+        | "wypoczynkowy"
+        | "na_zadanie"
+        | "okolicznosciowy"
+        | "bezplatny"
+        | "chorobowy"
+        | "opieka"
+        | "macierzynski"
+        | "ojcowski"
+        | "szkoleniowy"
+        | "inny"
       vacation_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
@@ -557,6 +571,18 @@ export const Constants = {
       app_role: ["admin", "driver"],
       availability_type: ["unavailable", "preferred"],
       fuel_type: ["Diesel", "Elektryczny", "Hybrydowy", "Wodorowy"],
+      leave_type: [
+        "wypoczynkowy",
+        "na_zadanie",
+        "okolicznosciowy",
+        "bezplatny",
+        "chorobowy",
+        "opieka",
+        "macierzynski",
+        "ojcowski",
+        "szkoleniowy",
+        "inny",
+      ],
       vacation_status: ["pending", "approved", "rejected"],
     },
   },

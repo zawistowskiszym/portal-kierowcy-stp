@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { listUsers, inviteUser, updateUser, resetUserPassword, deleteUser } from "@/lib/portal.functions";
+import { LEAVE_TYPE_LABEL } from "@/lib/leave-types";
+
 
 export const Route = createFileRoute("/_authenticated/admin/uzytkownicy")({
   head: () => ({ meta: [{ title: "Użytkownicy — Admin STP" }] }),
@@ -131,11 +133,16 @@ function AdminUsersPage() {
               <th className="px-6 py-3">Zajezdnia</th>
               <th className="px-6 py-3">Rola</th>
               <th className="px-6 py-3">Status</th>
+              <th className="px-6 py-3">Urlopy ({new Date().getFullYear()})</th>
               <th className="px-6 py-3 text-right">Akcje</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {users.map((u) => (
+            {users.map((u) => {
+              const summary = (u.leave_summary ?? {}) as Record<string, number>;
+              const entries = Object.entries(summary).filter(([, n]) => n > 0);
+              const totalDays = entries.reduce((s, [, n]) => s + n, 0);
+              return (
               <tr key={u.id}>
                 <td className="px-6 py-3 font-semibold">{u.full_name}</td>
                 <td className="px-6 py-3 font-mono text-xs">{u.employee_id ?? "—"}</td>
@@ -152,6 +159,22 @@ function AdminUsersPage() {
                     ? <Badge className="bg-status-ok text-status-ok-foreground">Aktywne</Badge>
                     : <Badge variant="outline">Zaproszenie wysłane</Badge>}
                 </td>
+                <td className="px-6 py-3">
+                  {entries.length === 0 ? (
+                    <span className="text-xs text-muted-foreground">—</span>
+                  ) : (
+                    <div className="space-y-1">
+                      <div className="text-xs font-bold font-mono">{totalDays} dni</div>
+                      <div className="flex flex-wrap gap-1">
+                        {entries.map(([type, n]) => (
+                          <Badge key={type} variant="outline" className="text-[10px] font-normal">
+                            {LEAVE_TYPE_LABEL[type] ?? type}: {n}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </td>
                 <td className="px-6 py-3 text-right space-x-2">
                   <Button variant="ghost" size="sm" onClick={() => onToggleActive(u)}>
                     {u.active ? "Zablokuj" : "Aktywuj"}
@@ -160,10 +183,12 @@ function AdminUsersPage() {
                   <Button variant="ghost" size="sm" className="text-destructive" onClick={() => onDelete(u)}>Usuń</Button>
                 </td>
               </tr>
-            ))}
+              );
+            })}
             {users.length === 0 && (
-              <tr><td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">Brak użytkowników.</td></tr>
+              <tr><td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">Brak użytkowników.</td></tr>
             )}
+
           </tbody>
         </table>
       </div>
