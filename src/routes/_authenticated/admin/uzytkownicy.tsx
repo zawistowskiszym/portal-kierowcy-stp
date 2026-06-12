@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { listUsers, inviteUser, updateUser, resetUserPassword, deleteUser } from "@/lib/portal.functions";
+import { LEAVE_TYPE_LABEL } from "@/lib/leave-types";
+
 
 export const Route = createFileRoute("/_authenticated/admin/uzytkownicy")({
   head: () => ({ meta: [{ title: "Użytkownicy — Admin STP" }] }),
