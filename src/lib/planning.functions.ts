@@ -474,9 +474,11 @@ export const generateDutiesFromBlocks = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: any) => z.object({
     day_type: z.enum(["weekday", "saturday", "sunday"]),
-    date_from: z.string(), // YYYY-MM-DD
+    date_from: z.string(),
     date_to: z.string(),
     replace_existing: z.boolean().default(false),
+    max_duty_minutes: z.number().int().min(60).max(900).default(480),
+    split_break_minutes: z.number().int().min(0).max(180).default(30),
   }).parse(d))
   .handler(async ({ context, data }) => {
     await requireStaff(context.supabase, context.userId);
@@ -486,7 +488,7 @@ export const generateDutiesFromBlocks = createServerFn({ method: "POST" })
     const start = new Date(data.date_from + "T00:00:00");
     const end = new Date(data.date_to + "T00:00:00");
     const dayMatches = (d: Date) => {
-      const dow = d.getDay(); // 0 Sun, 6 Sat
+      const dow = d.getDay();
       if (data.day_type === "saturday") return dow === 6;
       if (data.day_type === "sunday") return dow === 0;
       return dow >= 1 && dow <= 5;
@@ -502,22 +504,68 @@ export const generateDutiesFromBlocks = createServerFn({ method: "POST" })
         .gte("duty_date", dates[0]).lte("duty_date", dates[dates.length - 1]);
     }
 
+    // Split each block into segments not exceeding max_duty_minutes
+    type Segment = { start_time: string; end_time: string };
+    const segmentsByBlock = new Map<string, Segment[]>();
+    for (const b of blocks) {
+      const { data: trips } = await context.supabase.from("vehicle_block_trips")
+        .select("departure_time,arrival_time").eq("block_id", b.id).order("trip_order");
+      const tlist = trips ?? [];
+      if (tlist.length === 0) {
+        segmentsByBlock.set(b.id, [{ start_time: b.start_time, end_time: b.end_time }]);
+        continue;
+      }
+      const segs: Segment[] = [];
+      let segStartIdx = 0;
+      let i = 0;
+      while (i < tlist.length) {
+        const nextIdx = i + 1;
+        const segStart = toMin(tlist[segStartIdx].departure_time);
+        const wouldExtend = nextIdx < tlist.length ? (toMin(tlist[nextIdx].arrival_time) - segStart) : 0;
+        const atEnd = nextIdx === tlist.length;
+        const mustClose = !atEnd && wouldExtend > data.max_duty_minutes;
+        if (atEnd || mustClose) {
+          segs.push({
+            start_time: tlist[segStartIdx].departure_time,
+            end_time: tlist[i].arrival_time,
+          });
+          if (atEnd) break;
+          // Advance start past the break window
+          let newStart = nextIdx;
+          const minDep = toMin(tlist[i].arrival_time) + data.split_break_minutes;
+          while (newStart < tlist.length && toMin(tlist[newStart].departure_time) < minDep) newStart += 1;
+          if (newStart >= tlist.length) break;
+          segStartIdx = newStart;
+          i = newStart;
+        } else {
+          i = nextIdx;
+        }
+      }
+      if (segs.length === 0) segs.push({ start_time: b.start_time, end_time: b.end_time });
+      segmentsByBlock.set(b.id, segs);
+    }
+
+    const suffix = (i: number, total: number) =>
+      total <= 1 ? "" : String.fromCharCode("a".charCodeAt(0) + i);
+
     const rows: any[] = [];
     for (const date of dates) {
       for (const b of blocks) {
-        rows.push({
-          duty_number: String(b.block_number),
-          duty_date: date,
-          start_time: b.start_time,
-          end_time: b.end_time,
-          depot: b.depot,
-          route: (b.line_numbers as string[]).join("+"),
-          created_by: context.userId,
+        const segs = segmentsByBlock.get(b.id) ?? [{ start_time: b.start_time, end_time: b.end_time }];
+        segs.forEach((s, idx) => {
+          rows.push({
+            duty_number: `${b.block_number}${suffix(idx, segs.length)}`,
+            duty_date: date,
+            start_time: s.start_time,
+            end_time: s.end_time,
+            depot: b.depot,
+            route: (b.line_numbers as string[]).join("+"),
+            created_by: context.userId,
+          });
         });
       }
     }
     if (!rows.length) return { inserted: 0 };
-    // chunked insert
     const chunk = 500;
     let inserted = 0;
     for (let i = 0; i < rows.length; i += chunk) {
@@ -526,7 +574,8 @@ export const generateDutiesFromBlocks = createServerFn({ method: "POST" })
       if (error) throw new Error(error.message);
       inserted += slice.length;
     }
-    return { inserted };
+    const maxParts = Math.max(1, ...Array.from(segmentsByBlock.values()).map(s => s.length));
+    return { inserted, max_parts_per_block: maxParts };
   });
 
 // ============== PLANNING DASHBOARD ==============
