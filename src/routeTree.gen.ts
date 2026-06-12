@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ZaproszenieRouteImport } from './routes/zaproszenie'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as BootstrapRouteImport } from './routes/bootstrap'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -59,6 +60,11 @@ import { Route as AuthenticatedSluzbaDutyIdMapaRouteImport } from './routes/_aut
 const ZaproszenieRoute = ZaproszenieRouteImport.update({
   id: '/zaproszenie',
   path: '/zaproszenie',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BootstrapRoute = BootstrapRouteImport.update({
@@ -311,6 +317,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/bootstrap': typeof BootstrapRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/zaproszenie': typeof ZaproszenieRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
@@ -358,6 +365,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/bootstrap': typeof BootstrapRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/zaproszenie': typeof ZaproszenieRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
@@ -407,6 +415,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
   '/bootstrap': typeof BootstrapRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/zaproszenie': typeof ZaproszenieRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
@@ -456,6 +465,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/bootstrap'
+    | '/unsubscribe'
     | '/zaproszenie'
     | '/admin'
     | '/dyspozycyjnosc'
@@ -503,6 +513,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/bootstrap'
+    | '/unsubscribe'
     | '/zaproszenie'
     | '/admin'
     | '/dyspozycyjnosc'
@@ -551,6 +562,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/bootstrap'
+    | '/unsubscribe'
     | '/zaproszenie'
     | '/_authenticated/admin'
     | '/_authenticated/dyspozycyjnosc'
@@ -600,6 +612,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
   BootstrapRoute: typeof BootstrapRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
   ZaproszenieRoute: typeof ZaproszenieRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
@@ -623,6 +636,13 @@ declare module '@tanstack/react-router' {
       path: '/zaproszenie'
       fullPath: '/zaproszenie'
       preLoaderRoute: typeof ZaproszenieRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bootstrap': {
@@ -1025,6 +1045,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
   BootstrapRoute: BootstrapRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
   ZaproszenieRoute: ZaproszenieRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
@@ -1043,3 +1064,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
