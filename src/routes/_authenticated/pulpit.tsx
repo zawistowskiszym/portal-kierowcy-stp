@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyNextDuty, getMyUpcomingDuties, listAnnouncements } from "@/lib/portal.functions";
 import { Badge } from "@/components/ui/badge";
+import { RobloxLivePanel } from "@/components/roblox-live-panel";
 
 export const Route = createFileRoute("/_authenticated/pulpit")({
   head: () => ({ meta: [{ title: "Pulpit — Portal STP" }] }),
@@ -32,6 +33,7 @@ function PulpitPage() {
 
   return (
     <div className="grid grid-cols-12 gap-6">
+      <RobloxLivePanel />
       <section className="col-span-12 lg:col-span-8 bg-card border border-border rounded-xl overflow-hidden shadow-sm">
         <div className="bg-brand-accent px-4 py-3 flex justify-between items-center">
           <h2 className="font-bold uppercase tracking-wide text-xs text-brand-accent-foreground">
