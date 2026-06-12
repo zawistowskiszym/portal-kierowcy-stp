@@ -45,17 +45,20 @@ export const Route = createFileRoute("/api/public/roblox/timetable")({
             .order("position"),
           supabaseAdmin
             .from("line_timetables")
-            .select("day_type, first_departure, last_departure, layover_a_min, layover_b_min")
+            .select("id, day_type, first_departure, last_departure, layover_a_min, layover_b_min")
             .eq("line_id", line.id)
-            .eq("day_type", dayType)
+            .eq("day_type", dayType as any)
             .maybeSingle(),
-          supabaseAdmin
-            .from("line_frequency_windows")
-            .select("day_type, direction, start_time, end_time, frequency_min")
-            .eq("line_id", line.id)
-            .eq("day_type", dayType)
-            .order("start_time"),
         ]);
+
+        const timetable = ttRes.data ?? null;
+        const freqRes = timetable
+          ? await supabaseAdmin
+              .from("line_frequency_windows")
+              .select("start_time, end_time, headway_min")
+              .eq("timetable_id", timetable.id)
+              .order("start_time")
+          : { data: [] as any[] };
 
         const stops = (stopsRes.data ?? []).map((s: any) => ({
           position: s.position,
