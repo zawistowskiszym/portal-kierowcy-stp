@@ -549,8 +549,22 @@ function QuizzesSection() {
               </div>
             </div>
           )}
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 flex-wrap">
             <Button variant="destructive" onClick={remove}>Usuń</Button>
+            <Button
+              variant="outline"
+              onClick={() => decide("declined")}
+              disabled={deciding !== null}
+            >
+              {deciding === "declined" ? "Wysyłanie..." : "Odrzuć"}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => decide("approved")}
+              disabled={deciding !== null}
+            >
+              {deciding === "approved" ? "Wysyłanie..." : "Zaakceptuj"}
+            </Button>
             <Button variant="outline" onClick={() => setSelected(null)}>Anuluj</Button>
             <Button onClick={save} disabled={saving}>
               {saving ? "Zapisywanie..." : "Zapisz notatki"}
