@@ -54,10 +54,9 @@ export function PopupAnnouncements() {
   return (
     <Dialog open onOpenChange={() => {}}>
       <DialogContent
-        className="max-w-lg"
+        className="max-w-lg [&>button]:hidden"
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
-        showCloseButton={false}
       >
         <DialogHeader>
           <div className={`flex items-center gap-2 text-xs uppercase tracking-widest ${meta.color}`}>
