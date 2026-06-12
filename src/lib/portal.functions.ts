@@ -541,6 +541,7 @@ export const createVacationRequest = createServerFn({ method: "POST" })
       .object({
         start_date: z.string().min(10).max(10),
         end_date: z.string().min(10).max(10),
+        leave_type: z.enum(LEAVE_TYPE_VALUES),
         reason: z.string().max(500).optional().nullable(),
       })
       .parse(d),
@@ -551,12 +552,14 @@ export const createVacationRequest = createServerFn({ method: "POST" })
       user_id: context.userId,
       start_date: data.start_date,
       end_date: data.end_date,
+      leave_type: data.leave_type,
       reason: data.reason ?? null,
       status: "pending",
     });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
 
 export const cancelVacationRequest = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
