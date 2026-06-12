@@ -26,7 +26,7 @@ export const listActivePopupAnnouncements = createServerFn({ method: "GET" })
     ]);
     if (annRes.error) throw new Error(annRes.error.message);
     const readSet = new Set((readRes.data ?? []).map((r: any) => r.announcement_id));
-    return (annRes.data ?? []).filter((a: any) => !readSet.has(a.id));
+    return (annRes.data ?? []).map((a: any) => ({ ...a, read: readSet.has(a.id) }));
   });
 
 export const listAllPopupAnnouncements = createServerFn({ method: "GET" })
