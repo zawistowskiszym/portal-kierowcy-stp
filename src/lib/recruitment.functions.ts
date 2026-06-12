@@ -33,7 +33,7 @@ export const submitApplication = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const { notifyByEmail } = await import('./email/notify.server')
-    const { pickQuizQuestions } = await import('./recruitment-quiz')
+    const { generateQuizQuestions } = await import('./recruitment-quiz.server')
 
     const email = data.email.toLowerCase()
     const introToken = genToken()
@@ -56,8 +56,8 @@ export const submitApplication = createServerFn({ method: 'POST' })
       throw new Error('Nie udało się wysłać zgłoszenia')
     }
 
-    // Skip intro step — send quiz email directly.
-    const questions = pickQuizQuestions()
+    // Skip intro step — generate AI questions and send quiz email directly.
+    const questions = await generateQuizQuestions()
     const quizToken = genToken()
     const { error: qErr } = await supabaseAdmin.from('quiz_attempts').insert({
       token: quizToken,
@@ -94,7 +94,7 @@ export const requestQuiz = createServerFn({ method: 'POST' })
       .parse(data),
   )
   .handler(async ({ data }) => {
-    const { pickQuizQuestions } = await import('./recruitment-quiz')
+    const { generateQuizQuestions } = await import('./recruitment-quiz.server')
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const { notifyByEmail } = await import('./email/notify.server')
 
@@ -112,7 +112,7 @@ export const requestQuiz = createServerFn({ method: 'POST' })
 
     if (!email) throw new Error('Brak adresu email')
 
-    const questions = pickQuizQuestions()
+    const questions = await generateQuizQuestions()
     const token = genToken()
 
     const { error } = await supabaseAdmin.from('quiz_attempts').insert({
