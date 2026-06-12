@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
-export type AppRole = "admin" | "driver";
+export type AppRole = "admin" | "dyspozytor" | "driver";
 
 export interface AuthProfile {
   id: string;
@@ -19,6 +19,8 @@ interface AuthState {
   profile: AuthProfile | null;
   roles: AppRole[];
   isAdmin: boolean;
+  isDispatcher: boolean;
+  isStaff: boolean;
 }
 
 export function useAuth(): AuthState {
