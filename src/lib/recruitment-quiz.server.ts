@@ -42,8 +42,8 @@ export async function generateQuizQuestions(): Promise<string[]> {
     })
 
     const qs = (experimental_output?.questions ?? [])
-      .map((q) => q.trim())
-      .filter((q) => q.length > 0)
+      .map((q: string) => q.trim())
+      .filter((q: string) => q.length > 0)
 
     if (qs.length >= QUIZ_PICK_COUNT) return qs.slice(0, QUIZ_PICK_COUNT)
     // Top up from pool if AI returned fewer
