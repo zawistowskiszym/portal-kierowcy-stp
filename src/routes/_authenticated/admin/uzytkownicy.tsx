@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
@@ -14,6 +14,14 @@ import { LEAVE_TYPE_LABEL } from "@/lib/leave-types";
 
 
 export const Route = createFileRoute("/_authenticated/admin/uzytkownicy")({
+  ssr: false,
+  beforeLoad: async () => {
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) throw redirect({ to: "/auth" });
+    const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", u.user.id);
+    if (!(roles ?? []).some((r: any) => r.role === "admin")) throw redirect({ to: "/pulpit" });
+  },
   head: () => ({ meta: [{ title: "Użytkownicy — Admin STP" }] }),
   component: AdminUsersPage,
 });
