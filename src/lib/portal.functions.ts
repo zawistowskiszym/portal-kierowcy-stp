@@ -1027,3 +1027,45 @@ export const markNotificationRead = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ============ ROBLOX LIVE TELEMETRY ============
+
+export const getMyRobloxLive = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const today = new Date().toISOString().slice(0, 10);
+    const [dutyRes, posRes, presRes, cmdsRes] = await Promise.all([
+      supabase
+        .from("duties")
+        .select(
+          "id, duty_number, route, vehicle_label, depot, start_time, end_time, live_status, live_status_updated_at, live_status_note, pis_route, pis_headsign, pis_current_stop, pis_next_stop, pis_delay_sec, pis_updated_at",
+        )
+        .eq("assigned_to", userId)
+        .eq("duty_date", today)
+        .maybeSingle(),
+      supabase
+        .from("driver_positions")
+        .select("x, y, z, heading, speed_kmh, updated_at")
+        .eq("user_id", userId)
+        .maybeSingle(),
+      supabase
+        .from("driver_presence")
+        .select("status, note, updated_at")
+        .eq("user_id", userId)
+        .maybeSingle(),
+      supabase
+        .from("roblox_commands")
+        .select("id, type, payload, created_at, delivered_at, acked_at")
+        .eq("target_user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(10),
+    ]);
+    return {
+      duty: dutyRes.data ?? null,
+      position: posRes.data ?? null,
+      presence: presRes.data ?? null,
+      commands: cmdsRes.data ?? [],
+      server_time: new Date().toISOString(),
+    };
+  });
