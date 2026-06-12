@@ -33,9 +33,10 @@ export const submitApplication = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const { notifyByEmail } = await import('./email/notify.server')
+    const { pickQuizQuestions } = await import('./recruitment-quiz')
 
     const email = data.email.toLowerCase()
-    const token = genToken()
+    const introToken = genToken()
 
     const { data: app, error } = await supabaseAdmin
       .from('recruitment_applications')
@@ -45,7 +46,7 @@ export const submitApplication = createServerFn({ method: 'POST' })
         discord_username: data.discord_username || null,
         motivation: data.motivation,
         experience: data.experience || null,
-        intro_token: token,
+        intro_token: introToken,
         intro_sent_at: new Date().toISOString(),
       })
       .select('id')
@@ -55,12 +56,26 @@ export const submitApplication = createServerFn({ method: 'POST' })
       throw new Error('Nie udało się wysłać zgłoszenia')
     }
 
-    const introUrl = `${APP_URL}/wprowadzenie/${token}`
+    // Skip intro step — send quiz email directly.
+    const questions = pickQuizQuestions()
+    const quizToken = genToken()
+    const { error: qErr } = await supabaseAdmin.from('quiz_attempts').insert({
+      token: quizToken,
+      candidate_email: email,
+      questions,
+      status: 'pending',
+    })
+    if (qErr) {
+      console.error('quiz_attempts insert failed', qErr)
+      throw new Error('Nie udało się utworzyć quizu')
+    }
+
+    const quizUrl = `${APP_URL}/quiz/${quizToken}`
     await notifyByEmail({
-      templateName: 'intro-invite',
+      templateName: 'quiz-invite',
       recipientEmail: email,
-      templateData: { introUrl, candidateEmail: email },
-      idempotencyKey: `intro-invite-${token}`,
+      templateData: { quizUrl, candidateEmail: email },
+      idempotencyKey: `quiz-invite-${quizToken}`,
     })
 
     return { ok: true }
