@@ -426,6 +426,25 @@ function QuizzesSection() {
     qc.invalidateQueries({ queryKey: ["admin", "quiz-attempts"] });
   };
 
+  const decide = async (decision: "approved" | "declined") => {
+    if (!selected) return;
+    const label = decision === "approved" ? "zaakceptować" : "odrzucić";
+    if (!confirm(`Czy na pewno ${label} tę aplikację? Kandydat dostanie email.`)) return;
+    setDeciding(decision);
+    try {
+      await decideFn({ data: { attemptId: selected.id, decision } });
+      toast.success(
+        decision === "approved" ? "Zaakceptowano i wysłano email" : "Odrzucono i wysłano email",
+      );
+      setSelected(null);
+      qc.invalidateQueries({ queryKey: ["admin", "quiz-attempts"] });
+    } catch (err: any) {
+      toast.error(err?.message ?? "Nie udało się wysłać decyzji");
+    } finally {
+      setDeciding(null);
+    }
+  };
+
   const items = data ?? [];
 
   return (
