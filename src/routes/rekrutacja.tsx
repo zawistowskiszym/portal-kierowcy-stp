@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
+import { submitApplication } from "@/lib/recruitment.functions";
 import stpLogo from "@/assets/stp-logo.png.asset.json";
 
 export const Route = createFileRoute("/rekrutacja")({
@@ -49,18 +49,22 @@ function RecruitmentPage() {
       return;
     }
     setBusy(true);
-    const { error } = await supabase.from("recruitment_applications").insert({
-      email: parsed.data.email,
-      roblox_username: parsed.data.roblox_username,
-      discord_username: parsed.data.discord_username || null,
-      motivation: parsed.data.motivation,
-      experience: parsed.data.experience || null,
-    });
-    setBusy(false);
-    if (error) {
-      toast.error("Nie udało się wysłać zgłoszenia");
+    try {
+      await submitApplication({
+        data: {
+          email: parsed.data.email,
+          roblox_username: parsed.data.roblox_username,
+          discord_username: parsed.data.discord_username || null,
+          motivation: parsed.data.motivation,
+          experience: parsed.data.experience || null,
+        },
+      });
+    } catch (err) {
+      setBusy(false);
+      toast.error(err instanceof Error ? err.message : "Nie udało się wysłać zgłoszenia");
       return;
     }
+    setBusy(false);
     setSubmitted(true);
   };
 

@@ -12,6 +12,60 @@ function genToken(): string {
     .join('')
 }
 
+export const submitApplication = createServerFn({ method: 'POST' })
+  .inputValidator((data: {
+    email: string
+    roblox_username: string
+    discord_username?: string | null
+    motivation: string
+    experience?: string | null
+  }) =>
+    z
+      .object({
+        email: z.string().trim().email().max(255),
+        roblox_username: z.string().trim().min(3).max(50),
+        discord_username: z.string().trim().max(50).nullable().optional(),
+        motivation: z.string().trim().min(20).max(2000),
+        experience: z.string().trim().max(2000).nullable().optional(),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { notifyByEmail } = await import('./email/notify.server')
+
+    const email = data.email.toLowerCase()
+    const token = genToken()
+
+    const { data: app, error } = await supabaseAdmin
+      .from('recruitment_applications')
+      .insert({
+        email,
+        roblox_username: data.roblox_username,
+        discord_username: data.discord_username || null,
+        motivation: data.motivation,
+        experience: data.experience || null,
+        intro_token: token,
+        intro_sent_at: new Date().toISOString(),
+      })
+      .select('id')
+      .single()
+    if (error || !app) {
+      console.error('submitApplication insert failed', error)
+      throw new Error('Nie udało się wysłać zgłoszenia')
+    }
+
+    const introUrl = `${APP_URL}/wprowadzenie/${token}`
+    await notifyByEmail({
+      templateName: 'intro-invite',
+      recipientEmail: email,
+      templateData: { introUrl, candidateEmail: email },
+      idempotencyKey: `intro-invite-${token}`,
+    })
+
+    return { ok: true }
+  })
+
 export const requestQuiz = createServerFn({ method: 'POST' })
   .inputValidator((data: { email?: string; introToken?: string }) =>
     z
