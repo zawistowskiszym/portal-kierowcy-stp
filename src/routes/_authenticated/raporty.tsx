@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { FileText } from "lucide-react";
+import { FileText, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -85,11 +85,19 @@ function RaportyPage() {
 
   return (
     <div className="space-y-6 max-w-3xl">
-      <div>
-        <h1 className="text-2xl font-bold">Moje raporty</h1>
-        <p className="text-sm text-muted-foreground">
-          Złóż raport ze służby. Pola opcjonalne pomagają dyspozytorowi szybciej zlokalizować zdarzenie.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Raporty i zdarzenia</h1>
+          <p className="text-sm text-muted-foreground">
+            Złóż raport ze służby lub szybko zgłoś zdarzenie awaryjne.
+          </p>
+        </div>
+        <Button asChild variant="destructive">
+          <Link to="/zdarzenie">
+            <AlertTriangle className="size-4" />
+            Zgłoś zdarzenie
+          </Link>
+        </Button>
       </div>
 
       <form

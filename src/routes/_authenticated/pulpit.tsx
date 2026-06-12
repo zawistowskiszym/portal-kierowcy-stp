@@ -80,13 +80,10 @@ function PulpitPage() {
             Brak ogłoszeń.
           </div>
         )}
-        {annList.map((a, i) => (
+        {annList.map((a) => (
           <article
             key={a.id}
-            className={
-              "bg-card p-4 rounded-xl shadow-sm border border-border " +
-              (i === 0 ? "border-l-4 border-l-brand-accent" : "")
-            }
+            className="bg-card p-4 rounded-xl shadow-sm border border-border"
           >
             <p className="text-xs text-muted-foreground mb-1 font-mono">
               {new Date(a.published_at).toLocaleDateString("pl-PL")}

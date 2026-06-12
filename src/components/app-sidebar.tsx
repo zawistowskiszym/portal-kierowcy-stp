@@ -7,9 +7,7 @@ import {
   Users,
   ClipboardList,
   Bus,
-  CalendarCheck2,
   Plane,
-  BarChart3,
   FileBarChart,
   AlertTriangle,
   Activity,
@@ -32,11 +30,8 @@ import {
 const driverItems = [
   { title: "Pulpit", url: "/pulpit", icon: LayoutDashboard },
   { title: "Mój grafik", url: "/grafik", icon: CalendarRange },
-  { title: "Dyspozycyjność", url: "/dyspozycyjnosc", icon: CalendarCheck2 },
   { title: "Urlopy", url: "/urlopy", icon: Plane },
-  { title: "Moje raporty", url: "/raporty", icon: FileBarChart },
-  { title: "Zgłoś zdarzenie", url: "/zdarzenie", icon: AlertTriangle },
-  { title: "Moje statystyki", url: "/statystyki", icon: BarChart3 },
+  { title: "Raporty i zdarzenia", url: "/raporty", icon: FileBarChart },
   { title: "Ogłoszenia", url: "/ogloszenia", icon: Megaphone },
   { title: "Mój profil", url: "/profil", icon: UserCircle },
 ];
