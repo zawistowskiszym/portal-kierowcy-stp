@@ -19,13 +19,8 @@ export const Route = createFileRoute("/api/public/roblox/duty")({
         if (!driver) return errorResponse(404, "driver not found");
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const today = new Date().toISOString().slice(0, 10);
-
-        // Find target duty: prefer duty_number, else today's assigned active duty.
-        let q = supabaseAdmin.from("duties").select("id").eq("assigned_to", driver.id);
-        if (duty_number) q = q.eq("duty_number", String(duty_number));
-        else q = q.eq("duty_date", today);
-        const { data: duty } = await q.maybeSingle();
+        const now = new Date().toISOString();
+        const today = now.slice(0, 10);
 
         const live_status =
           event === "start" ? "on_route" :
@@ -35,18 +30,35 @@ export const Route = createFileRoute("/api/public/roblox/duty")({
           event === "end" ? "offline" :
           event === "break_start" ? "break" : "active";
 
-        if (duty?.id) {
-          await supabaseAdmin.from("duties").update({
-            live_status,
-            live_status_updated_at: new Date().toISOString(),
-            live_status_note: `Roblox: ${event}`,
-          }).eq("id", duty.id);
-        }
+        // Always update the lightweight driver_live row (no duty needed).
+        await supabaseAdmin.from("driver_live").upsert({
+          user_id: driver.id,
+          live_status,
+          live_status_note: `Roblox: ${event}`,
+          live_status_updated_at: now,
+          duty_number: duty_number ? String(duty_number) : null,
+        });
+
+        // Update presence regardless of duty allocation.
         await supabaseAdmin.from("driver_presence").upsert({
           user_id: driver.id,
           status: presence,
-          updated_at: new Date().toISOString(),
+          updated_at: now,
         });
+
+        // Best-effort: if a matching duty exists, mirror status there too.
+        let q = supabaseAdmin.from("duties").select("id").eq("assigned_to", driver.id);
+        if (duty_number) q = q.eq("duty_number", String(duty_number));
+        else q = q.eq("duty_date", today);
+        const { data: duty } = await q.maybeSingle();
+
+        if (duty?.id) {
+          await supabaseAdmin.from("duties").update({
+            live_status,
+            live_status_updated_at: now,
+            live_status_note: `Roblox: ${event}`,
+          }).eq("id", duty.id);
+        }
 
         return jsonResponse({ ok: true, duty_id: duty?.id ?? null, live_status, presence });
       },
