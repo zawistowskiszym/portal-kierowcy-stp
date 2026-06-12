@@ -20,6 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { sendIntro } from "@/lib/recruitment.functions";
 
 type Status = "new" | "reviewing" | "accepted" | "rejected";
 
