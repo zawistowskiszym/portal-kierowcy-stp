@@ -87,6 +87,17 @@ function VacationsPage() {
           <DialogContent>
             <DialogHeader><DialogTitle>Nowy wniosek urlopowy</DialogTitle></DialogHeader>
             <form onSubmit={onSubmit} className="space-y-3">
+              <div className="space-y-1">
+                <Label>Rodzaj urlopu</Label>
+                <Select value={form.leave_type} onValueChange={(v) => setForm({ ...form, leave_type: v as LeaveTypeValue })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {LEAVE_TYPES.map((t) => (
+                      <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <Label>Od</Label>
@@ -106,6 +117,7 @@ function VacationsPage() {
           </DialogContent>
         </Dialog>
       </div>
+
 
       <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
         <table className="w-full text-sm text-left">
