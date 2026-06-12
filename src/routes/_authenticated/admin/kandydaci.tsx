@@ -35,6 +35,8 @@ type Application = {
   status: Status;
   reviewer_notes: string | null;
   created_at: string;
+  intro_token: string | null;
+  intro_sent_at: string | null;
 };
 
 const STATUS_LABEL: Record<Status, string> = {
