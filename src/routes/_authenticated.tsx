@@ -36,6 +36,7 @@ function AuthedLayout() {
           </main>
           <BottomTabBar isAdmin={isAdmin} isDispatcher={isDispatcher} />
         </div>
+        {!loading && <PopupAnnouncements />}
       </div>
     </SidebarProvider>
   );
