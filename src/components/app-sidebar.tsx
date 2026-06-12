@@ -33,7 +33,7 @@ import {
 const driverItems = [
   { title: "Pulpit", url: "/pulpit", icon: LayoutDashboard },
   { title: "Mój grafik", url: "/grafik", icon: CalendarRange },
-  { title: "Wiadomości", url: "/wiadomosci", icon: Inbox },
+  { title: "Komunikacja", url: "/wiadomosci", icon: Radio },
   { title: "Dyspozycyjność", url: "/dyspozycyjnosc", icon: CalendarCheck2 },
   { title: "Urlopy", url: "/urlopy", icon: Plane },
   { title: "Moje statystyki", url: "/statystyki", icon: BarChart3 },
