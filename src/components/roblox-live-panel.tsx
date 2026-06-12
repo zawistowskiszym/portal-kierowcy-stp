@@ -48,16 +48,57 @@ export function RobloxLivePanel() {
   const liveActive = duty && (duty.live_status === "in_progress" || duty.live_status === "on_break");
   const isFresh = pos?.updated_at && Date.now() - new Date(pos.updated_at).getTime() < 60_000;
 
+  const qc = useQueryClient();
+  const spawnFn = useServerFn(requestVehicleSpawn);
+  const pendingSpawn = cmds.find(
+    (c) => c.type === "spawn_vehicle" && !c.acked_at,
+  );
+  const spawnMut = useMutation({
+    mutationFn: () => spawnFn(),
+    onSuccess: (res: any) => {
+      toast.success(
+        res?.reused
+          ? "Zlecenie już oczekuje w kolejce gry."
+          : "Wysłano zlecenie spawnu pojazdu. Pojazd pojawi się w grze w ciągu kilku sekund.",
+      );
+      qc.invalidateQueries({ queryKey: ["pulpit", "roblox-live"] });
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Nie udało się zlecić spawnu."),
+  });
+
+  const canSpawn = !!duty?.vehicle_label;
+
   return (
     <section className="col-span-12 bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-      <div className="bg-brand-accent px-4 py-3 flex justify-between items-center">
+      <div className="bg-brand-accent px-4 py-3 flex justify-between items-center gap-3 flex-wrap">
         <h2 className="font-bold uppercase tracking-wide text-xs text-brand-accent-foreground">
           Roblox — telemetria na żywo
         </h2>
-        <span className="flex items-center gap-2 text-[10px] text-brand-accent-foreground/90 font-mono">
-          <span className={`h-2 w-2 rounded-full ${isFresh ? "bg-emerald-400 animate-pulse" : "bg-muted-foreground/60"}`} />
-          {isFresh ? "LIVE" : "BRAK SYGNAŁU"}
-        </span>
+        <div className="flex items-center gap-3">
+          <Button
+            size="sm"
+            variant="secondary"
+            disabled={!canSpawn || spawnMut.isPending}
+            onClick={() => spawnMut.mutate()}
+            title={
+              canSpawn
+                ? "Wyślij do gry polecenie spawnu Twojego pojazdu"
+                : "Brak przypisanego pojazdu na dzisiejszą służbę"
+            }
+            className="h-7 gap-1.5"
+          >
+            {spawnMut.isPending ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Bus className="h-3.5 w-3.5" />
+            )}
+            {pendingSpawn ? "Spawn w kolejce…" : "Spawnuj pojazd w grze"}
+          </Button>
+          <span className="flex items-center gap-2 text-[10px] text-brand-accent-foreground/90 font-mono">
+            <span className={`h-2 w-2 rounded-full ${isFresh ? "bg-emerald-400 animate-pulse" : "bg-muted-foreground/60"}`} />
+            {isFresh ? "LIVE" : "BRAK SYGNAŁU"}
+          </span>
+        </div>
       </div>
 
       {isLoading ? (
