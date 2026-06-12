@@ -189,7 +189,7 @@ function IntroPage() {
 
       <footer className="border-t border-border/60">
         <div className="mx-auto max-w-3xl px-4 md:px-6 py-6 text-xs text-muted-foreground">
-          © STP — Skuszawyjickie Towarzystwo Przewozowe
+          © STP — Skuszawyjiński Transport Publiczny
         </div>
       </footer>
     </div>
