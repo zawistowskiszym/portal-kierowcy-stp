@@ -32,15 +32,13 @@ type Item = { title: string; url: string; icon: React.ComponentType<{ className?
 const driverPrimary: Item[] = [
   { title: "Pulpit", url: "/pulpit", icon: LayoutDashboard },
   { title: "Grafik", url: "/grafik", icon: CalendarRange },
-  { title: "Dyspo.", url: "/dyspozycyjnosc", icon: CalendarCheck2 },
+  { title: "Raporty", url: "/raporty", icon: FileBarChart },
   { title: "Ogłosz.", url: "/ogloszenia", icon: Megaphone },
 ];
 
 const driverMore: Item[] = [
   { title: "Urlopy", url: "/urlopy", icon: Plane },
-  { title: "Moje raporty", url: "/raporty", icon: FileBarChart },
-  { title: "Zgłoś zdarzenie", url: "/zdarzenie", icon: AlertTriangle },
-  { title: "Moje statystyki", url: "/statystyki", icon: BarChart3 },
+  { title: "Raporty i zdarzenia", url: "/raporty", icon: FileBarChart },
   { title: "Mój profil", url: "/profil", icon: UserCircle },
 ];
 
