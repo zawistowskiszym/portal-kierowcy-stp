@@ -33,6 +33,7 @@ import { Route as AuthenticatedAdminOgloszeniaRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminNieprzydzieloneRouteImport } from './routes/_authenticated/admin/nieprzydzielone'
 import { Route as AuthenticatedAdminMonitorRouteImport } from './routes/_authenticated/admin/monitor'
 import { Route as AuthenticatedAdminMapaRouteImport } from './routes/_authenticated/admin/mapa'
+import { Route as AuthenticatedAdminKomunikatyRouteImport } from './routes/_authenticated/admin/komunikaty'
 import { Route as AuthenticatedAdminKierowcyRouteImport } from './routes/_authenticated/admin/kierowcy'
 import { Route as AuthenticatedAdminIncydentyRouteImport } from './routes/_authenticated/admin/incydenty'
 import { Route as AuthenticatedAdminDziennikRouteImport } from './routes/_authenticated/admin/dziennik'
@@ -179,6 +180,12 @@ const AuthenticatedAdminMapaRoute = AuthenticatedAdminMapaRouteImport.update({
   path: '/mapa',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminKomunikatyRoute =
+  AuthenticatedAdminKomunikatyRouteImport.update({
+    id: '/komunikaty',
+    path: '/komunikaty',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminKierowcyRoute =
   AuthenticatedAdminKierowcyRouteImport.update({
     id: '/kierowcy',
@@ -293,6 +300,7 @@ export interface FileRoutesByFullPath {
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
   '/admin/kierowcy': typeof AuthenticatedAdminKierowcyRoute
+  '/admin/komunikaty': typeof AuthenticatedAdminKomunikatyRoute
   '/admin/mapa': typeof AuthenticatedAdminMapaRoute
   '/admin/monitor': typeof AuthenticatedAdminMonitorRoute
   '/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
@@ -335,6 +343,7 @@ export interface FileRoutesByTo {
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
   '/admin/kierowcy': typeof AuthenticatedAdminKierowcyRoute
+  '/admin/komunikaty': typeof AuthenticatedAdminKomunikatyRoute
   '/admin/mapa': typeof AuthenticatedAdminMapaRoute
   '/admin/monitor': typeof AuthenticatedAdminMonitorRoute
   '/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
@@ -379,6 +388,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/_authenticated/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
   '/_authenticated/admin/kierowcy': typeof AuthenticatedAdminKierowcyRoute
+  '/_authenticated/admin/komunikaty': typeof AuthenticatedAdminKomunikatyRoute
   '/_authenticated/admin/mapa': typeof AuthenticatedAdminMapaRoute
   '/_authenticated/admin/monitor': typeof AuthenticatedAdminMonitorRoute
   '/_authenticated/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
@@ -423,6 +433,7 @@ export interface FileRouteTypes {
     | '/admin/dziennik'
     | '/admin/incydenty'
     | '/admin/kierowcy'
+    | '/admin/komunikaty'
     | '/admin/mapa'
     | '/admin/monitor'
     | '/admin/nieprzydzielone'
@@ -465,6 +476,7 @@ export interface FileRouteTypes {
     | '/admin/dziennik'
     | '/admin/incydenty'
     | '/admin/kierowcy'
+    | '/admin/komunikaty'
     | '/admin/mapa'
     | '/admin/monitor'
     | '/admin/nieprzydzielone'
@@ -508,6 +520,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/dziennik'
     | '/_authenticated/admin/incydenty'
     | '/_authenticated/admin/kierowcy'
+    | '/_authenticated/admin/komunikaty'
     | '/_authenticated/admin/mapa'
     | '/_authenticated/admin/monitor'
     | '/_authenticated/admin/nieprzydzielone'
@@ -719,6 +732,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminMapaRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/komunikaty': {
+      id: '/_authenticated/admin/komunikaty'
+      path: '/komunikaty'
+      fullPath: '/admin/komunikaty'
+      preLoaderRoute: typeof AuthenticatedAdminKomunikatyRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/kierowcy': {
       id: '/_authenticated/admin/kierowcy'
       path: '/kierowcy'
@@ -846,6 +866,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminDziennikRoute: typeof AuthenticatedAdminDziennikRoute
   AuthenticatedAdminIncydentyRoute: typeof AuthenticatedAdminIncydentyRoute
   AuthenticatedAdminKierowcyRoute: typeof AuthenticatedAdminKierowcyRoute
+  AuthenticatedAdminKomunikatyRoute: typeof AuthenticatedAdminKomunikatyRoute
   AuthenticatedAdminMapaRoute: typeof AuthenticatedAdminMapaRoute
   AuthenticatedAdminMonitorRoute: typeof AuthenticatedAdminMonitorRoute
   AuthenticatedAdminNieprzydzieloneRoute: typeof AuthenticatedAdminNieprzydzieloneRoute
@@ -862,6 +883,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminDziennikRoute: AuthenticatedAdminDziennikRoute,
   AuthenticatedAdminIncydentyRoute: AuthenticatedAdminIncydentyRoute,
   AuthenticatedAdminKierowcyRoute: AuthenticatedAdminKierowcyRoute,
+  AuthenticatedAdminKomunikatyRoute: AuthenticatedAdminKomunikatyRoute,
   AuthenticatedAdminMapaRoute: AuthenticatedAdminMapaRoute,
   AuthenticatedAdminMonitorRoute: AuthenticatedAdminMonitorRoute,
   AuthenticatedAdminNieprzydzieloneRoute:
