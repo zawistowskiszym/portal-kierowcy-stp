@@ -55,6 +55,7 @@ const dispatcherMore: Item[] = [
 
 const adminOnlyMore: Item[] = [
   { title: "Kandydaci", url: "/admin/kandydaci", icon: UserPlus },
+  { title: "Quizy kandydatów", url: "/admin/quizy", icon: ClipboardList },
   { title: "Użytkownicy", url: "/admin/uzytkownicy", icon: Users },
 ];
 
