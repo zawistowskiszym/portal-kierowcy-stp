@@ -64,8 +64,36 @@ export const createPopupAnnouncement = createServerFn({ method: "POST" })
       .select("id")
       .single();
     if (error) throw new Error(error.message);
+
+    // Email everyone who opted in
+    try {
+      const { notifyByEmail, lookupAllNotifiableEmails } = await import(
+        "@/lib/email/notify.server"
+      );
+      const recipients = await lookupAllNotifiableEmails();
+      await Promise.all(
+        recipients.map((r) =>
+          notifyByEmail({
+            templateName: "new-announcement",
+            recipientEmail: r.email,
+            idempotencyKey: `popup-${row.id}-${r.id}`,
+            templateData: {
+              recipientName: r.full_name?.split(" ")[0] ?? null,
+              title: data.title,
+              body: data.body,
+              severity: data.severity,
+              appUrl: "https://panel.skuszawyjice.eu",
+            },
+          }),
+        ),
+      );
+    } catch (e) {
+      console.error("notify popup-announcement failed", e);
+    }
+
     return { ok: true, id: row.id };
   });
+
 
 export const archivePopupAnnouncement = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
