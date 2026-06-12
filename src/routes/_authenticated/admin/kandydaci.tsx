@@ -289,10 +289,31 @@ function AdminCandidatesPage() {
                   onChange={(e) => setNotes(e.target.value)}
                 />
               </div>
+
+              <div className="rounded-lg border border-border/60 bg-muted/20 p-3 text-xs space-y-1">
+                <div className="font-medium text-foreground">Wprowadzenie</div>
+                <div className="text-muted-foreground">
+                  {selected.intro_sent_at
+                    ? `Wysłano: ${new Date(selected.intro_sent_at).toLocaleString("pl-PL")}`
+                    : "Jeszcze nie wysłano."}
+                </div>
+                {selected.intro_token && (
+                  <div className="text-muted-foreground break-all">
+                    Link: /wprowadzenie/{selected.intro_token}
+                  </div>
+                )}
+              </div>
             </div>
           )}
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 flex-wrap">
             <Button variant="destructive" onClick={remove}>Usuń</Button>
+            <Button variant="secondary" onClick={sendIntroEmail} disabled={sendingIntro}>
+              {sendingIntro
+                ? "Wysyłanie..."
+                : selected?.intro_sent_at
+                  ? "Wyślij wprowadzenie ponownie"
+                  : "Wyślij wprowadzenie"}
+            </Button>
             <Button variant="outline" onClick={() => setSelected(null)}>Anuluj</Button>
             <Button onClick={save} disabled={saving}>
               {saving ? "Zapisywanie..." : "Zapisz"}
