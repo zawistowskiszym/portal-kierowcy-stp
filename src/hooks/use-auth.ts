@@ -10,6 +10,7 @@ export interface AuthProfile {
   employee_id: string | null;
   depot: string | null;
   active: boolean;
+  avatar_url?: string | null;
 }
 
 interface AuthState {
