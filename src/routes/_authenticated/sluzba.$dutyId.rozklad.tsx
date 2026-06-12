@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, CalendarDays, MapPin, ArrowRight, Clock, Bus } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, CalendarDays, MapPin, ArrowRight, Clock, Bus, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LINE_PRESETS, parseRouteLines, buildSchedule, getLinePreset } from "@/lib/line-presets";
@@ -95,22 +96,17 @@ function RozkladPage() {
                 const line = lineById.get(t.line_id);
                 const from = line ? (t.direction === "AB" ? line.terminus_a : line.terminus_b) : "?";
                 const to = line ? (t.direction === "AB" ? line.terminus_b : line.terminus_a) : "?";
+                const stops = (data?.stopsByLine?.[t.line_id]?.[t.direction as "AB" | "BA"] ?? []) as { name: string; travel_time_to_next_min: number }[];
                 return (
-                  <li key={t.id} className="flex items-center gap-3 px-3 py-2 text-sm">
-                    <span className="inline-flex items-center justify-center min-w-10 px-2 h-6 rounded-md bg-brand text-brand-foreground font-bold text-xs">
-                      {t.line_number}
-                    </span>
-                    <span className="font-mono text-muted-foreground w-12 tabular-nums">
-                      {String(t.departure_time).slice(0, 5)}
-                    </span>
-                    <span className="truncate flex-1">{from}</span>
-                    <ArrowRight className="size-3.5 text-muted-foreground shrink-0" />
-                    <span className="truncate flex-1">{to}</span>
-                    <span className="font-mono text-muted-foreground w-12 tabular-nums text-right hidden sm:inline">
-                      {String(t.arrival_time).slice(0, 5)}
-                    </span>
-                    <Clock className="size-3.5 text-muted-foreground hidden sm:inline" />
-                  </li>
+                  <TripRow
+                    key={t.id}
+                    lineNumber={t.line_number}
+                    departure={String(t.departure_time).slice(0, 5)}
+                    arrival={String(t.arrival_time).slice(0, 5)}
+                    from={from}
+                    to={to}
+                    stops={stops}
+                  />
                 );
               })}
             </ol>
@@ -177,5 +173,57 @@ function RozkladPage() {
         )}
       </div>
     </div>
+  );
+}
+
+function TripRow({
+  lineNumber, departure, arrival, from, to, stops,
+}: {
+  lineNumber: string; departure: string; arrival: string;
+  from: string; to: string;
+  stops: { name: string; travel_time_to_next_min: number }[];
+}) {
+  const [open, setOpen] = useState(false);
+  const [h, m] = departure.split(":").map(Number);
+  let cursor = h * 60 + (m || 0);
+  const timed = stops.map((s, i) => {
+    const time = `${String(Math.floor(cursor / 60) % 24).padStart(2, "0")}:${String(cursor % 60).padStart(2, "0")}`;
+    if (i < stops.length - 1) cursor += s.travel_time_to_next_min || 0;
+    return { ...s, time };
+  });
+  const hasStops = stops.length > 0;
+  return (
+    <li className="text-sm">
+      <button
+        type="button"
+        onClick={() => hasStops && setOpen((o) => !o)}
+        className={`w-full flex items-center gap-3 px-3 py-2 text-left ${hasStops ? "hover:bg-muted/50" : "cursor-default"}`}
+      >
+        {hasStops ? (
+          open ? <ChevronDown className="size-3.5 text-muted-foreground shrink-0" />
+               : <ChevronRight className="size-3.5 text-muted-foreground shrink-0" />
+        ) : <span className="w-3.5 shrink-0" />}
+        <span className="inline-flex items-center justify-center min-w-10 px-2 h-6 rounded-md bg-brand text-brand-foreground font-bold text-xs">
+          {lineNumber}
+        </span>
+        <span className="font-mono text-muted-foreground w-12 tabular-nums">{departure}</span>
+        <span className="truncate flex-1">{from}</span>
+        <ArrowRight className="size-3.5 text-muted-foreground shrink-0" />
+        <span className="truncate flex-1">{to}</span>
+        <span className="font-mono text-muted-foreground w-12 tabular-nums text-right hidden sm:inline">{arrival}</span>
+        <Clock className="size-3.5 text-muted-foreground hidden sm:inline" />
+      </button>
+      {open && hasStops && (
+        <ol className="bg-muted/30 border-t border-border divide-y divide-border/50">
+          {timed.map((s, i) => (
+            <li key={i} className="flex items-center gap-3 pl-12 pr-3 py-1.5 text-xs">
+              <span className="font-mono text-muted-foreground w-12 tabular-nums">{s.time}</span>
+              <MapPin className="size-3 text-brand shrink-0" />
+              <span className="truncate">{s.name}</span>
+            </li>
+          ))}
+        </ol>
+      )}
+    </li>
   );
 }

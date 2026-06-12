@@ -52,10 +52,17 @@ function BlocksPage() {
   const [from, setFrom] = useState(today);
   const [to, setTo] = useState(next30);
   const [replace, setReplace] = useState(false);
+  const [maxDutyMin, setMaxDutyMin] = useState(480);
+  const [splitBreakMin, setSplitBreakMin] = useState(30);
 
   const genDuties = useMutation({
-    mutationFn: () => genDutiesFn({ data: { day_type: dayType, date_from: from, date_to: to, replace_existing: replace } }),
-    onSuccess: (r: any) => toast.success(`Utworzono ${r.inserted} służb`),
+    mutationFn: () => genDutiesFn({ data: {
+      day_type: dayType, date_from: from, date_to: to,
+      replace_existing: replace,
+      max_duty_minutes: maxDutyMin,
+      split_break_minutes: splitBreakMin,
+    } }),
+    onSuccess: (r: any) => toast.success(`Utworzono ${r.inserted} służb${r.max_parts_per_block > 1 ? ` (do ${r.max_parts_per_block} części/brygada)` : ""}`),
     onError: (e: any) => toast.error(e.message),
   });
 
@@ -95,6 +102,14 @@ function BlocksPage() {
         <div className="flex flex-wrap items-end gap-3">
           <div><Label className="text-xs">Od</Label><Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></div>
           <div><Label className="text-xs">Do</Label><Input type="date" value={to} onChange={(e) => setTo(e.target.value)} /></div>
+          <div>
+            <Label className="text-xs">Maks. czas służby (min)</Label>
+            <Input type="number" min={60} max={900} className="w-28" value={maxDutyMin} onChange={(e) => setMaxDutyMin(Number(e.target.value))} />
+          </div>
+          <div>
+            <Label className="text-xs">Przerwa między częściami (min)</Label>
+            <Input type="number" min={0} max={180} className="w-28" value={splitBreakMin} onChange={(e) => setSplitBreakMin(Number(e.target.value))} />
+          </div>
           <label className="flex items-center gap-2 pb-2">
             <Switch checked={replace} onCheckedChange={setReplace} />
             <span className="text-xs">Zastąp istniejące w zakresie</span>
@@ -104,7 +119,7 @@ function BlocksPage() {
           </Button>
         </div>
         <p className="text-xs text-muted-foreground">
-          Tworzy rekordy w tabeli służb (route=numer/numery linii, duty_number=numer brygady) dla wszystkich dni w zakresie pasujących do typu dnia.
+          Brygady dłuższe niż maksymalny czas służby zostaną podzielone na części (1a, 1b…) z zachowaniem przerwy między nimi, żeby jeden kierowca nie pracował całego dnia.
         </p>
       </div>
 
