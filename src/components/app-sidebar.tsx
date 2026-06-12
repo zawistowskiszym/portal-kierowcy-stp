@@ -98,6 +98,32 @@ export function AppSidebar({ isAdmin, isDispatcher }: { isAdmin: boolean; isDisp
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {showDispatcher && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-muted-foreground text-[10px] uppercase tracking-widest">
+              Dyspozytor
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {dispatcherItems.map((item) => (
+                  <SidebarMenuItem key={item.url}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive(item.url)}
+                      className="rounded-xl data-[active=true]:bg-primary/12 data-[active=true]:text-primary data-[active=true]:font-semibold hover:bg-glass text-foreground/70 hover:text-foreground"
+                    >
+                      <Link to={item.url}>
+                        <item.icon className="size-4" />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
         {isAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel className="text-muted-foreground text-[10px] uppercase tracking-widest">
@@ -105,7 +131,7 @@ export function AppSidebar({ isAdmin, isDispatcher }: { isAdmin: boolean; isDisp
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {adminItems.map((item) => (
+                {adminOnlyItems.map((item) => (
                   <SidebarMenuItem key={item.url}>
                     <SidebarMenuButton
                       asChild
