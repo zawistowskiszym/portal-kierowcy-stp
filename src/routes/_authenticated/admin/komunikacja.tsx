@@ -36,6 +36,7 @@ function CommsPage() {
 
   const { data: sent } = useQuery({ queryKey: ["msgs", "sent"], queryFn: () => listFn() });
   const { data: drivers } = useQuery({ queryKey: ["all-drivers"], queryFn: () => driversFn() });
+  const { data: inbox } = useQuery({ queryKey: ["msgs", "inbox"], queryFn: () => inboxFn(), refetchInterval: 30000 });
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
