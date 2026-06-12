@@ -22,7 +22,7 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
-import { sendIntro } from "@/lib/recruitment.functions";
+import { sendIntro, decideQuizAttempt } from "@/lib/recruitment.functions";
 
 type Status = "new" | "reviewing" | "accepted" | "rejected";
 
@@ -364,6 +364,8 @@ function QuizzesSection() {
   const [selected, setSelected] = useState<Attempt | null>(null);
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
+  const [deciding, setDeciding] = useState<"approved" | "declined" | null>(null);
+  const decideFn = useServerFn(decideQuizAttempt);
 
   const { data } = useQuery({
     queryKey: ["admin", "quiz-attempts", filter],
