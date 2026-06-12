@@ -726,6 +726,71 @@ export type Database = {
           },
         ]
       }
+      popup_announcement_reads: {
+        Row: {
+          announcement_id: string
+          read_at: string
+          user_id: string
+        }
+        Insert: {
+          announcement_id: string
+          read_at?: string
+          user_id: string
+        }
+        Update: {
+          announcement_id?: string
+          read_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "popup_announcement_reads_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "popup_announcements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      popup_announcements: {
+        Row: {
+          archived: boolean
+          archived_at: string | null
+          archived_by: string | null
+          author_id: string | null
+          body: string
+          created_at: string
+          id: string
+          severity: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          archived?: boolean
+          archived_at?: string | null
+          archived_by?: string | null
+          author_id?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          severity?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          archived?: boolean
+          archived_at?: string | null
+          archived_by?: string | null
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          severity?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           active: boolean
