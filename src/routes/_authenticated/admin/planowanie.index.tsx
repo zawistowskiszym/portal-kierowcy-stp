@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { planningDashboard } from "@/lib/planning.functions";
-import { Route2, ClipboardList, Truck, Users } from "lucide-react";
+import { Waypoints, ClipboardList, Truck, Users } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/planowanie/")({
   component: Dashboard,
@@ -58,7 +58,7 @@ function Dashboard() {
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat icon={Route2} label="Linie" value={lines.length} />
+        <Stat icon={Waypoints} label="Linie" value={lines.length} />
         <Stat icon={ClipboardList} label="Rozkłady" value={tts.length} />
         <Stat icon={Truck} label="Aktywne brygady" value={blocks.length} />
         <Stat icon={Users} label="Pojazdy potrzebne" value={blocks.length} />

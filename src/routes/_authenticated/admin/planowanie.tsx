@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { Route2, ClipboardList, Truck, LayoutDashboard } from "lucide-react";
+import { Waypoints, ClipboardList, Truck, LayoutDashboard } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/planowanie")({
   head: () => ({ meta: [{ title: "Planowanie sieci — STP" }] }),
@@ -8,7 +8,7 @@ export const Route = createFileRoute("/_authenticated/admin/planowanie")({
 
 const tabs = [
   { to: "/admin/planowanie", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/admin/planowanie/linie", label: "Linie", icon: Route2 },
+  { to: "/admin/planowanie/linie", label: "Linie", icon: Waypoints },
   { to: "/admin/planowanie/rozklady", label: "Rozkłady", icon: ClipboardList },
   { to: "/admin/planowanie/brygady", label: "Brygady i duty", icon: Truck },
 ];
