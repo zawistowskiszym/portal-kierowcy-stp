@@ -650,7 +650,7 @@ export const sendDriverMessage = createServerFn({ method: "POST" })
     if (rErr) throw new Error(rErr.message);
     const recipientIds = [...new Set((roles ?? []).map((r: any) => r.user_id as string))];
 
-    const { data: msg, error } = await context.supabase
+    const { error } = await context.supabase
       .from("internal_messages")
       .insert({
         id: messageId,
@@ -660,8 +660,7 @@ export const sendDriverMessage = createServerFn({ method: "POST" })
         body: data.body,
         audience_kind: "dispatchers" as any,
         audience: [],
-      })
-      .select("id", { head: false, count: "exact" });
+      });
     if (error) throw new Error(error.message);
 
     if (recipientIds.length > 0) {
