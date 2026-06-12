@@ -4,7 +4,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { AppHeader } from "@/components/app-header";
 import { BottomTabBar } from "@/components/bottom-tab-bar";
 import { useAuth } from "@/hooks/use-auth";
-import { PopupAnnouncements } from "@/components/popup-announcements";
+import { PopupAnnouncements, PopupAnnouncementsBanner } from "@/components/popup-announcements";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
