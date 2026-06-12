@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ChatPopover } from "@/components/chat-popover";
 import { NotificationBell } from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { HelpDialog } from "@/components/help-dialog";
 import { signedAvatarUrl } from "@/lib/avatar";
 import type { AuthProfile } from "@/hooks/use-auth";
 
@@ -71,6 +72,7 @@ export function AppHeader({
 
         <div className="flex items-center gap-1 md:gap-2">
           <ThemeToggle />
+          <HelpDialog />
           <ChatPopover />
           <NotificationBell />
           <div className="text-right hidden lg:block px-2">
