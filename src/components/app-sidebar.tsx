@@ -49,11 +49,8 @@ const dispatcherItems = [
   { title: "Komunikaty pop-up", url: "/admin/komunikaty", icon: AlertTriangle },
 ];
 
-const dispatcherItemsExtra = [
-  { title: "Kandydaci", url: "/admin/kandydaci", icon: UserPlus },
-];
-
 const adminOnlyItems = [
+  { title: "Kandydaci", url: "/admin/kandydaci", icon: UserPlus },
   { title: "Użytkownicy", url: "/admin/uzytkownicy", icon: Users },
 ];
 
@@ -108,7 +105,7 @@ export function AppSidebar({ isAdmin, isDispatcher }: { isAdmin: boolean; isDisp
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {[...dispatcherItems, ...dispatcherItemsExtra].map((item) => (
+                {dispatcherItems.map((item) => (
                   <SidebarMenuItem key={item.url}>
                     <SidebarMenuButton
                       asChild

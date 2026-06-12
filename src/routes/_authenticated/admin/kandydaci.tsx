@@ -59,7 +59,7 @@ export const Route = createFileRoute("/_authenticated/admin/kandydaci")({
       .select("role")
       .eq("user_id", u.user.id);
     const allowed = (roles ?? []).some(
-      (r: any) => r.role === "admin" || r.role === "dyspozytor",
+      (r: any) => r.role === "admin",
     );
     if (!allowed) throw redirect({ to: "/pulpit" });
   },
