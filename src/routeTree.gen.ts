@@ -32,6 +32,7 @@ import { Route as AuthenticatedAdminUrlopyRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdminSluzbyRouteImport } from './routes/_authenticated/admin/sluzby'
 import { Route as AuthenticatedAdminRaportyRouteImport } from './routes/_authenticated/admin/raporty'
 import { Route as AuthenticatedAdminPojazdyRouteImport } from './routes/_authenticated/admin/pojazdy'
+import { Route as AuthenticatedAdminPlanowanieRouteImport } from './routes/_authenticated/admin/planowanie'
 import { Route as AuthenticatedAdminOgloszeniaRouteImport } from './routes/_authenticated/admin/ogloszenia'
 import { Route as AuthenticatedAdminNieprzydzieloneRouteImport } from './routes/_authenticated/admin/nieprzydzielone'
 import { Route as AuthenticatedAdminMonitorRouteImport } from './routes/_authenticated/admin/monitor'
@@ -41,6 +42,7 @@ import { Route as AuthenticatedAdminKierowcyRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminIncydentyRouteImport } from './routes/_authenticated/admin/incydenty'
 import { Route as AuthenticatedAdminDziennikRouteImport } from './routes/_authenticated/admin/dziennik'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
+import { Route as AuthenticatedAdminPlanowanieIndexRouteImport } from './routes/_authenticated/admin/planowanie.index'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -56,6 +58,9 @@ import { Route as AuthenticatedSluzbaDutyIdZdarzenieRouteImport } from './routes
 import { Route as AuthenticatedSluzbaDutyIdRozkladRouteImport } from './routes/_authenticated/sluzba.$dutyId.rozklad'
 import { Route as AuthenticatedSluzbaDutyIdRaportRouteImport } from './routes/_authenticated/sluzba.$dutyId.raport'
 import { Route as AuthenticatedSluzbaDutyIdMapaRouteImport } from './routes/_authenticated/sluzba.$dutyId.mapa'
+import { Route as AuthenticatedAdminPlanowanieRozkladyRouteImport } from './routes/_authenticated/admin/planowanie.rozklady'
+import { Route as AuthenticatedAdminPlanowanieLinieRouteImport } from './routes/_authenticated/admin/planowanie.linie'
+import { Route as AuthenticatedAdminPlanowanieBrygadyRouteImport } from './routes/_authenticated/admin/planowanie.brygady'
 
 const ZaproszenieRoute = ZaproszenieRouteImport.update({
   id: '/zaproszenie',
@@ -177,6 +182,12 @@ const AuthenticatedAdminPojazdyRoute =
     path: '/pojazdy',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminPlanowanieRoute =
+  AuthenticatedAdminPlanowanieRouteImport.update({
+    id: '/planowanie',
+    path: '/planowanie',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminOgloszeniaRoute =
   AuthenticatedAdminOgloszeniaRouteImport.update({
     id: '/ogloszenia',
@@ -229,6 +240,12 @@ const AuthenticatedAdminDashboardRoute =
     id: '/dashboard',
     path: '/dashboard',
     getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminPlanowanieIndexRoute =
+  AuthenticatedAdminPlanowanieIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAdminPlanowanieRoute,
   } as any)
 const LovableEmailTransactionalSendRoute =
   LovableEmailTransactionalSendRouteImport.update({
@@ -312,6 +329,24 @@ const AuthenticatedSluzbaDutyIdMapaRoute =
     path: '/sluzba/$dutyId/mapa',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedAdminPlanowanieRozkladyRoute =
+  AuthenticatedAdminPlanowanieRozkladyRouteImport.update({
+    id: '/rozklady',
+    path: '/rozklady',
+    getParentRoute: () => AuthenticatedAdminPlanowanieRoute,
+  } as any)
+const AuthenticatedAdminPlanowanieLinieRoute =
+  AuthenticatedAdminPlanowanieLinieRouteImport.update({
+    id: '/linie',
+    path: '/linie',
+    getParentRoute: () => AuthenticatedAdminPlanowanieRoute,
+  } as any)
+const AuthenticatedAdminPlanowanieBrygadyRoute =
+  AuthenticatedAdminPlanowanieBrygadyRouteImport.update({
+    id: '/brygady',
+    path: '/brygady',
+    getParentRoute: () => AuthenticatedAdminPlanowanieRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -339,12 +374,16 @@ export interface FileRoutesByFullPath {
   '/admin/monitor': typeof AuthenticatedAdminMonitorRoute
   '/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
+  '/admin/planowanie': typeof AuthenticatedAdminPlanowanieRouteWithChildren
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/admin/raporty': typeof AuthenticatedAdminRaportyRoute
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
   '/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/admin/planowanie/brygady': typeof AuthenticatedAdminPlanowanieBrygadyRoute
+  '/admin/planowanie/linie': typeof AuthenticatedAdminPlanowanieLinieRoute
+  '/admin/planowanie/rozklady': typeof AuthenticatedAdminPlanowanieRozkladyRoute
   '/sluzba/$dutyId/mapa': typeof AuthenticatedSluzbaDutyIdMapaRoute
   '/sluzba/$dutyId/raport': typeof AuthenticatedSluzbaDutyIdRaportRoute
   '/sluzba/$dutyId/rozklad': typeof AuthenticatedSluzbaDutyIdRozkladRoute
@@ -360,6 +399,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/admin/planowanie/': typeof AuthenticatedAdminPlanowanieIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -393,6 +433,9 @@ export interface FileRoutesByTo {
   '/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/admin/planowanie/brygady': typeof AuthenticatedAdminPlanowanieBrygadyRoute
+  '/admin/planowanie/linie': typeof AuthenticatedAdminPlanowanieLinieRoute
+  '/admin/planowanie/rozklady': typeof AuthenticatedAdminPlanowanieRozkladyRoute
   '/sluzba/$dutyId/mapa': typeof AuthenticatedSluzbaDutyIdMapaRoute
   '/sluzba/$dutyId/raport': typeof AuthenticatedSluzbaDutyIdRaportRoute
   '/sluzba/$dutyId/rozklad': typeof AuthenticatedSluzbaDutyIdRozkladRoute
@@ -408,6 +451,7 @@ export interface FileRoutesByTo {
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/admin/planowanie': typeof AuthenticatedAdminPlanowanieIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -437,12 +481,16 @@ export interface FileRoutesById {
   '/_authenticated/admin/monitor': typeof AuthenticatedAdminMonitorRoute
   '/_authenticated/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
   '/_authenticated/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
+  '/_authenticated/admin/planowanie': typeof AuthenticatedAdminPlanowanieRouteWithChildren
   '/_authenticated/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
   '/_authenticated/admin/raporty': typeof AuthenticatedAdminRaportyRoute
   '/_authenticated/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
   '/_authenticated/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/_authenticated/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/_authenticated/admin/planowanie/brygady': typeof AuthenticatedAdminPlanowanieBrygadyRoute
+  '/_authenticated/admin/planowanie/linie': typeof AuthenticatedAdminPlanowanieLinieRoute
+  '/_authenticated/admin/planowanie/rozklady': typeof AuthenticatedAdminPlanowanieRozkladyRoute
   '/_authenticated/sluzba/$dutyId/mapa': typeof AuthenticatedSluzbaDutyIdMapaRoute
   '/_authenticated/sluzba/$dutyId/raport': typeof AuthenticatedSluzbaDutyIdRaportRoute
   '/_authenticated/sluzba/$dutyId/rozklad': typeof AuthenticatedSluzbaDutyIdRozkladRoute
@@ -458,6 +506,7 @@ export interface FileRoutesById {
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
+  '/_authenticated/admin/planowanie/': typeof AuthenticatedAdminPlanowanieIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -487,12 +536,16 @@ export interface FileRouteTypes {
     | '/admin/monitor'
     | '/admin/nieprzydzielone'
     | '/admin/ogloszenia'
+    | '/admin/planowanie'
     | '/admin/pojazdy'
     | '/admin/raporty'
     | '/admin/sluzby'
     | '/admin/urlopy'
     | '/admin/uzytkownicy'
     | '/lovable/email/suppression'
+    | '/admin/planowanie/brygady'
+    | '/admin/planowanie/linie'
+    | '/admin/planowanie/rozklady'
     | '/sluzba/$dutyId/mapa'
     | '/sluzba/$dutyId/raport'
     | '/sluzba/$dutyId/rozklad'
@@ -508,6 +561,7 @@ export interface FileRouteTypes {
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
+    | '/admin/planowanie/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -541,6 +595,9 @@ export interface FileRouteTypes {
     | '/admin/urlopy'
     | '/admin/uzytkownicy'
     | '/lovable/email/suppression'
+    | '/admin/planowanie/brygady'
+    | '/admin/planowanie/linie'
+    | '/admin/planowanie/rozklady'
     | '/sluzba/$dutyId/mapa'
     | '/sluzba/$dutyId/raport'
     | '/sluzba/$dutyId/rozklad'
@@ -556,6 +613,7 @@ export interface FileRouteTypes {
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
+    | '/admin/planowanie'
   id:
     | '__root__'
     | '/'
@@ -584,12 +642,16 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/monitor'
     | '/_authenticated/admin/nieprzydzielone'
     | '/_authenticated/admin/ogloszenia'
+    | '/_authenticated/admin/planowanie'
     | '/_authenticated/admin/pojazdy'
     | '/_authenticated/admin/raporty'
     | '/_authenticated/admin/sluzby'
     | '/_authenticated/admin/urlopy'
     | '/_authenticated/admin/uzytkownicy'
     | '/lovable/email/suppression'
+    | '/_authenticated/admin/planowanie/brygady'
+    | '/_authenticated/admin/planowanie/linie'
+    | '/_authenticated/admin/planowanie/rozklady'
     | '/_authenticated/sluzba/$dutyId/mapa'
     | '/_authenticated/sluzba/$dutyId/raport'
     | '/_authenticated/sluzba/$dutyId/rozklad'
@@ -605,6 +667,7 @@ export interface FileRouteTypes {
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
+    | '/_authenticated/admin/planowanie/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -792,6 +855,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminPojazdyRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/planowanie': {
+      id: '/_authenticated/admin/planowanie'
+      path: '/planowanie'
+      fullPath: '/admin/planowanie'
+      preLoaderRoute: typeof AuthenticatedAdminPlanowanieRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/ogloszenia': {
       id: '/_authenticated/admin/ogloszenia'
       path: '/ogloszenia'
@@ -854,6 +924,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/dashboard'
       preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/planowanie/': {
+      id: '/_authenticated/admin/planowanie/'
+      path: '/'
+      fullPath: '/admin/planowanie/'
+      preLoaderRoute: typeof AuthenticatedAdminPlanowanieIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminPlanowanieRoute
     }
     '/lovable/email/transactional/send': {
       id: '/lovable/email/transactional/send'
@@ -960,8 +1037,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSluzbaDutyIdMapaRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/planowanie/rozklady': {
+      id: '/_authenticated/admin/planowanie/rozklady'
+      path: '/rozklady'
+      fullPath: '/admin/planowanie/rozklady'
+      preLoaderRoute: typeof AuthenticatedAdminPlanowanieRozkladyRouteImport
+      parentRoute: typeof AuthenticatedAdminPlanowanieRoute
+    }
+    '/_authenticated/admin/planowanie/linie': {
+      id: '/_authenticated/admin/planowanie/linie'
+      path: '/linie'
+      fullPath: '/admin/planowanie/linie'
+      preLoaderRoute: typeof AuthenticatedAdminPlanowanieLinieRouteImport
+      parentRoute: typeof AuthenticatedAdminPlanowanieRoute
+    }
+    '/_authenticated/admin/planowanie/brygady': {
+      id: '/_authenticated/admin/planowanie/brygady'
+      path: '/brygady'
+      fullPath: '/admin/planowanie/brygady'
+      preLoaderRoute: typeof AuthenticatedAdminPlanowanieBrygadyRouteImport
+      parentRoute: typeof AuthenticatedAdminPlanowanieRoute
+    }
   }
 }
+
+interface AuthenticatedAdminPlanowanieRouteChildren {
+  AuthenticatedAdminPlanowanieBrygadyRoute: typeof AuthenticatedAdminPlanowanieBrygadyRoute
+  AuthenticatedAdminPlanowanieLinieRoute: typeof AuthenticatedAdminPlanowanieLinieRoute
+  AuthenticatedAdminPlanowanieRozkladyRoute: typeof AuthenticatedAdminPlanowanieRozkladyRoute
+  AuthenticatedAdminPlanowanieIndexRoute: typeof AuthenticatedAdminPlanowanieIndexRoute
+}
+
+const AuthenticatedAdminPlanowanieRouteChildren: AuthenticatedAdminPlanowanieRouteChildren =
+  {
+    AuthenticatedAdminPlanowanieBrygadyRoute:
+      AuthenticatedAdminPlanowanieBrygadyRoute,
+    AuthenticatedAdminPlanowanieLinieRoute:
+      AuthenticatedAdminPlanowanieLinieRoute,
+    AuthenticatedAdminPlanowanieRozkladyRoute:
+      AuthenticatedAdminPlanowanieRozkladyRoute,
+    AuthenticatedAdminPlanowanieIndexRoute:
+      AuthenticatedAdminPlanowanieIndexRoute,
+  }
+
+const AuthenticatedAdminPlanowanieRouteWithChildren =
+  AuthenticatedAdminPlanowanieRoute._addFileChildren(
+    AuthenticatedAdminPlanowanieRouteChildren,
+  )
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
@@ -973,6 +1095,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminMonitorRoute: typeof AuthenticatedAdminMonitorRoute
   AuthenticatedAdminNieprzydzieloneRoute: typeof AuthenticatedAdminNieprzydzieloneRoute
   AuthenticatedAdminOgloszeniaRoute: typeof AuthenticatedAdminOgloszeniaRoute
+  AuthenticatedAdminPlanowanieRoute: typeof AuthenticatedAdminPlanowanieRouteWithChildren
   AuthenticatedAdminPojazdyRoute: typeof AuthenticatedAdminPojazdyRoute
   AuthenticatedAdminRaportyRoute: typeof AuthenticatedAdminRaportyRoute
   AuthenticatedAdminSluzbyRoute: typeof AuthenticatedAdminSluzbyRoute
@@ -991,6 +1114,8 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminNieprzydzieloneRoute:
     AuthenticatedAdminNieprzydzieloneRoute,
   AuthenticatedAdminOgloszeniaRoute: AuthenticatedAdminOgloszeniaRoute,
+  AuthenticatedAdminPlanowanieRoute:
+    AuthenticatedAdminPlanowanieRouteWithChildren,
   AuthenticatedAdminPojazdyRoute: AuthenticatedAdminPojazdyRoute,
   AuthenticatedAdminRaportyRoute: AuthenticatedAdminRaportyRoute,
   AuthenticatedAdminSluzbyRoute: AuthenticatedAdminSluzbyRoute,

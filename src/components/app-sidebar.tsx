@@ -15,6 +15,7 @@ import {
   Map as MapIcon,
   Gauge,
   UserCircle,
+  Network,
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,6 +39,7 @@ const driverItems = [
 
 const dispatcherItems = [
   { title: "Pulpit dyspozytora", url: "/admin/dashboard", icon: Gauge },
+  { title: "Planowanie sieci", url: "/admin/planowanie", icon: Network },
   { title: "Kierowcy i tabor", url: "/admin/kierowcy", icon: Users },
   { title: "Planowanie służb", url: "/admin/sluzby", icon: ClipboardList },
   { title: "Mapa operacyjna", url: "/admin/mapa", icon: MapIcon },

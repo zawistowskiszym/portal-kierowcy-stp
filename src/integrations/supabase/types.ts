@@ -653,6 +653,208 @@ export type Database = {
         }
         Relationships: []
       }
+      line_frequency_windows: {
+        Row: {
+          created_at: string
+          end_time: string
+          headway_min: number
+          id: string
+          start_time: string
+          timetable_id: string
+        }
+        Insert: {
+          created_at?: string
+          end_time: string
+          headway_min: number
+          id?: string
+          start_time: string
+          timetable_id: string
+        }
+        Update: {
+          created_at?: string
+          end_time?: string
+          headway_min?: number
+          id?: string
+          start_time?: string
+          timetable_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "line_frequency_windows_timetable_id_fkey"
+            columns: ["timetable_id"]
+            isOneToOne: false
+            referencedRelation: "line_timetables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      line_interline_pairs: {
+        Row: {
+          created_at: string
+          id: string
+          line_a_id: string
+          line_b_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          line_a_id: string
+          line_b_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          line_a_id?: string
+          line_b_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "line_interline_pairs_line_a_id_fkey"
+            columns: ["line_a_id"]
+            isOneToOne: false
+            referencedRelation: "lines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "line_interline_pairs_line_b_id_fkey"
+            columns: ["line_b_id"]
+            isOneToOne: false
+            referencedRelation: "lines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      line_stops: {
+        Row: {
+          created_at: string
+          direction: Database["public"]["Enums"]["line_direction"]
+          id: string
+          line_id: string
+          position: number
+          stop_id: string
+          travel_time_to_next_min: number
+        }
+        Insert: {
+          created_at?: string
+          direction: Database["public"]["Enums"]["line_direction"]
+          id?: string
+          line_id: string
+          position: number
+          stop_id: string
+          travel_time_to_next_min?: number
+        }
+        Update: {
+          created_at?: string
+          direction?: Database["public"]["Enums"]["line_direction"]
+          id?: string
+          line_id?: string
+          position?: number
+          stop_id?: string
+          travel_time_to_next_min?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "line_stops_line_id_fkey"
+            columns: ["line_id"]
+            isOneToOne: false
+            referencedRelation: "lines"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "line_stops_stop_id_fkey"
+            columns: ["stop_id"]
+            isOneToOne: false
+            referencedRelation: "stops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      line_timetables: {
+        Row: {
+          created_at: string
+          day_type: Database["public"]["Enums"]["planning_day_type"]
+          first_departure: string
+          id: string
+          last_departure: string
+          layover_a_min: number
+          layover_b_min: number
+          line_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          day_type: Database["public"]["Enums"]["planning_day_type"]
+          first_departure?: string
+          id?: string
+          last_departure?: string
+          layover_a_min?: number
+          layover_b_min?: number
+          line_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          day_type?: Database["public"]["Enums"]["planning_day_type"]
+          first_departure?: string
+          id?: string
+          last_departure?: string
+          layover_a_min?: number
+          layover_b_min?: number
+          line_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "line_timetables_line_id_fkey"
+            columns: ["line_id"]
+            isOneToOne: false
+            referencedRelation: "lines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lines: {
+        Row: {
+          active: boolean
+          created_at: string
+          custom_return: boolean
+          depot: string
+          id: string
+          interlining_enabled: boolean
+          line_number: string
+          min_interline_layover_min: number
+          terminus_a: string
+          terminus_b: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          custom_return?: boolean
+          depot?: string
+          id?: string
+          interlining_enabled?: boolean
+          line_number: string
+          min_interline_layover_min?: number
+          terminus_a: string
+          terminus_b: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          custom_return?: boolean
+          depot?: string
+          id?: string
+          interlining_enabled?: boolean
+          line_number?: string
+          min_interline_layover_min?: number
+          terminus_a?: string
+          terminus_b?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       message_recipients: {
         Row: {
           created_at: string
@@ -909,6 +1111,27 @@ export type Database = {
           },
         ]
       }
+      stops: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -995,6 +1218,107 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      vehicle_block_trips: {
+        Row: {
+          arrival_time: string
+          block_id: string
+          created_at: string
+          departure_time: string
+          direction: Database["public"]["Enums"]["line_direction"]
+          id: string
+          line_id: string
+          line_number: string
+          trip_order: number
+        }
+        Insert: {
+          arrival_time: string
+          block_id: string
+          created_at?: string
+          departure_time: string
+          direction: Database["public"]["Enums"]["line_direction"]
+          id?: string
+          line_id: string
+          line_number: string
+          trip_order: number
+        }
+        Update: {
+          arrival_time?: string
+          block_id?: string
+          created_at?: string
+          departure_time?: string
+          direction?: Database["public"]["Enums"]["line_direction"]
+          id?: string
+          line_id?: string
+          line_number?: string
+          trip_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_block_trips_block_id_fkey"
+            columns: ["block_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_blocks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vehicle_block_trips_line_id_fkey"
+            columns: ["line_id"]
+            isOneToOne: false
+            referencedRelation: "lines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vehicle_blocks: {
+        Row: {
+          block_number: number
+          created_at: string
+          day_type: Database["public"]["Enums"]["planning_day_type"]
+          depot: string
+          end_time: string
+          id: string
+          line_ids: string[]
+          line_numbers: string[]
+          start_time: string
+          updated_at: string
+          vehicle_id: string | null
+        }
+        Insert: {
+          block_number: number
+          created_at?: string
+          day_type: Database["public"]["Enums"]["planning_day_type"]
+          depot: string
+          end_time: string
+          id?: string
+          line_ids: string[]
+          line_numbers: string[]
+          start_time: string
+          updated_at?: string
+          vehicle_id?: string | null
+        }
+        Update: {
+          block_number?: number
+          created_at?: string
+          day_type?: Database["public"]["Enums"]["planning_day_type"]
+          depot?: string
+          end_time?: string
+          id?: string
+          line_ids?: string[]
+          line_numbers?: string[]
+          start_time?: string
+          updated_at?: string
+          vehicle_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_blocks_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       vehicle_maintenance: {
         Row: {
@@ -1162,6 +1486,7 @@ export type Database = {
         | "ojcowski"
         | "szkoleniowy"
         | "inny"
+      line_direction: "AB" | "BA"
       message_audience_kind:
         | "all_drivers"
         | "drivers"
@@ -1175,6 +1500,7 @@ export type Database = {
         | "service_change"
         | "diversion"
         | "driver_message"
+      planning_day_type: "weekday" | "saturday" | "sunday"
       report_category:
         | "operational"
         | "complaint"
@@ -1365,6 +1691,7 @@ export const Constants = {
         "szkoleniowy",
         "inny",
       ],
+      line_direction: ["AB", "BA"],
       message_audience_kind: [
         "all_drivers",
         "drivers",
@@ -1380,6 +1707,7 @@ export const Constants = {
         "diversion",
         "driver_message",
       ],
+      planning_day_type: ["weekday", "saturday", "sunday"],
       report_category: [
         "operational",
         "complaint",
