@@ -9,11 +9,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge as _Badge2 } from "@/components/ui/badge";
+import { LEAVE_TYPES, LEAVE_TYPE_LABEL, type LeaveTypeValue } from "@/lib/leave-types";
 import {
   listMyVacationRequests,
   createVacationRequest,
   cancelVacationRequest,
 } from "@/lib/portal.functions";
+
 
 export const Route = createFileRoute("/_authenticated/urlopy")({
   head: () => ({ meta: [{ title: "Urlopy — Portal STP" }] }),
