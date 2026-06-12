@@ -19,13 +19,23 @@ const STATUS_LABEL: Record<string, string> = {
   unavailable: "Niedostępny",
 };
 
-const LIVE_LABEL: Record<string, string> = {
-  scheduled: "Zaplanowana",
-  in_progress: "W trakcie",
-  on_break: "Przerwa",
-  completed: "Zakończona",
-  cancelled: "Anulowana",
-};
+function ProgressBar({ value, total }: { value: number; total: number }) {
+  const pct = total > 0 ? Math.min(100, Math.max(0, Math.round((value / total) * 100))) : 0;
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-baseline justify-between font-mono text-xs">
+        <span className="text-muted-foreground">{value} / {total} przystanków</span>
+        <span className="font-bold">{pct}%</span>
+      </div>
+      <div className="h-2.5 w-full rounded-full bg-muted overflow-hidden">
+        <div
+          className="h-full bg-brand-accent transition-all duration-500"
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
+  );
+}
 
 export function RobloxLivePanel() {
   const fn = useServerFn(getMyRobloxLive);
@@ -40,16 +50,17 @@ export function RobloxLivePanel() {
   const duty = d.duty;
   const pos = d.position;
   const pres = d.presence;
-  const cmds: any[] = d.commands ?? [];
 
-  const liveActive = duty && (duty.live_status === "in_progress" || duty.live_status === "on_break");
-  const isFresh = pos?.updated_at && Date.now() - new Date(pos.updated_at).getTime() < 60_000;
+  const onDuty = !!duty?.pis_route || pres?.status === "on_duty" || pres?.status === "active";
+  const isFresh = duty?.pis_updated_at && Date.now() - new Date(duty.pis_updated_at).getTime() < 60_000;
+  const stopIdx = typeof duty?.pis_stop_index === "number" ? duty.pis_stop_index : null;
+  const stopTotal = typeof duty?.pis_total_stops === "number" ? duty.pis_total_stops : null;
 
   return (
     <section className="col-span-12 bg-card border border-border rounded-xl overflow-hidden shadow-sm">
       <div className="bg-brand-accent px-4 py-3 flex justify-between items-center">
         <h2 className="font-bold uppercase tracking-wide text-xs text-brand-accent-foreground">
-          Roblox — telemetria na żywo
+          Bieżąca służba — dane z gry
         </h2>
         <span className="flex items-center gap-2 text-[10px] text-brand-accent-foreground/90 font-mono">
           <span className={`h-2 w-2 rounded-full ${isFresh ? "bg-emerald-400 animate-pulse" : "bg-muted-foreground/60"}`} />
@@ -59,123 +70,74 @@ export function RobloxLivePanel() {
 
       {isLoading ? (
         <div className="p-6 text-sm text-muted-foreground">Ładowanie…</div>
+      ) : !onDuty && !duty?.pis_route ? (
+        <div className="p-10 text-center text-sm text-muted-foreground">
+          Nie jesteś teraz na służbie. Po wejściu do gry i rozpoczęciu kursu pojawią się tu dane na żywo.
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-0 divide-y md:divide-y-0 md:divide-x divide-border">
-          {/* Presence */}
-          <div className="p-4">
-            <p className="text-[10px] uppercase text-muted-foreground font-bold mb-2">Status kierowcy</p>
-            <p className="text-lg font-bold">
-              {pres?.status ? STATUS_LABEL[pres.status] ?? pres.status : "—"}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">{fmtAgo(pres?.updated_at)}</p>
-            {pres?.note && <p className="text-xs mt-2 italic">{pres.note}</p>}
+        <>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-0 divide-y md:divide-y-0 md:divide-x divide-border">
+            <div className="p-5">
+              <p className="text-[10px] uppercase text-muted-foreground font-bold mb-2">Linia</p>
+              <p className="text-4xl font-bold font-mono leading-none">
+                {duty?.pis_route ?? duty?.route ?? "—"}
+              </p>
+              {duty?.duty_number && (
+                <p className="text-[10px] text-muted-foreground mt-2 font-mono">
+                  Brygada {duty.duty_number}
+                </p>
+              )}
+            </div>
+            <div className="p-5">
+              <p className="text-[10px] uppercase text-muted-foreground font-bold mb-2">Kierunek</p>
+              <p className="text-xl font-bold leading-tight">
+                {duty?.pis_headsign ?? "—"}
+              </p>
+            </div>
+            <div className="p-5">
+              <p className="text-[10px] uppercase text-muted-foreground font-bold mb-2">Obecny przystanek</p>
+              <p className="text-base font-bold leading-tight">
+                {duty?.pis_current_stop ?? "—"}
+              </p>
+            </div>
+            <div className="p-5">
+              <p className="text-[10px] uppercase text-muted-foreground font-bold mb-2">Następny przystanek</p>
+              <p className="text-base font-bold leading-tight">
+                {duty?.pis_next_stop ?? "—"}
+              </p>
+            </div>
           </div>
 
-          {/* Duty live */}
-          <div className="p-4">
-            <p className="text-[10px] uppercase text-muted-foreground font-bold mb-2">Służba</p>
-            {duty ? (
-              <>
-                <p className="text-lg font-bold">
-                  {LIVE_LABEL[duty.live_status as string] ?? duty.live_status ?? "—"}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1 font-mono">
-                  {duty.duty_number} · {duty.route}
-                </p>
-                <p className="text-xs text-muted-foreground">{fmtAgo(duty.live_status_updated_at)}</p>
-              </>
+          <div className="px-5 py-4 border-t border-border space-y-3">
+            <p className="text-[10px] uppercase text-muted-foreground font-bold">Postęp trasy</p>
+            {stopIdx !== null && stopTotal !== null && stopTotal > 0 ? (
+              <ProgressBar value={stopIdx} total={stopTotal} />
             ) : (
-              <p className="text-sm text-muted-foreground">Brak aktywnej służby</p>
+              <p className="text-xs text-muted-foreground">Brak danych o postępie z gry.</p>
             )}
+            <div className="flex flex-wrap items-center gap-3 pt-1 text-[10px] text-muted-foreground">
+              <span>Status: <span className="font-bold text-foreground">{pres?.status ? STATUS_LABEL[pres.status] ?? pres.status : "—"}</span></span>
+              {typeof pos?.speed_kmh === "number" && (
+                <span>· {Math.round(pos.speed_kmh)} km/h</span>
+              )}
+              {typeof duty?.pis_delay_sec === "number" && (
+                <Badge
+                  variant="secondary"
+                  className={
+                    duty.pis_delay_sec > 180
+                      ? "bg-destructive/15 text-destructive"
+                      : duty.pis_delay_sec > 60
+                        ? "bg-amber-500/15 text-amber-700 dark:text-amber-400"
+                        : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400"
+                  }
+                >
+                  {duty.pis_delay_sec > 0 ? "+" : ""}{Math.round(duty.pis_delay_sec / 60)} min
+                </Badge>
+              )}
+              <span className="ml-auto">Aktualizacja {fmtAgo(duty?.pis_updated_at)}</span>
+            </div>
           </div>
-
-          {/* PIS */}
-          <div className="p-4">
-            <p className="text-[10px] uppercase text-muted-foreground font-bold mb-2">PIS / Trasa</p>
-            {duty?.pis_route ? (
-              <>
-                <p className="text-lg font-bold">
-                  {duty.pis_route}
-                  {duty.pis_headsign && (
-                    <span className="text-sm text-muted-foreground font-normal"> → {duty.pis_headsign}</span>
-                  )}
-                </p>
-                <p className="text-xs mt-1">
-                  <span className="text-muted-foreground">Obecny:</span> {duty.pis_current_stop ?? "—"}
-                </p>
-                <p className="text-xs">
-                  <span className="text-muted-foreground">Następny:</span> {duty.pis_next_stop ?? "—"}
-                </p>
-                {typeof duty.pis_delay_sec === "number" && (
-                  <Badge
-                    variant="secondary"
-                    className={
-                      "mt-2 " +
-                      (duty.pis_delay_sec > 180
-                        ? "bg-destructive/15 text-destructive"
-                        : duty.pis_delay_sec > 60
-                          ? "bg-amber-500/15 text-amber-700 dark:text-amber-400"
-                          : "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400")
-                    }
-                  >
-                    {duty.pis_delay_sec > 0 ? "+" : ""}
-                    {Math.round(duty.pis_delay_sec / 60)} min
-                  </Badge>
-                )}
-                <p className="text-[10px] text-muted-foreground mt-2">{fmtAgo(duty.pis_updated_at)}</p>
-              </>
-            ) : (
-              <p className="text-sm text-muted-foreground">Brak danych PIS</p>
-            )}
-          </div>
-
-          {/* Position */}
-          <div className="p-4">
-            <p className="text-[10px] uppercase text-muted-foreground font-bold mb-2">Pozycja w grze</p>
-            {pos ? (
-              <>
-                <p className="text-lg font-bold font-mono">
-                  {typeof pos.speed_kmh === "number" ? Math.round(pos.speed_kmh) : "—"}{" "}
-                  <span className="text-sm text-muted-foreground font-normal">km/h</span>
-                </p>
-                <p className="text-[10px] font-mono text-muted-foreground mt-1">
-                  X {Math.round(pos.x)} · Y {Math.round(pos.y)}
-                  {typeof pos.z === "number" && <> · Z {Math.round(pos.z)}</>}
-                </p>
-                {typeof pos.heading === "number" && (
-                  <p className="text-[10px] font-mono text-muted-foreground">
-                    Kurs {Math.round(pos.heading)}°
-                  </p>
-                )}
-                <p className="text-[10px] text-muted-foreground mt-2">{fmtAgo(pos.updated_at)}</p>
-              </>
-            ) : (
-              <p className="text-sm text-muted-foreground">Brak pozycji</p>
-            )}
-          </div>
-        </div>
-      )}
-
-      {cmds.length > 0 && (
-        <div className="border-t border-border px-4 py-3">
-          <p className="text-[10px] uppercase text-muted-foreground font-bold mb-2">
-            Ostatnie polecenia z dyspozytorni
-          </p>
-          <ul className="space-y-1">
-            {cmds.slice(0, 5).map((c) => (
-              <li key={c.id} className="flex items-center justify-between text-xs">
-                <span className="font-mono">{c.type}</span>
-                <span className="text-muted-foreground">
-                  {c.acked_at
-                    ? `✓ potwierdzone ${fmtAgo(c.acked_at)}`
-                    : c.delivered_at
-                      ? `dostarczone ${fmtAgo(c.delivered_at)}`
-                      : `oczekuje ${fmtAgo(c.created_at)}`}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        </>
       )}
     </section>
   );

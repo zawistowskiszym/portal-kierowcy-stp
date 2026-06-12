@@ -154,6 +154,8 @@ export type Database = {
           pis_headsign: string | null
           pis_next_stop: string | null
           pis_route: string | null
+          pis_stop_index: number | null
+          pis_total_stops: number | null
           pis_updated_at: string | null
           updated_at: string
           user_id: string
@@ -169,6 +171,8 @@ export type Database = {
           pis_headsign?: string | null
           pis_next_stop?: string | null
           pis_route?: string | null
+          pis_stop_index?: number | null
+          pis_total_stops?: number | null
           pis_updated_at?: string | null
           updated_at?: string
           user_id: string
@@ -184,6 +188,8 @@ export type Database = {
           pis_headsign?: string | null
           pis_next_stop?: string | null
           pis_route?: string | null
+          pis_stop_index?: number | null
+          pis_total_stops?: number | null
           pis_updated_at?: string | null
           updated_at?: string
           user_id?: string

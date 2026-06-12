@@ -1186,3 +1186,65 @@ export const markDispatcherGroupRead = createServerFn({ method: "POST" })
     if (uErr) throw new Error(uErr.message);
     return { ok: true, count: ids.length };
   });
+
+// ============ DISPATCHER: ALL DRIVER LIVE ============
+
+export const listAllDriverLive = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireStaff(context.supabase, context.userId);
+    const today = new Date().toISOString().slice(0, 10);
+    const [liveRes, dutyRes, posRes, presRes] = await Promise.all([
+      context.supabase
+        .from("driver_live")
+        .select("user_id, live_status, live_status_updated_at, duty_number, pis_route, pis_headsign, pis_current_stop, pis_next_stop, pis_delay_sec, pis_stop_index, pis_total_stops, pis_updated_at"),
+      context.supabase
+        .from("duties")
+        .select("id, duty_number, route, vehicle_label, depot, start_time, end_time, assigned_to, live_status")
+        .eq("duty_date", today)
+        .not("assigned_to", "is", null),
+      context.supabase
+        .from("driver_positions")
+        .select("user_id, x, y, speed_kmh, heading, updated_at"),
+      context.supabase
+        .from("driver_presence")
+        .select("user_id, status, updated_at"),
+    ]);
+
+    const lives: any[] = liveRes.data ?? [];
+    const duties: any[] = dutyRes.data ?? [];
+    const positions: any[] = posRes.data ?? [];
+    const presences: any[] = presRes.data ?? [];
+
+    const driverIds = Array.from(new Set([
+      ...lives.map(l => l.user_id),
+      ...duties.map(d => d.assigned_to).filter(Boolean),
+    ]));
+    if (driverIds.length === 0) return [];
+
+    const { data: profiles } = await context.supabase
+      .from("profiles")
+      .select("id, full_name, employee_id")
+      .in("id", driverIds);
+    const profMap = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+    const dutyMap = new Map(duties.map(d => [d.assigned_to, d]));
+    const posMap = new Map(positions.map(p => [p.user_id, p]));
+    const presMap = new Map(presences.map(p => [p.user_id, p]));
+
+    return driverIds.map(uid => {
+      const live = lives.find(l => l.user_id === uid) ?? null;
+      const duty = dutyMap.get(uid) ?? null;
+      return {
+        user_id: uid,
+        driver: profMap.get(uid) ?? null,
+        duty,
+        live,
+        position: posMap.get(uid) ?? null,
+        presence: presMap.get(uid) ?? null,
+      };
+    }).sort((a: any, b: any) => {
+      const at = a.live?.pis_updated_at ?? a.position?.updated_at ?? "";
+      const bt = b.live?.pis_updated_at ?? b.position?.updated_at ?? "";
+      return bt.localeCompare(at);
+    });
+  });

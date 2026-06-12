@@ -1117,7 +1117,7 @@ export const getMyRobloxLive = createServerFn({ method: "GET" })
       supabase
         .from("driver_live")
         .select(
-          "live_status, live_status_updated_at, live_status_note, duty_number, pis_route, pis_headsign, pis_current_stop, pis_next_stop, pis_delay_sec, pis_updated_at, updated_at",
+          "live_status, live_status_updated_at, live_status_note, duty_number, pis_route, pis_headsign, pis_current_stop, pis_next_stop, pis_delay_sec, pis_stop_index, pis_total_stops, pis_updated_at, updated_at",
         )
         .eq("user_id", userId)
         .maybeSingle(),
@@ -1162,6 +1162,8 @@ export const getMyRobloxLive = createServerFn({ method: "GET" })
           pis_current_stop: live?.pis_current_stop ?? null,
           pis_next_stop: live?.pis_next_stop ?? null,
           pis_delay_sec: live?.pis_delay_sec ?? null,
+          pis_stop_index: live?.pis_stop_index ?? null,
+          pis_total_stops: live?.pis_total_stops ?? null,
           pis_updated_at: live?.pis_updated_at ?? null,
         }
       : null;

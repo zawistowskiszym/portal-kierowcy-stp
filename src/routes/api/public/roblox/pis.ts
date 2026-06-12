@@ -9,7 +9,7 @@ export const Route = createFileRoute("/api/public/roblox/pis")({
         const v = await verifyRobloxRequest(request);
         if (!v.ok) return errorResponse(v.status, v.message);
 
-        const { roblox_username, route, headsign, current_stop, next_stop, delay_sec, duty_number } = v.json ?? {};
+        const { roblox_username, route, headsign, current_stop, next_stop, delay_sec, duty_number, stop_index, total_stops } = v.json ?? {};
         if (!roblox_username || !route) return errorResponse(400, "roblox_username and route required");
 
         const driver = await resolveDriverByRoblox(String(roblox_username));
@@ -28,6 +28,8 @@ export const Route = createFileRoute("/api/public/roblox/pis")({
           pis_current_stop: current_stop ?? null,
           pis_next_stop: next_stop ?? null,
           pis_delay_sec: delay,
+          pis_stop_index: typeof stop_index === "number" ? Math.trunc(stop_index) : null,
+          pis_total_stops: typeof total_stops === "number" ? Math.trunc(total_stops) : null,
           pis_updated_at: now,
           duty_number: duty_number ? String(duty_number) : null,
         });
