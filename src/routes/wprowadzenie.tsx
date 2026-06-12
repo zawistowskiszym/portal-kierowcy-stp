@@ -38,7 +38,7 @@ type Lesson = {
 
 const lessons: Lesson[] = [
   { number: 1, title: "Czym są Skuszawyjice?", description: "Poznaj miasto, w którym działa STP — jego historię, układ i charakter." },
-  { number: 2, title: "Czym jest STP", description: "Skuszawyjickie Towarzystwo Przewozowe — kto za nim stoi, czym się zajmuje i jaką rolę pełni w mieście." },
+  { number: 2, title: "Czym jest STP", description: "Skuszawyjiński Transport Publiczny — kto za nim stoi, czym się zajmuje i jaką rolę pełni w mieście." },
   { number: 3, title: "Podstawowe wymagania dla kierowców", description: "Co musisz spełniać i wiedzieć zanim zasiądziesz za kierownicą autobusu STP." },
   { number: 4, title: "Korzystanie z portalu kierowcy", description: "Grafik, urlopy, ogłoszenia, raporty — przewodnik po Twoim głównym narzędziu pracy." },
   { number: 5, title: "Zgłaszanie zdarzeń", description: "Jak prawidłowo i sprawnie raportować incydenty oraz sytuacje na trasie." },
