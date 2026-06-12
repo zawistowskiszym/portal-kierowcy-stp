@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   listLines,
   createLine,
@@ -144,12 +144,14 @@ function LineEditor({ lineId }: { lineId: string }) {
   const [dirty, setDirty] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  if (data && !loaded) {
-    const stops = data.stops as any[];
-    setAB(stops.filter(s => s.direction === "AB").sort((a, b) => a.position - b.position).map(s => ({ stop_id: s.stop_id, travel_time_to_next_min: s.travel_time_to_next_min })));
-    setBA(stops.filter(s => s.direction === "BA").sort((a, b) => a.position - b.position).map(s => ({ stop_id: s.stop_id, travel_time_to_next_min: s.travel_time_to_next_min })));
-    setLoaded(true);
-  }
+  useEffect(() => {
+    if (data && !loaded) {
+      const stops = data.stops as any[];
+      setAB(stops.filter(s => s.direction === "AB").sort((a, b) => a.position - b.position).map(s => ({ stop_id: s.stop_id, travel_time_to_next_min: s.travel_time_to_next_min })));
+      setBA(stops.filter(s => s.direction === "BA").sort((a, b) => a.position - b.position).map(s => ({ stop_id: s.stop_id, travel_time_to_next_min: s.travel_time_to_next_min })));
+      setLoaded(true);
+    }
+  }, [data, loaded]);
 
   const line = data?.line;
   const stopMap = new Map(allStops.map((s: any) => [s.id, s.name]));
