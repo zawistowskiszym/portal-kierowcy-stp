@@ -28,6 +28,7 @@ import { Route as AuthenticatedAdminRaportyRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminPojazdyRouteImport } from './routes/_authenticated/admin/pojazdy'
 import { Route as AuthenticatedAdminOgloszeniaRouteImport } from './routes/_authenticated/admin/ogloszenia'
 import { Route as AuthenticatedAdminNieprzydzieloneRouteImport } from './routes/_authenticated/admin/nieprzydzielone'
+import { Route as AuthenticatedAdminMonitorRouteImport } from './routes/_authenticated/admin/monitor'
 import { Route as AuthenticatedAdminIncydentyRouteImport } from './routes/_authenticated/admin/incydenty'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -140,6 +141,12 @@ const AuthenticatedAdminNieprzydzieloneRoute =
     path: '/nieprzydzielone',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminMonitorRoute =
+  AuthenticatedAdminMonitorRouteImport.update({
+    id: '/monitor',
+    path: '/monitor',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminIncydentyRoute =
   AuthenticatedAdminIncydentyRouteImport.update({
     id: '/incydenty',
@@ -207,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/urlopy': typeof AuthenticatedUrlopyRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
+  '/admin/monitor': typeof AuthenticatedAdminMonitorRoute
   '/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
@@ -236,6 +244,7 @@ export interface FileRoutesByTo {
   '/urlopy': typeof AuthenticatedUrlopyRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
+  '/admin/monitor': typeof AuthenticatedAdminMonitorRoute
   '/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
@@ -267,6 +276,7 @@ export interface FileRoutesById {
   '/_authenticated/urlopy': typeof AuthenticatedUrlopyRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
+  '/_authenticated/admin/monitor': typeof AuthenticatedAdminMonitorRoute
   '/_authenticated/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
   '/_authenticated/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/_authenticated/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
@@ -298,6 +308,7 @@ export interface FileRouteTypes {
     | '/urlopy'
     | '/admin/dashboard'
     | '/admin/incydenty'
+    | '/admin/monitor'
     | '/admin/nieprzydzielone'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
@@ -327,6 +338,7 @@ export interface FileRouteTypes {
     | '/urlopy'
     | '/admin/dashboard'
     | '/admin/incydenty'
+    | '/admin/monitor'
     | '/admin/nieprzydzielone'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
@@ -357,6 +369,7 @@ export interface FileRouteTypes {
     | '/_authenticated/urlopy'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/incydenty'
+    | '/_authenticated/admin/monitor'
     | '/_authenticated/admin/nieprzydzielone'
     | '/_authenticated/admin/ogloszenia'
     | '/_authenticated/admin/pojazdy'
@@ -519,6 +532,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminNieprzydzieloneRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/monitor': {
+      id: '/_authenticated/admin/monitor'
+      path: '/monitor'
+      fullPath: '/admin/monitor'
+      preLoaderRoute: typeof AuthenticatedAdminMonitorRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/incydenty': {
       id: '/_authenticated/admin/incydenty'
       path: '/incydenty'
@@ -588,6 +608,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
   AuthenticatedAdminIncydentyRoute: typeof AuthenticatedAdminIncydentyRoute
+  AuthenticatedAdminMonitorRoute: typeof AuthenticatedAdminMonitorRoute
   AuthenticatedAdminNieprzydzieloneRoute: typeof AuthenticatedAdminNieprzydzieloneRoute
   AuthenticatedAdminOgloszeniaRoute: typeof AuthenticatedAdminOgloszeniaRoute
   AuthenticatedAdminPojazdyRoute: typeof AuthenticatedAdminPojazdyRoute
@@ -600,6 +621,7 @@ interface AuthenticatedAdminRouteChildren {
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
   AuthenticatedAdminIncydentyRoute: AuthenticatedAdminIncydentyRoute,
+  AuthenticatedAdminMonitorRoute: AuthenticatedAdminMonitorRoute,
   AuthenticatedAdminNieprzydzieloneRoute:
     AuthenticatedAdminNieprzydzieloneRoute,
   AuthenticatedAdminOgloszeniaRoute: AuthenticatedAdminOgloszeniaRoute,
