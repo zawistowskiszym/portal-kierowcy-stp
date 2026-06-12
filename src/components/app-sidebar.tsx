@@ -12,6 +12,12 @@ import {
   BarChart3,
   FileBarChart,
   AlertTriangle,
+  Activity,
+  Radio,
+  BookOpen,
+  Map as MapIcon,
+  Inbox,
+  Gauge,
 } from "lucide-react";
 import {
   Sidebar,
@@ -27,6 +33,7 @@ import {
 const driverItems = [
   { title: "Pulpit", url: "/pulpit", icon: LayoutDashboard },
   { title: "Mój grafik", url: "/grafik", icon: CalendarRange },
+  { title: "Wiadomości", url: "/wiadomosci", icon: Inbox },
   { title: "Dyspozycyjność", url: "/dyspozycyjnosc", icon: CalendarCheck2 },
   { title: "Urlopy", url: "/urlopy", icon: Plane },
   { title: "Moje statystyki", url: "/statystyki", icon: BarChart3 },
@@ -34,16 +41,23 @@ const driverItems = [
 ];
 
 const dispatcherItems = [
+  { title: "Pulpit dyspozytora", url: "/admin/dashboard", icon: Gauge },
+  { title: "Monitor służb", url: "/admin/monitor", icon: Activity },
+  { title: "Incydenty", url: "/admin/incydenty", icon: AlertTriangle },
+  { title: "Centrum raportów", url: "/admin/raporty", icon: FileBarChart },
+  { title: "Kierowcy", url: "/admin/kierowcy", icon: Users },
   { title: "Planowanie służb", url: "/admin/sluzby", icon: ClipboardList },
   { title: "Nieprzydzielone", url: "/admin/nieprzydzielone", icon: AlertTriangle },
   { title: "Tabor", url: "/admin/pojazdy", icon: Bus },
+  { title: "Komunikacja", url: "/admin/komunikacja", icon: Radio },
+  { title: "Mapa operacyjna", url: "/admin/mapa", icon: MapIcon },
+  { title: "Dziennik", url: "/admin/dziennik", icon: BookOpen },
   { title: "Wnioski urlopowe", url: "/admin/urlopy", icon: Plane },
   { title: "Ogłoszenia (admin)", url: "/admin/ogloszenia", icon: Megaphone },
 ];
 
 const adminOnlyItems = [
   { title: "Użytkownicy", url: "/admin/uzytkownicy", icon: Users },
-  { title: "Raporty", url: "/admin/raporty", icon: FileBarChart },
 ];
 
 export function AppSidebar({ isAdmin, isDispatcher }: { isAdmin: boolean; isDispatcher: boolean }) {
