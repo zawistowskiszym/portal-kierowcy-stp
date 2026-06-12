@@ -52,10 +52,17 @@ function BlocksPage() {
   const [from, setFrom] = useState(today);
   const [to, setTo] = useState(next30);
   const [replace, setReplace] = useState(false);
+  const [maxDutyMin, setMaxDutyMin] = useState(480);
+  const [splitBreakMin, setSplitBreakMin] = useState(30);
 
   const genDuties = useMutation({
-    mutationFn: () => genDutiesFn({ data: { day_type: dayType, date_from: from, date_to: to, replace_existing: replace } }),
-    onSuccess: (r: any) => toast.success(`Utworzono ${r.inserted} służb`),
+    mutationFn: () => genDutiesFn({ data: {
+      day_type: dayType, date_from: from, date_to: to,
+      replace_existing: replace,
+      max_duty_minutes: maxDutyMin,
+      split_break_minutes: splitBreakMin,
+    } }),
+    onSuccess: (r: any) => toast.success(`Utworzono ${r.inserted} służb${r.max_parts_per_block > 1 ? ` (do ${r.max_parts_per_block} części/brygada)` : ""}`),
     onError: (e: any) => toast.error(e.message),
   });
 
