@@ -139,16 +139,34 @@ function InvitePage() {
             <div className="space-y-1">
               <Label>Nr służbowy</Label>
               <Input
+                required
+                inputMode="numeric"
+                pattern="\d{4}"
+                maxLength={4}
+                placeholder="0000"
                 value={form.employee_id}
-                onChange={(e) => setForm({ ...form, employee_id: e.target.value })}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    employee_id: e.target.value.replace(/\D/g, "").slice(0, 4),
+                  })
+                }
               />
             </div>
             <div className="space-y-1">
               <Label>Zajezdnia</Label>
-              <Input
+              <Select
                 value={form.depot}
-                onChange={(e) => setForm({ ...form, depot: e.target.value })}
-              />
+                onValueChange={(v) => setForm({ ...form, depot: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Wybierz…" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Królewska">Królewska</SelectItem>
+                  <SelectItem value="Kijowska">Kijowska</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="space-y-1">
