@@ -87,8 +87,11 @@ const dutyInput = z.object({
   depot: z.string().min(1),
   route: z.string().min(1),
   vehicle_label: z.string().optional().nullable(),
+  vehicle_id: z.string().uuid().optional().nullable(),
   notes: z.string().optional().nullable(),
   assigned_to: z.string().uuid().optional().nullable(),
+  priority: z.enum(["low", "normal", "high"]).optional(),
+  division: z.string().optional().nullable(),
 });
 
 export const createDuty = createServerFn({ method: "POST" })
