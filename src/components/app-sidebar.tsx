@@ -63,9 +63,9 @@ export function AppSidebar({ isAdmin, isDispatcher }: { isAdmin: boolean; isDisp
         <div className="flex items-center gap-3 px-4 pt-5 pb-4">
           <img src={stpLogo.url} alt="STP" className="size-10 object-contain shrink-0" />
           <div className="leading-tight min-w-0">
-            <div className="font-display text-lg tracking-tight truncate">Portal STP</div>
+            <div className="font-display text-lg tracking-tight truncate">STP</div>
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
-              Skuszawyjińsk
+              PORTAL KIEROWCY
             </div>
           </div>
         </div>

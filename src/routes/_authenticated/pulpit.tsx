@@ -47,7 +47,7 @@ function PulpitPage() {
           <>
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">Linia / Służba</p>
+                <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">LINIA / BRYGADA</p>
                 <p className="text-3xl font-bold">
                   {nd.route} <span className="text-muted-foreground/50 font-normal font-mono text-2xl">/ {nd.duty_number}</span>
                 </p>
