@@ -34,6 +34,8 @@ function PulpitPage() {
 
   return (
     <div className="grid grid-cols-12 gap-6">
+      <RobloxLivePanel />
+      
       
       <section className="col-span-12 lg:col-span-8 bg-card border border-border rounded-xl overflow-hidden shadow-sm">
         <div className="bg-brand-accent px-4 py-3 flex justify-between items-center">
