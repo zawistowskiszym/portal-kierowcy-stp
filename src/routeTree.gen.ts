@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ZaproszenieRouteImport } from './routes/zaproszenie'
+import { Route as WprowadzenieRouteImport } from './routes/wprowadzenie'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as RekrutacjaRouteImport } from './routes/rekrutacja'
 import { Route as BootstrapRouteImport } from './routes/bootstrap'
@@ -67,6 +68,11 @@ import { Route as AuthenticatedAdminPlanowanieBrygadyRouteImport } from './route
 const ZaproszenieRoute = ZaproszenieRouteImport.update({
   id: '/zaproszenie',
   path: '/zaproszenie',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WprowadzenieRoute = WprowadzenieRouteImport.update({
+  id: '/wprowadzenie',
+  path: '/wprowadzenie',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
@@ -367,6 +373,7 @@ export interface FileRoutesByFullPath {
   '/bootstrap': typeof BootstrapRoute
   '/rekrutacja': typeof RekrutacjaRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/wprowadzenie': typeof WprowadzenieRoute
   '/zaproszenie': typeof ZaproszenieRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
@@ -422,6 +429,7 @@ export interface FileRoutesByTo {
   '/bootstrap': typeof BootstrapRoute
   '/rekrutacja': typeof RekrutacjaRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/wprowadzenie': typeof WprowadzenieRoute
   '/zaproszenie': typeof ZaproszenieRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
@@ -478,6 +486,7 @@ export interface FileRoutesById {
   '/bootstrap': typeof BootstrapRoute
   '/rekrutacja': typeof RekrutacjaRoute
   '/unsubscribe': typeof UnsubscribeRoute
+  '/wprowadzenie': typeof WprowadzenieRoute
   '/zaproszenie': typeof ZaproszenieRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/dyspozycyjnosc': typeof AuthenticatedDyspozycyjnoscRoute
@@ -535,6 +544,7 @@ export interface FileRouteTypes {
     | '/bootstrap'
     | '/rekrutacja'
     | '/unsubscribe'
+    | '/wprowadzenie'
     | '/zaproszenie'
     | '/admin'
     | '/dyspozycyjnosc'
@@ -590,6 +600,7 @@ export interface FileRouteTypes {
     | '/bootstrap'
     | '/rekrutacja'
     | '/unsubscribe'
+    | '/wprowadzenie'
     | '/zaproszenie'
     | '/admin'
     | '/dyspozycyjnosc'
@@ -645,6 +656,7 @@ export interface FileRouteTypes {
     | '/bootstrap'
     | '/rekrutacja'
     | '/unsubscribe'
+    | '/wprowadzenie'
     | '/zaproszenie'
     | '/_authenticated/admin'
     | '/_authenticated/dyspozycyjnosc'
@@ -702,6 +714,7 @@ export interface RootRouteChildren {
   BootstrapRoute: typeof BootstrapRoute
   RekrutacjaRoute: typeof RekrutacjaRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
+  WprowadzenieRoute: typeof WprowadzenieRoute
   ZaproszenieRoute: typeof ZaproszenieRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
@@ -725,6 +738,13 @@ declare module '@tanstack/react-router' {
       path: '/zaproszenie'
       fullPath: '/zaproszenie'
       preLoaderRoute: typeof ZaproszenieRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/wprowadzenie': {
+      id: '/wprowadzenie'
+      path: '/wprowadzenie'
+      fullPath: '/wprowadzenie'
+      preLoaderRoute: typeof WprowadzenieRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/unsubscribe': {
@@ -1214,6 +1234,7 @@ const rootRouteChildren: RootRouteChildren = {
   BootstrapRoute: BootstrapRoute,
   RekrutacjaRoute: RekrutacjaRoute,
   UnsubscribeRoute: UnsubscribeRoute,
+  WprowadzenieRoute: WprowadzenieRoute,
   ZaproszenieRoute: ZaproszenieRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
