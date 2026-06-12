@@ -14,6 +14,7 @@ import { Route as BootstrapRouteImport } from './routes/bootstrap'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedWiadomosciRouteImport } from './routes/_authenticated/wiadomosci'
 import { Route as AuthenticatedUrlopyRouteImport } from './routes/_authenticated/urlopy'
 import { Route as AuthenticatedStatystykiRouteImport } from './routes/_authenticated/statystyki'
 import { Route as AuthenticatedPulpitRouteImport } from './routes/_authenticated/pulpit'
@@ -66,6 +67,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedWiadomosciRoute = AuthenticatedWiadomosciRouteImport.update({
+  id: '/wiadomosci',
+  path: '/wiadomosci',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedUrlopyRoute = AuthenticatedUrlopyRouteImport.update({
   id: '/urlopy',
@@ -239,6 +245,7 @@ export interface FileRoutesByFullPath {
   '/pulpit': typeof AuthenticatedPulpitRoute
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
+  '/wiadomosci': typeof AuthenticatedWiadomosciRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -273,6 +280,7 @@ export interface FileRoutesByTo {
   '/pulpit': typeof AuthenticatedPulpitRoute
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
+  '/wiadomosci': typeof AuthenticatedWiadomosciRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -309,6 +317,7 @@ export interface FileRoutesById {
   '/_authenticated/pulpit': typeof AuthenticatedPulpitRoute
   '/_authenticated/statystyki': typeof AuthenticatedStatystykiRoute
   '/_authenticated/urlopy': typeof AuthenticatedUrlopyRoute
+  '/_authenticated/wiadomosci': typeof AuthenticatedWiadomosciRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/_authenticated/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -345,6 +354,7 @@ export interface FileRouteTypes {
     | '/pulpit'
     | '/statystyki'
     | '/urlopy'
+    | '/wiadomosci'
     | '/admin/dashboard'
     | '/admin/dziennik'
     | '/admin/incydenty'
@@ -379,6 +389,7 @@ export interface FileRouteTypes {
     | '/pulpit'
     | '/statystyki'
     | '/urlopy'
+    | '/wiadomosci'
     | '/admin/dashboard'
     | '/admin/dziennik'
     | '/admin/incydenty'
@@ -414,6 +425,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pulpit'
     | '/_authenticated/statystyki'
     | '/_authenticated/urlopy'
+    | '/_authenticated/wiadomosci'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/dziennik'
     | '/_authenticated/admin/incydenty'
@@ -484,6 +496,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/wiadomosci': {
+      id: '/_authenticated/wiadomosci'
+      path: '/wiadomosci'
+      fullPath: '/wiadomosci'
+      preLoaderRoute: typeof AuthenticatedWiadomosciRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/urlopy': {
       id: '/_authenticated/urlopy'
@@ -730,6 +749,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPulpitRoute: typeof AuthenticatedPulpitRoute
   AuthenticatedStatystykiRoute: typeof AuthenticatedStatystykiRoute
   AuthenticatedUrlopyRoute: typeof AuthenticatedUrlopyRoute
+  AuthenticatedWiadomosciRoute: typeof AuthenticatedWiadomosciRoute
   AuthenticatedSluzbaDutyIdMapaRoute: typeof AuthenticatedSluzbaDutyIdMapaRoute
   AuthenticatedSluzbaDutyIdRaportRoute: typeof AuthenticatedSluzbaDutyIdRaportRoute
   AuthenticatedSluzbaDutyIdRozkladRoute: typeof AuthenticatedSluzbaDutyIdRozkladRoute
@@ -744,6 +764,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPulpitRoute: AuthenticatedPulpitRoute,
   AuthenticatedStatystykiRoute: AuthenticatedStatystykiRoute,
   AuthenticatedUrlopyRoute: AuthenticatedUrlopyRoute,
+  AuthenticatedWiadomosciRoute: AuthenticatedWiadomosciRoute,
   AuthenticatedSluzbaDutyIdMapaRoute: AuthenticatedSluzbaDutyIdMapaRoute,
   AuthenticatedSluzbaDutyIdRaportRoute: AuthenticatedSluzbaDutyIdRaportRoute,
   AuthenticatedSluzbaDutyIdRozkladRoute: AuthenticatedSluzbaDutyIdRozkladRoute,
