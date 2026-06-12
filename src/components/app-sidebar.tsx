@@ -18,6 +18,7 @@ import {
   Map as MapIcon,
   Inbox,
   Gauge,
+  UserCircle,
 } from "lucide-react";
 import {
   Sidebar,
