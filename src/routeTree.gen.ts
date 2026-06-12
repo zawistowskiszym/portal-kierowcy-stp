@@ -40,6 +40,12 @@ import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authe
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiPublicRobloxPositionRouteImport } from './routes/api/public/roblox/position'
+import { Route as ApiPublicRobloxPisRouteImport } from './routes/api/public/roblox/pis'
+import { Route as ApiPublicRobloxIncidentRouteImport } from './routes/api/public/roblox/incident'
+import { Route as ApiPublicRobloxDutyRouteImport } from './routes/api/public/roblox/duty'
+import { Route as ApiPublicRobloxDriverRouteImport } from './routes/api/public/roblox/driver'
+import { Route as ApiPublicRobloxAckRouteImport } from './routes/api/public/roblox/ack'
 import { Route as AuthenticatedSluzbaDutyIdZdarzenieRouteImport } from './routes/_authenticated/sluzba.$dutyId.zdarzenie'
 import { Route as AuthenticatedSluzbaDutyIdRozkladRouteImport } from './routes/_authenticated/sluzba.$dutyId.rozklad'
 import { Route as AuthenticatedSluzbaDutyIdRaportRouteImport } from './routes/_authenticated/sluzba.$dutyId.raport'
@@ -214,6 +220,36 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicRobloxPositionRoute = ApiPublicRobloxPositionRouteImport.update({
+  id: '/api/public/roblox/position',
+  path: '/api/public/roblox/position',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicRobloxPisRoute = ApiPublicRobloxPisRouteImport.update({
+  id: '/api/public/roblox/pis',
+  path: '/api/public/roblox/pis',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicRobloxIncidentRoute = ApiPublicRobloxIncidentRouteImport.update({
+  id: '/api/public/roblox/incident',
+  path: '/api/public/roblox/incident',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicRobloxDutyRoute = ApiPublicRobloxDutyRouteImport.update({
+  id: '/api/public/roblox/duty',
+  path: '/api/public/roblox/duty',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicRobloxDriverRoute = ApiPublicRobloxDriverRouteImport.update({
+  id: '/api/public/roblox/driver',
+  path: '/api/public/roblox/driver',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicRobloxAckRoute = ApiPublicRobloxAckRouteImport.update({
+  id: '/api/public/roblox/ack',
+  path: '/api/public/roblox/ack',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedSluzbaDutyIdZdarzenieRoute =
   AuthenticatedSluzbaDutyIdZdarzenieRouteImport.update({
     id: '/sluzba/$dutyId/zdarzenie',
@@ -271,6 +307,12 @@ export interface FileRoutesByFullPath {
   '/sluzba/$dutyId/raport': typeof AuthenticatedSluzbaDutyIdRaportRoute
   '/sluzba/$dutyId/rozklad': typeof AuthenticatedSluzbaDutyIdRozkladRoute
   '/sluzba/$dutyId/zdarzenie': typeof AuthenticatedSluzbaDutyIdZdarzenieRoute
+  '/api/public/roblox/ack': typeof ApiPublicRobloxAckRoute
+  '/api/public/roblox/driver': typeof ApiPublicRobloxDriverRoute
+  '/api/public/roblox/duty': typeof ApiPublicRobloxDutyRoute
+  '/api/public/roblox/incident': typeof ApiPublicRobloxIncidentRoute
+  '/api/public/roblox/pis': typeof ApiPublicRobloxPisRoute
+  '/api/public/roblox/position': typeof ApiPublicRobloxPositionRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -307,6 +349,12 @@ export interface FileRoutesByTo {
   '/sluzba/$dutyId/raport': typeof AuthenticatedSluzbaDutyIdRaportRoute
   '/sluzba/$dutyId/rozklad': typeof AuthenticatedSluzbaDutyIdRozkladRoute
   '/sluzba/$dutyId/zdarzenie': typeof AuthenticatedSluzbaDutyIdZdarzenieRoute
+  '/api/public/roblox/ack': typeof ApiPublicRobloxAckRoute
+  '/api/public/roblox/driver': typeof ApiPublicRobloxDriverRoute
+  '/api/public/roblox/duty': typeof ApiPublicRobloxDutyRoute
+  '/api/public/roblox/incident': typeof ApiPublicRobloxIncidentRoute
+  '/api/public/roblox/pis': typeof ApiPublicRobloxPisRoute
+  '/api/public/roblox/position': typeof ApiPublicRobloxPositionRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -345,6 +393,12 @@ export interface FileRoutesById {
   '/_authenticated/sluzba/$dutyId/raport': typeof AuthenticatedSluzbaDutyIdRaportRoute
   '/_authenticated/sluzba/$dutyId/rozklad': typeof AuthenticatedSluzbaDutyIdRozkladRoute
   '/_authenticated/sluzba/$dutyId/zdarzenie': typeof AuthenticatedSluzbaDutyIdZdarzenieRoute
+  '/api/public/roblox/ack': typeof ApiPublicRobloxAckRoute
+  '/api/public/roblox/driver': typeof ApiPublicRobloxDriverRoute
+  '/api/public/roblox/duty': typeof ApiPublicRobloxDutyRoute
+  '/api/public/roblox/incident': typeof ApiPublicRobloxIncidentRoute
+  '/api/public/roblox/pis': typeof ApiPublicRobloxPisRoute
+  '/api/public/roblox/position': typeof ApiPublicRobloxPositionRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -383,6 +437,12 @@ export interface FileRouteTypes {
     | '/sluzba/$dutyId/raport'
     | '/sluzba/$dutyId/rozklad'
     | '/sluzba/$dutyId/zdarzenie'
+    | '/api/public/roblox/ack'
+    | '/api/public/roblox/driver'
+    | '/api/public/roblox/duty'
+    | '/api/public/roblox/incident'
+    | '/api/public/roblox/pis'
+    | '/api/public/roblox/position'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -419,6 +479,12 @@ export interface FileRouteTypes {
     | '/sluzba/$dutyId/raport'
     | '/sluzba/$dutyId/rozklad'
     | '/sluzba/$dutyId/zdarzenie'
+    | '/api/public/roblox/ack'
+    | '/api/public/roblox/driver'
+    | '/api/public/roblox/duty'
+    | '/api/public/roblox/incident'
+    | '/api/public/roblox/pis'
+    | '/api/public/roblox/position'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -456,6 +522,12 @@ export interface FileRouteTypes {
     | '/_authenticated/sluzba/$dutyId/raport'
     | '/_authenticated/sluzba/$dutyId/rozklad'
     | '/_authenticated/sluzba/$dutyId/zdarzenie'
+    | '/api/public/roblox/ack'
+    | '/api/public/roblox/driver'
+    | '/api/public/roblox/duty'
+    | '/api/public/roblox/incident'
+    | '/api/public/roblox/pis'
+    | '/api/public/roblox/position'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
@@ -467,6 +539,12 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BootstrapRoute: typeof BootstrapRoute
   ZaproszenieRoute: typeof ZaproszenieRoute
+  ApiPublicRobloxAckRoute: typeof ApiPublicRobloxAckRoute
+  ApiPublicRobloxDriverRoute: typeof ApiPublicRobloxDriverRoute
+  ApiPublicRobloxDutyRoute: typeof ApiPublicRobloxDutyRoute
+  ApiPublicRobloxIncidentRoute: typeof ApiPublicRobloxIncidentRoute
+  ApiPublicRobloxPisRoute: typeof ApiPublicRobloxPisRoute
+  ApiPublicRobloxPositionRoute: typeof ApiPublicRobloxPositionRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
@@ -691,6 +769,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/roblox/position': {
+      id: '/api/public/roblox/position'
+      path: '/api/public/roblox/position'
+      fullPath: '/api/public/roblox/position'
+      preLoaderRoute: typeof ApiPublicRobloxPositionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/roblox/pis': {
+      id: '/api/public/roblox/pis'
+      path: '/api/public/roblox/pis'
+      fullPath: '/api/public/roblox/pis'
+      preLoaderRoute: typeof ApiPublicRobloxPisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/roblox/incident': {
+      id: '/api/public/roblox/incident'
+      path: '/api/public/roblox/incident'
+      fullPath: '/api/public/roblox/incident'
+      preLoaderRoute: typeof ApiPublicRobloxIncidentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/roblox/duty': {
+      id: '/api/public/roblox/duty'
+      path: '/api/public/roblox/duty'
+      fullPath: '/api/public/roblox/duty'
+      preLoaderRoute: typeof ApiPublicRobloxDutyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/roblox/driver': {
+      id: '/api/public/roblox/driver'
+      path: '/api/public/roblox/driver'
+      fullPath: '/api/public/roblox/driver'
+      preLoaderRoute: typeof ApiPublicRobloxDriverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/roblox/ack': {
+      id: '/api/public/roblox/ack'
+      path: '/api/public/roblox/ack'
+      fullPath: '/api/public/roblox/ack'
+      preLoaderRoute: typeof ApiPublicRobloxAckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/sluzba/$dutyId/zdarzenie': {
       id: '/_authenticated/sluzba/$dutyId/zdarzenie'
       path: '/sluzba/$dutyId/zdarzenie'
@@ -803,6 +923,12 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BootstrapRoute: BootstrapRoute,
   ZaproszenieRoute: ZaproszenieRoute,
+  ApiPublicRobloxAckRoute: ApiPublicRobloxAckRoute,
+  ApiPublicRobloxDriverRoute: ApiPublicRobloxDriverRoute,
+  ApiPublicRobloxDutyRoute: ApiPublicRobloxDutyRoute,
+  ApiPublicRobloxIncidentRoute: ApiPublicRobloxIncidentRoute,
+  ApiPublicRobloxPisRoute: ApiPublicRobloxPisRoute,
+  ApiPublicRobloxPositionRoute: ApiPublicRobloxPositionRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,

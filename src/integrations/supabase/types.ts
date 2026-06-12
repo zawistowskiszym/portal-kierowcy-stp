@@ -110,6 +110,44 @@ export type Database = {
         }
         Relationships: []
       }
+      driver_positions: {
+        Row: {
+          heading: number | null
+          speed_kmh: number | null
+          updated_at: string
+          user_id: string
+          x: number
+          y: number
+          z: number | null
+        }
+        Insert: {
+          heading?: number | null
+          speed_kmh?: number | null
+          updated_at?: string
+          user_id: string
+          x: number
+          y: number
+          z?: number | null
+        }
+        Update: {
+          heading?: number | null
+          speed_kmh?: number | null
+          updated_at?: string
+          user_id?: string
+          x?: number
+          y?: number
+          z?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_positions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       driver_presence: {
         Row: {
           note: string | null
@@ -218,6 +256,12 @@ export type Database = {
           live_status_note: string | null
           live_status_updated_at: string | null
           notes: string | null
+          pis_current_stop: string | null
+          pis_delay_sec: number | null
+          pis_headsign: string | null
+          pis_next_stop: string | null
+          pis_route: string | null
+          pis_updated_at: string | null
           priority: Database["public"]["Enums"]["duty_priority"]
           route: string
           start_time: string
@@ -239,6 +283,12 @@ export type Database = {
           live_status_note?: string | null
           live_status_updated_at?: string | null
           notes?: string | null
+          pis_current_stop?: string | null
+          pis_delay_sec?: number | null
+          pis_headsign?: string | null
+          pis_next_stop?: string | null
+          pis_route?: string | null
+          pis_updated_at?: string | null
           priority?: Database["public"]["Enums"]["duty_priority"]
           route: string
           start_time: string
@@ -260,6 +310,12 @@ export type Database = {
           live_status_note?: string | null
           live_status_updated_at?: string | null
           notes?: string | null
+          pis_current_stop?: string | null
+          pis_delay_sec?: number | null
+          pis_headsign?: string | null
+          pis_next_stop?: string | null
+          pis_route?: string | null
+          pis_updated_at?: string | null
           priority?: Database["public"]["Enums"]["duty_priority"]
           route?: string
           start_time?: string
@@ -418,6 +474,7 @@ export type Database = {
           priority: Database["public"]["Enums"]["incident_priority"]
           reporter_id: string
           route: string | null
+          source: string
           status: Database["public"]["Enums"]["incident_status"]
           type: Database["public"]["Enums"]["incident_type"]
           updated_at: string
@@ -438,6 +495,7 @@ export type Database = {
           priority?: Database["public"]["Enums"]["incident_priority"]
           reporter_id: string
           route?: string | null
+          source?: string
           status?: Database["public"]["Enums"]["incident_status"]
           type: Database["public"]["Enums"]["incident_type"]
           updated_at?: string
@@ -458,6 +516,7 @@ export type Database = {
           priority?: Database["public"]["Enums"]["incident_priority"]
           reporter_id?: string
           route?: string | null
+          source?: string
           status?: Database["public"]["Enums"]["incident_status"]
           type?: Database["public"]["Enums"]["incident_type"]
           updated_at?: string
@@ -657,6 +716,47 @@ export type Database = {
             columns: ["report_id"]
             isOneToOne: false
             referencedRelation: "driver_reports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roblox_commands: {
+        Row: {
+          acked_at: string | null
+          created_at: string
+          created_by: string | null
+          delivered_at: string | null
+          id: string
+          payload: Json
+          target_user_id: string
+          type: string
+        }
+        Insert: {
+          acked_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          delivered_at?: string | null
+          id?: string
+          payload?: Json
+          target_user_id: string
+          type: string
+        }
+        Update: {
+          acked_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          delivered_at?: string | null
+          id?: string
+          payload?: Json
+          target_user_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roblox_commands_target_user_id_fkey"
+            columns: ["target_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
