@@ -295,7 +295,7 @@ export const generateBlocks = createServerFn({ method: "POST" })
     const layoverB = tt.layover_b_min ?? 5;
 
     function headwayAt(minute: number): number | null {
-      for (const w of wins) {
+      for (const w of wins!) {
         const s = toMin(w.start_time);
         const e = toMin(w.end_time);
         if (minute >= s && minute < e) return w.headway_min;
