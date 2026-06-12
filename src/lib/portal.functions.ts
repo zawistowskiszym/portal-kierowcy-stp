@@ -204,7 +204,7 @@ export const deleteAnnouncement = createServerFn({ method: "POST" })
 export const listUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requireAdmin(context.supabase, context.userId);
+    await requireSuperAdmin(context.supabase, context.userId);
     const yearStart = `${new Date().getFullYear()}-01-01`;
     const [profilesRes, rolesRes, vacRes] = await Promise.all([
       context.supabase.from("profiles").select("*").order("full_name", { ascending: true }),
@@ -247,7 +247,7 @@ export const listUsers = createServerFn({ method: "GET" })
 
 const inviteUserInput = z.object({
   email: z.string().email().max(254),
-  role: z.enum(["admin", "driver"]),
+  role: z.enum(["admin", "dyspozytor", "driver"]),
   redirectTo: z.string().url(),
 });
 
@@ -255,7 +255,7 @@ export const inviteUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => inviteUserInput.parse(d))
   .handler(async ({ data, context }) => {
-    await requireAdmin(context.supabase, context.userId);
+    await requireSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: invited, error: inviteErr } =
@@ -322,11 +322,11 @@ export const updateUser = createServerFn({ method: "POST" })
       employee_id: z.string().nullable().optional(),
       depot: z.string().nullable().optional(),
       active: z.boolean().optional(),
-      role: z.enum(["admin", "driver"]).optional(),
+      role: z.enum(["admin", "dyspozytor", "driver"]).optional(),
     }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    await requireAdmin(context.supabase, context.userId);
+    await requireSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { id, role, ...patch } = data;
     if (Object.keys(patch).length > 0) {
@@ -347,7 +347,7 @@ export const resetUserPassword = createServerFn({ method: "POST" })
     z.object({ id: z.string().uuid(), password: z.string().min(8).max(72) }).parse(d),
   )
   .handler(async ({ data, context }) => {
-    await requireAdmin(context.supabase, context.userId);
+    await requireSuperAdmin(context.supabase, context.userId);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.auth.admin.updateUserById(data.id, {
       password: data.password,
@@ -360,7 +360,7 @@ export const deleteUser = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    await requireAdmin(context.supabase, context.userId);
+    await requireSuperAdmin(context.supabase, context.userId);
     if (data.id === context.userId) throw new Error("Nie można usunąć własnego konta");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.auth.admin.deleteUser(data.id);
@@ -673,7 +673,7 @@ export const getMyStats = createServerFn({ method: "GET" })
 export const getAdminReports = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await requireAdmin(context.supabase, context.userId);
+    await requireSuperAdmin(context.supabase, context.userId);
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
     const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);
