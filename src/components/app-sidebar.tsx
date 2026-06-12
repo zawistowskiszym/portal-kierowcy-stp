@@ -29,7 +29,7 @@ import {
 
 const driverItems = [
   { title: "Pulpit", url: "/pulpit", icon: LayoutDashboard },
-  { title: "Mój grafik", url: "/grafik", icon: CalendarRange },
+  { title: "Grafik", url: "/grafik", icon: CalendarRange },
   { title: "Urlopy", url: "/urlopy", icon: Plane },
   { title: "Raporty i zdarzenia", url: "/raporty", icon: FileBarChart },
   { title: "Ogłoszenia", url: "/ogloszenia", icon: Megaphone },
