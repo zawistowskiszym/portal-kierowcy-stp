@@ -10,8 +10,8 @@ export const Route = createFileRoute("/_authenticated/admin")({
       .from("user_roles")
       .select("role")
       .eq("user_id", userRes.user.id);
-    const isAdmin = (roleRows ?? []).some((r: any) => r.role === "admin");
-    if (!isAdmin) throw redirect({ to: "/pulpit" });
+    const isStaff = (roleRows ?? []).some((r: any) => r.role === "admin" || r.role === "dyspozytor");
+    if (!isStaff) throw redirect({ to: "/pulpit" });
   },
   component: () => <Outlet />,
 });

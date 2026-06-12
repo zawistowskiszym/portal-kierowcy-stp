@@ -1,9 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getAdminReports } from "@/lib/portal.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/raporty")({
+  ssr: false,
+  beforeLoad: async () => {
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) throw redirect({ to: "/auth" });
+    const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", u.user.id);
+    if (!(roles ?? []).some((r: any) => r.role === "admin")) throw redirect({ to: "/pulpit" });
+  },
   head: () => ({ meta: [{ title: "Raporty — Admin STP" }] }),
   component: ReportsPage,
 });

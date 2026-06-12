@@ -17,12 +17,12 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function AuthedLayout() {
-  const { profile, isAdmin, loading } = useAuth();
+  const { profile, isAdmin, isDispatcher, loading } = useAuth();
   return (
     <SidebarProvider>
       <div className="aurora-canvas min-h-screen flex w-full">
         <div className="hidden md:block">
-          <AppSidebar isAdmin={isAdmin} />
+          <AppSidebar isAdmin={isAdmin} isDispatcher={isDispatcher} />
         </div>
         <div className="flex-1 flex flex-col min-w-0">
           <AppHeader profile={profile} />
@@ -33,7 +33,7 @@ function AuthedLayout() {
               <Outlet />
             )}
           </main>
-          <BottomTabBar isAdmin={isAdmin} />
+          <BottomTabBar isAdmin={isAdmin} isDispatcher={isDispatcher} />
         </div>
       </div>
     </SidebarProvider>

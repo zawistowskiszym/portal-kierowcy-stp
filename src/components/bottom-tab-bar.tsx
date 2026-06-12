@@ -36,22 +36,29 @@ const driverMore: Item[] = [
   { title: "Moje statystyki", url: "/statystyki", icon: BarChart3 },
 ];
 
-const adminMore: Item[] = [
-  { title: "Użytkownicy", url: "/admin/uzytkownicy", icon: Users },
+const dispatcherMore: Item[] = [
   { title: "Planowanie służb", url: "/admin/sluzby", icon: ClipboardList },
   { title: "Nieprzydzielone", url: "/admin/nieprzydzielone", icon: AlertTriangle },
   { title: "Tabor", url: "/admin/pojazdy", icon: Bus },
   { title: "Wnioski urlopowe", url: "/admin/urlopy", icon: Plane },
-  { title: "Raporty", url: "/admin/raporty", icon: FileBarChart },
   { title: "Ogłoszenia (admin)", url: "/admin/ogloszenia", icon: Megaphone },
 ];
 
-export function BottomTabBar({ isAdmin }: { isAdmin: boolean }) {
+const adminOnlyMore: Item[] = [
+  { title: "Użytkownicy", url: "/admin/uzytkownicy", icon: Users },
+  { title: "Raporty", url: "/admin/raporty", icon: FileBarChart },
+];
+
+export function BottomTabBar({ isAdmin, isDispatcher }: { isAdmin: boolean; isDispatcher: boolean }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
   const isActive = (url: string) => pathname === url || pathname.startsWith(url + "/");
 
-  const moreItems = [...driverMore, ...(isAdmin ? adminMore : [])];
+  const moreItems = [
+    ...driverMore,
+    ...((isAdmin || isDispatcher) ? dispatcherMore : []),
+    ...(isAdmin ? adminOnlyMore : []),
+  ];
 
   return (
     <nav

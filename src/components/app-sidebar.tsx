@@ -33,19 +33,23 @@ const driverItems = [
   { title: "Ogłoszenia", url: "/ogloszenia", icon: Megaphone },
 ];
 
-const adminItems = [
-  { title: "Użytkownicy", url: "/admin/uzytkownicy", icon: Users },
+const dispatcherItems = [
   { title: "Planowanie służb", url: "/admin/sluzby", icon: ClipboardList },
   { title: "Nieprzydzielone", url: "/admin/nieprzydzielone", icon: AlertTriangle },
   { title: "Tabor", url: "/admin/pojazdy", icon: Bus },
   { title: "Wnioski urlopowe", url: "/admin/urlopy", icon: Plane },
-  { title: "Raporty", url: "/admin/raporty", icon: FileBarChart },
   { title: "Ogłoszenia (admin)", url: "/admin/ogloszenia", icon: Megaphone },
 ];
 
-export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
+const adminOnlyItems = [
+  { title: "Użytkownicy", url: "/admin/uzytkownicy", icon: Users },
+  { title: "Raporty", url: "/admin/raporty", icon: FileBarChart },
+];
+
+export function AppSidebar({ isAdmin, isDispatcher }: { isAdmin: boolean; isDispatcher: boolean }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isActive = (url: string) => pathname === url || pathname.startsWith(url + "/");
+  const showDispatcher = isAdmin || isDispatcher;
 
   return (
     <Sidebar collapsible="icon" className="border-r-0 bg-transparent">
@@ -94,6 +98,32 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        {showDispatcher && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="text-muted-foreground text-[10px] uppercase tracking-widest">
+              Dyspozytor
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {dispatcherItems.map((item) => (
+                  <SidebarMenuItem key={item.url}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={isActive(item.url)}
+                      className="rounded-xl data-[active=true]:bg-primary/12 data-[active=true]:text-primary data-[active=true]:font-semibold hover:bg-glass text-foreground/70 hover:text-foreground"
+                    >
+                      <Link to={item.url}>
+                        <item.icon className="size-4" />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
         {isAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel className="text-muted-foreground text-[10px] uppercase tracking-widest">
@@ -101,7 +131,7 @@ export function AppSidebar({ isAdmin }: { isAdmin: boolean }) {
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {adminItems.map((item) => (
+                {adminOnlyItems.map((item) => (
                   <SidebarMenuItem key={item.url}>
                     <SidebarMenuButton
                       asChild

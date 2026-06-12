@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
@@ -14,6 +14,14 @@ import { LEAVE_TYPE_LABEL } from "@/lib/leave-types";
 
 
 export const Route = createFileRoute("/_authenticated/admin/uzytkownicy")({
+  ssr: false,
+  beforeLoad: async () => {
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { data: u } = await supabase.auth.getUser();
+    if (!u.user) throw redirect({ to: "/auth" });
+    const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", u.user.id);
+    if (!(roles ?? []).some((r: any) => r.role === "admin")) throw redirect({ to: "/pulpit" });
+  },
   head: () => ({ meta: [{ title: "Użytkownicy — Admin STP" }] }),
   component: AdminUsersPage,
 });
@@ -29,7 +37,7 @@ function AdminUsersPage() {
   const { data } = useQuery({ queryKey: ["admin", "users"], queryFn: () => listFn() });
   const users = (data ?? []) as any[];
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ email: "", role: "driver" as "admin" | "driver" });
+  const [form, setForm] = useState({ email: "", role: "driver" as "admin" | "dyspozytor" | "driver" });
 
   const refresh = () => qc.invalidateQueries({ queryKey: ["admin", "users"] });
 
@@ -112,6 +120,7 @@ function AdminUsersPage() {
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="driver">Kierowca</SelectItem>
+                    <SelectItem value="dyspozytor">Dyspozytor</SelectItem>
                     <SelectItem value="admin">Administrator</SelectItem>
                   </SelectContent>
                 </Select>
@@ -149,8 +158,8 @@ function AdminUsersPage() {
                 <td className="px-6 py-3 text-muted-foreground">{u.depot ?? "—"}</td>
                 <td className="px-6 py-3">
                   {u.roles.map((r: string) => (
-                    <Badge key={r} variant={r === "admin" ? "default" : "secondary"} className="mr-1">
-                      {r === "admin" ? "Administrator" : "Kierowca"}
+                    <Badge key={r} variant={r === "admin" ? "default" : r === "dyspozytor" ? "outline" : "secondary"} className="mr-1">
+                      {r === "admin" ? "Administrator" : r === "dyspozytor" ? "Dyspozytor" : "Kierowca"}
                     </Badge>
                   ))}
                 </td>
