@@ -105,7 +105,7 @@ export function AppSidebar({ isAdmin, isDispatcher }: { isAdmin: boolean; isDisp
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {[...dispatcherItems, ...dispatcherItemsExtra].map((item) => (
+                {dispatcherItems.map((item) => (
                   <SidebarMenuItem key={item.url}>
                     <SidebarMenuButton
                       asChild
