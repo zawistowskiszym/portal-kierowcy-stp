@@ -958,7 +958,7 @@ async function resolveDispatcherIds(supabase: any): Promise<string[]> {
     .select("user_id, role")
     .in("role", ["admin", "dyspozytor"]);
   if (error) throw new Error(error.message);
-  return [...new Set((data ?? []).map((r: any) => r.user_id as string))];
+  return Array.from(new Set(((data ?? []) as any[]).map((r) => r.user_id as string)));
 }
 
 async function isDispatcher(supabase: any, userId: string): Promise<boolean> {
