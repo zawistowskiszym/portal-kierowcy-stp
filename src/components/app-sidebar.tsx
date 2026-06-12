@@ -54,6 +54,7 @@ const dispatcherItems = [
   { title: "Dziennik", url: "/admin/dziennik", icon: BookOpen },
   { title: "Wnioski urlopowe", url: "/admin/urlopy", icon: Plane },
   { title: "Ogłoszenia (admin)", url: "/admin/ogloszenia", icon: Megaphone },
+  { title: "Komunikaty pop-up", url: "/admin/komunikaty", icon: AlertTriangle },
 ];
 
 const adminOnlyItems = [
