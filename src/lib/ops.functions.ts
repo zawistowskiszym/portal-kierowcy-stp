@@ -629,6 +629,196 @@ export const listAllDrivers = createServerFn({ method: "GET" })
     return data ?? [];
   });
 
+export const listChatContacts = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("profiles")
+      .select("id, full_name, employee_id, roblox_username")
+      .eq("active", true)
+      .neq("id", context.userId)
+      .order("full_name");
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const listChatConversations = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const [sentRes, receivedRes] = await Promise.all([
+      supabaseAdmin
+        .from("internal_messages")
+        .select("id, author_id, body, created_at, recipients:message_recipients!inner(user_id, read_at)")
+        .eq("kind", "driver_message")
+        .eq("audience_kind", "drivers")
+        .eq("author_id", context.userId)
+        .order("created_at", { ascending: false })
+        .limit(100),
+      supabaseAdmin
+        .from("internal_messages")
+        .select("id, author_id, body, created_at, recipients:message_recipients!inner(user_id, read_at)")
+        .eq("kind", "driver_message")
+        .eq("audience_kind", "drivers")
+        .eq("recipients.user_id", context.userId)
+        .order("created_at", { ascending: false })
+        .limit(100),
+    ]);
+
+    if (sentRes.error) throw new Error(sentRes.error.message);
+    if (receivedRes.error) throw new Error(receivedRes.error.message);
+
+    const conversations = new Map<string, { peer_id: string; last_message: string; created_at: string; unread_count: number }>();
+
+    for (const message of (sentRes.data ?? []) as any[]) {
+      const peerId = message.recipients?.[0]?.user_id as string | undefined;
+      if (!peerId) continue;
+      const existing = conversations.get(peerId);
+      if (!existing || new Date(message.created_at).getTime() > new Date(existing.created_at).getTime()) {
+        conversations.set(peerId, {
+          peer_id: peerId,
+          last_message: message.body,
+          created_at: message.created_at,
+          unread_count: existing?.unread_count ?? 0,
+        });
+      }
+    }
+
+    for (const message of (receivedRes.data ?? []) as any[]) {
+      const peerId = message.author_id as string;
+      const unread = message.recipients?.some((recipient: any) => recipient.user_id === context.userId && !recipient.read_at) ? 1 : 0;
+      const existing = conversations.get(peerId);
+      if (!existing || new Date(message.created_at).getTime() > new Date(existing.created_at).getTime()) {
+        conversations.set(peerId, {
+          peer_id: peerId,
+          last_message: message.body,
+          created_at: message.created_at,
+          unread_count: (existing?.unread_count ?? 0) + unread,
+        });
+      } else if (unread) {
+        existing.unread_count += unread;
+      }
+    }
+
+    return [...conversations.values()].sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    );
+  });
+
+export const listChatMessages = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ peerId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const [sentRes, receivedRes] = await Promise.all([
+      supabaseAdmin
+        .from("internal_messages")
+        .select("id, author_id, body, created_at, recipients:message_recipients!inner(user_id)")
+        .eq("kind", "driver_message")
+        .eq("audience_kind", "drivers")
+        .eq("author_id", context.userId)
+        .eq("recipients.user_id", data.peerId)
+        .order("created_at", { ascending: true })
+        .limit(100),
+      supabaseAdmin
+        .from("internal_messages")
+        .select("id, author_id, body, created_at, recipients:message_recipients!inner(user_id, read_at)")
+        .eq("kind", "driver_message")
+        .eq("audience_kind", "drivers")
+        .eq("author_id", data.peerId)
+        .eq("recipients.user_id", context.userId)
+        .order("created_at", { ascending: true })
+        .limit(100),
+    ]);
+
+    if (sentRes.error) throw new Error(sentRes.error.message);
+    if (receivedRes.error) throw new Error(receivedRes.error.message);
+
+    return [...((sentRes.data ?? []) as any[]), ...((receivedRes.data ?? []) as any[])]
+      .map((message) => ({
+        id: message.id,
+        author_id: message.author_id,
+        body: message.body,
+        created_at: message.created_at,
+      }))
+      .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+  });
+
+export const markChatThreadRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ peerId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: rows, error } = await supabaseAdmin
+      .from("internal_messages")
+      .select("id, recipients:message_recipients!inner(user_id, read_at)")
+      .eq("kind", "driver_message")
+      .eq("audience_kind", "drivers")
+      .eq("author_id", data.peerId)
+      .eq("recipients.user_id", context.userId)
+      .is("recipients.read_at", null)
+      .limit(100);
+
+    if (error) throw new Error(error.message);
+
+    const unreadIds = (rows ?? []).map((row: any) => row.id);
+    if (unreadIds.length === 0) return { ok: true, count: 0 };
+
+    const { error: updateError } = await supabaseAdmin
+      .from("message_recipients")
+      .update({ read_at: new Date().toISOString() })
+      .eq("user_id", context.userId)
+      .in("message_id", unreadIds)
+      .is("read_at", null);
+
+    if (updateError) throw new Error(updateError.message);
+    return { ok: true, count: unreadIds.length };
+  });
+
+export const sendDirectMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ recipient_id: z.string().uuid(), body: z.string().trim().min(1).max(5000) }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    if (data.recipient_id === context.userId) throw new Error("Nie możesz wysłać wiadomości do siebie");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: recipient, error: recipientError } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .eq("id", data.recipient_id)
+      .eq("active", true)
+      .maybeSingle();
+
+    if (recipientError) throw new Error(recipientError.message);
+    if (!recipient) throw new Error("Wybrany użytkownik nie istnieje");
+
+    const messageId = crypto.randomUUID();
+    const subject = data.body.replace(/\s+/g, " ").trim().slice(0, 80) || "Wiadomość";
+
+    const { error } = await supabaseAdmin.from("internal_messages").insert({
+      id: messageId,
+      author_id: context.userId,
+      kind: "driver_message" as any,
+      subject,
+      body: data.body,
+      audience_kind: "drivers" as any,
+      audience: [data.recipient_id],
+    });
+    if (error) throw new Error(error.message);
+
+    const { error: recipientInsertError } = await supabaseAdmin.from("message_recipients").insert({
+      message_id: messageId,
+      user_id: data.recipient_id,
+    });
+    if (recipientInsertError) throw new Error(recipientInsertError.message);
+
+    return { ok: true, id: messageId };
+  });
+
 // ============ DRIVER → DISPATCH MESSAGES ============
 
 export const sendDriverMessage = createServerFn({ method: "POST" })
