@@ -37,7 +37,7 @@ function AdminUsersPage() {
   const { data } = useQuery({ queryKey: ["admin", "users"], queryFn: () => listFn() });
   const users = (data ?? []) as any[];
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ email: "", role: "driver" as "admin" | "driver" });
+  const [form, setForm] = useState({ email: "", role: "driver" as "admin" | "dyspozytor" | "driver" });
 
   const refresh = () => qc.invalidateQueries({ queryKey: ["admin", "users"] });
 
@@ -120,6 +120,7 @@ function AdminUsersPage() {
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="driver">Kierowca</SelectItem>
+                    <SelectItem value="dyspozytor">Dyspozytor</SelectItem>
                     <SelectItem value="admin">Administrator</SelectItem>
                   </SelectContent>
                 </Select>
@@ -157,8 +158,8 @@ function AdminUsersPage() {
                 <td className="px-6 py-3 text-muted-foreground">{u.depot ?? "—"}</td>
                 <td className="px-6 py-3">
                   {u.roles.map((r: string) => (
-                    <Badge key={r} variant={r === "admin" ? "default" : "secondary"} className="mr-1">
-                      {r === "admin" ? "Administrator" : "Kierowca"}
+                    <Badge key={r} variant={r === "admin" ? "default" : r === "dyspozytor" ? "outline" : "secondary"} className="mr-1">
+                      {r === "admin" ? "Administrator" : r === "dyspozytor" ? "Dyspozytor" : "Kierowca"}
                     </Badge>
                   ))}
                 </td>
