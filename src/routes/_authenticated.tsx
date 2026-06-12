@@ -27,6 +27,7 @@ function AuthedLayout() {
         </div>
         <div className="flex-1 flex flex-col min-w-0">
           <AppHeader profile={profile} />
+          {!loading && <PopupAnnouncementsBanner />}
           <main className="flex-1 px-3 md:px-6 pt-4 pb-28 md:pb-10 space-y-4">
             {loading ? (
               <div className="text-sm text-muted-foreground">Ładowanie…</div>
