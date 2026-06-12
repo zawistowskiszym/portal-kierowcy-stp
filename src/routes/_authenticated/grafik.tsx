@@ -22,7 +22,26 @@ export const Route = createFileRoute("/_authenticated/grafik")({
   component: GrafikPage,
 });
 
-// ── Main page ──────────────────────────────────────────────────────────────
+const PL_DOW = ["Nd", "Pn", "Wt", "Śr", "Cz", "Pt", "Sb"];
+const PL_MONTHS_SHORT = [
+  "sty", "lut", "mar", "kwi", "maj", "cze",
+  "lip", "sie", "wrz", "paź", "lis", "gru",
+];
+
+const pad = (n: number) => String(n).padStart(2, "0");
+const isoDate = (d: Date) =>
+  `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+function durationLabel(start?: string | null, end?: string | null) {
+  if (!start || !end) return null;
+  const [sh, sm] = start.split(":").map(Number);
+  const [eh, em] = end.split(":").map(Number);
+  let mins = eh * 60 + em - (sh * 60 + sm);
+  if (mins < 0) mins += 24 * 60;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m === 0 ? `${h} h` : `${h} h ${m} min`;
+}
 
 function GrafikPage() {
   const today = useMemo(() => {
@@ -58,10 +77,7 @@ function GrafikPage() {
   }
 
   const [selectedIso, setSelectedIso] = useState<string>(isoDate(today));
-  const [pisDialogDuty, setPisDialogDuty] = useState<any | null>(null);
   const selectedDuties = byDate.get(selectedIso) ?? [];
-
-  const isToday = selectedIso === isoDate(today);
 
   return (
     <div className="space-y-6">
@@ -72,7 +88,6 @@ function GrafikPage() {
         </p>
       </div>
 
-      {/* Day selector */}
       <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
         {days.map((d) => {
           const iso = isoDate(d);
@@ -90,39 +105,21 @@ function GrafikPage() {
                   : "bg-card border-border hover:border-brand/40 hover:shadow-sm",
               ].join(" ")}
             >
-              <div
-                className={`text-[10px] font-bold uppercase ${isSelected ? "opacity-80" : "text-muted-foreground"}`}
-              >
+              <div className={`text-[10px] font-bold uppercase ${isSelected ? "opacity-80" : "text-muted-foreground"}`}>
                 {PL_DOW[d.getDay()]}{" "}
-                {isTodayDay && !isSelected && (
-                  <span className="text-brand-accent">• dziś</span>
-                )}
+                {isTodayDay && !isSelected && <span className="text-brand-accent">• dziś</span>}
               </div>
-              <div className="text-2xl font-bold font-mono leading-tight mt-1">
-                {d.getDate()}
-              </div>
-              <div
-                className={`text-[10px] font-mono ${isSelected ? "opacity-80" : "text-muted-foreground"}`}
-              >
+              <div className="text-2xl font-bold font-mono leading-tight mt-1">{d.getDate()}</div>
+              <div className={`text-[10px] font-mono ${isSelected ? "opacity-80" : "text-muted-foreground"}`}>
                 {PL_MONTHS_SHORT[d.getMonth()]}
               </div>
               <div className="mt-2">
                 {items.length > 0 ? (
-                  <span
-                    className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                      isSelected
-                        ? "bg-brand-foreground/20"
-                        : "bg-brand/10 text-brand"
-                    }`}
-                  >
+                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isSelected ? "bg-brand-foreground/20" : "bg-brand/10 text-brand"}`}>
                     {items.length === 1 ? items[0].route : `${items.length} służb`}
                   </span>
                 ) : (
-                  <span
-                    className={`text-[10px] ${isSelected ? "opacity-70" : "text-muted-foreground"}`}
-                  >
-                    wolne
-                  </span>
+                  <span className={`text-[10px] ${isSelected ? "opacity-70" : "text-muted-foreground"}`}>wolne</span>
                 )}
               </div>
             </button>
@@ -130,7 +127,6 @@ function GrafikPage() {
         })}
       </div>
 
-      {/* Duty cards */}
       <div className="space-y-4">
         {selectedDuties.length === 0 ? (
           <div className="bg-card border border-border rounded-xl p-10 text-center text-sm text-muted-foreground shadow-sm">
@@ -139,51 +135,18 @@ function GrafikPage() {
         ) : (
           selectedDuties.map((d) => {
             const duration = durationLabel(d.start_time, d.end_time);
-            const canStart = isToday;
-            const isActive = d.live_status === "on_route";
-            const isCompleted = d.live_status === "completed";
-
             return (
-              <div
-                key={d.id}
-                className="bg-card border border-border rounded-xl overflow-hidden shadow-sm"
-              >
-                {/* Header */}
+              <div key={d.id} className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
                 <div className="bg-brand-accent px-4 py-3 flex items-center justify-between">
                   <h3 className="font-bold uppercase tracking-wide text-xs text-brand-accent-foreground">
                     Szczegóły służby
                   </h3>
-                  <div className="flex items-center gap-2">
-                    {isActive && (
-                      <Badge className="bg-emerald-500/20 text-emerald-700 border-emerald-500/40 border text-[10px]">
-                        ● W trasie
-                      </Badge>
-                    )}
-                    {isCompleted && (
-                      <Badge variant="secondary" className="text-[10px]">
-                        ✓ Zakończona
-                      </Badge>
-                    )}
-                    <Badge variant="secondary" className="font-mono">
-                      {d.duty_number}
-                    </Badge>
-                  </div>
+                  <Badge variant="secondary" className="font-mono">{d.duty_number}</Badge>
                 </div>
 
-                {/* Info grid */}
                 <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-6">
-                  <Field
-                    icon={Hash}
-                    label="Linia / służba"
-                    value={`${d.route} / ${d.duty_number}`}
-                    mono
-                  />
-                  <Field
-                    icon={Bus}
-                    label="Pojazd"
-                    value={d.vehicle_label ?? "—"}
-                    mono
-                  />
+                  <Field icon={Hash} label="Linia / służba" value={`${d.route} / ${d.duty_number}`} mono />
+                  <Field icon={Bus} label="Pojazd" value={d.vehicle_label ?? "—"} mono />
                   <Field icon={Building2} label="Zajezdnia" value={d.depot} />
                   <Field icon={Clock} label="Czas służby" value={duration ?? "—"} />
                 </div>
@@ -202,75 +165,25 @@ function GrafikPage() {
                   </div>
                 )}
 
-                {/* Actions */}
                 <div className="px-6 py-4 border-t border-border">
-                  {/* Roblox start button — prominent, shown for today's duties */}
-                  {canStart && !isCompleted && (
-                    <div className="mb-4">
-                      <button
-                        onClick={() => setPisDialogDuty(d)}
-                        className={[
-                          "w-full flex items-center justify-center gap-2 rounded-xl px-4 py-3 font-bold text-sm transition-all active:scale-[0.98]",
-                          isActive
-                            ? "bg-emerald-500/15 border-2 border-emerald-500/50 text-emerald-700 hover:bg-emerald-500/25"
-                            : "bg-brand text-brand-foreground shadow-[0_8px_24px_-8px_color-mix(in_oklab,var(--color-primary)_60%,transparent)] hover:brightness-110",
-                        ].join(" ")}
-                      >
-                        {isActive ? (
-                          <>
-                            <CheckCircle2 className="size-4" />
-                            Służba aktywna — zarządzaj
-                          </>
-                        ) : (
-                          <>
-                            <Play className="size-4" />
-                            Rozpocznij służbę
-                            <Gamepad2 className="size-4 opacity-70 ml-1" />
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Secondary actions */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     <Button asChild variant="outline" className="justify-start">
-                      <Link
-                        to="/sluzba/$dutyId/mapa"
-                        params={{ dutyId: d.id }}
-                      >
+                      <Link to="/sluzba/$dutyId/mapa" params={{ dutyId: d.id }}>
                         <MapPin className="size-4 mr-2" /> Mapa trasy
                       </Link>
                     </Button>
                     <Button asChild variant="outline" className="justify-start">
-                      <Link
-                        to="/sluzba/$dutyId/rozklad"
-                        params={{ dutyId: d.id }}
-                        search={{
-                          route: d.route,
-                          start: d.start_time?.slice(0, 5),
-                        }}
-                      >
+                      <Link to="/sluzba/$dutyId/rozklad" params={{ dutyId: d.id }} search={{ route: d.route, start: d.start_time?.slice(0, 5) }}>
                         <CalendarDays className="size-4 mr-2" /> Rozkład jazdy
                       </Link>
                     </Button>
                     <Button asChild variant="outline" className="justify-start">
-                      <Link
-                        to="/sluzba/$dutyId/raport"
-                        params={{ dutyId: d.id }}
-                      >
+                      <Link to="/sluzba/$dutyId/raport" params={{ dutyId: d.id }}>
                         <FileText className="size-4 mr-2" /> Złóż raport
                       </Link>
                     </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="justify-start text-destructive hover:text-destructive"
-                    >
-                      <Link
-                        to="/sluzba/$dutyId/zdarzenie"
-                        params={{ dutyId: d.id }}
-                      >
+                    <Button asChild variant="outline" className="justify-start text-destructive hover:text-destructive">
+                      <Link to="/sluzba/$dutyId/zdarzenie" params={{ dutyId: d.id }}>
                         <AlertTriangle className="size-4 mr-2" /> Zdarzenie
                       </Link>
                     </Button>
@@ -281,15 +194,6 @@ function GrafikPage() {
           })
         )}
       </div>
-
-      {/* Roblox PIS dialog */}
-      {pisDialogDuty && (
-        <RobloxPISDialog
-          duty={pisDialogDuty}
-          open={!!pisDialogDuty}
-          onOpenChange={(v) => { if (!v) setPisDialogDuty(null); }}
-        />
-      )}
     </div>
   );
 }
