@@ -124,6 +124,7 @@ function VacationsPage() {
           <thead className="bg-muted/40 border-b border-border text-muted-foreground font-bold uppercase text-[10px]">
             <tr>
               <th className="px-6 py-3">Okres</th>
+              <th className="px-6 py-3">Rodzaj</th>
               <th className="px-6 py-3">Uzasadnienie</th>
               <th className="px-6 py-3">Status</th>
               <th className="px-6 py-3">Decyzja</th>
@@ -134,7 +135,9 @@ function VacationsPage() {
             {list.map((v) => (
               <tr key={v.id}>
                 <td className="px-6 py-3 font-mono text-xs">{v.start_date} → {v.end_date}</td>
+                <td className="px-6 py-3 text-xs"><Badge variant="secondary">{LEAVE_TYPE_LABEL[v.leave_type] ?? v.leave_type}</Badge></td>
                 <td className="px-6 py-3 text-muted-foreground">{v.reason ?? "—"}</td>
+
                 <td className="px-6 py-3">
                   {v.status === "approved" && <Badge className="bg-status-ok text-status-ok-foreground">Zatwierdzone</Badge>}
                   {v.status === "rejected" && <Badge variant="destructive">Odrzucone</Badge>}
