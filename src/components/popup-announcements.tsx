@@ -47,7 +47,7 @@ function useActiveAnnouncements() {
   });
   useEffect(() => {
     const channel = supabase
-      .channel("popup-announcements-rt")
+      .channel(`popup-announcements-rt-${Math.random().toString(36).slice(2)}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "popup_announcements" },
