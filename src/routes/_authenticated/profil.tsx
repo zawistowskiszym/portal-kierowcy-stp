@@ -124,10 +124,6 @@ function ProfilePage() {
       toast.error("Nr służbowy musi składać się z 4 cyfr");
       return;
     }
-    if (!form.roblox_username.trim()) {
-      toast.error("Nazwa użytkownika Roblox jest wymagana");
-      return;
-    }
     setSaving(true);
     try {
       await updateFn({
