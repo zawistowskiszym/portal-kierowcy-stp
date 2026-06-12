@@ -16,6 +16,7 @@ import {
   Gauge,
   UserCircle,
   Network,
+  UserPlus,
 } from "lucide-react";
 import {
   Sidebar,
@@ -46,6 +47,10 @@ const dispatcherItems = [
   { title: "Dziennik", url: "/admin/dziennik", icon: BookOpen },
   { title: "Ogłoszenia (admin)", url: "/admin/ogloszenia", icon: Megaphone },
   { title: "Komunikaty pop-up", url: "/admin/komunikaty", icon: AlertTriangle },
+];
+
+const dispatcherItemsExtra = [
+  { title: "Kandydaci", url: "/admin/kandydaci", icon: UserPlus },
 ];
 
 const adminOnlyItems = [
@@ -103,7 +108,7 @@ export function AppSidebar({ isAdmin, isDispatcher }: { isAdmin: boolean; isDisp
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {dispatcherItems.map((item) => (
+                {[...dispatcherItems, ...dispatcherItemsExtra].map((item) => (
                   <SidebarMenuItem key={item.url}>
                     <SidebarMenuButton
                       asChild

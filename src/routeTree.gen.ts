@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ZaproszenieRouteImport } from './routes/zaproszenie'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
+import { Route as RekrutacjaRouteImport } from './routes/rekrutacja'
 import { Route as BootstrapRouteImport } from './routes/bootstrap'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -39,6 +40,7 @@ import { Route as AuthenticatedAdminMonitorRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminMapaRouteImport } from './routes/_authenticated/admin/mapa'
 import { Route as AuthenticatedAdminKomunikatyRouteImport } from './routes/_authenticated/admin/komunikaty'
 import { Route as AuthenticatedAdminKierowcyRouteImport } from './routes/_authenticated/admin/kierowcy'
+import { Route as AuthenticatedAdminKandydaciRouteImport } from './routes/_authenticated/admin/kandydaci'
 import { Route as AuthenticatedAdminIncydentyRouteImport } from './routes/_authenticated/admin/incydenty'
 import { Route as AuthenticatedAdminDziennikRouteImport } from './routes/_authenticated/admin/dziennik'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
@@ -70,6 +72,11 @@ const ZaproszenieRoute = ZaproszenieRouteImport.update({
 const UnsubscribeRoute = UnsubscribeRouteImport.update({
   id: '/unsubscribe',
   path: '/unsubscribe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RekrutacjaRoute = RekrutacjaRouteImport.update({
+  id: '/rekrutacja',
+  path: '/rekrutacja',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BootstrapRoute = BootstrapRouteImport.update({
@@ -223,6 +230,12 @@ const AuthenticatedAdminKierowcyRoute =
     path: '/kierowcy',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminKandydaciRoute =
+  AuthenticatedAdminKandydaciRouteImport.update({
+    id: '/kandydaci',
+    path: '/kandydaci',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminIncydentyRoute =
   AuthenticatedAdminIncydentyRouteImport.update({
     id: '/incydenty',
@@ -352,6 +365,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/bootstrap': typeof BootstrapRoute
+  '/rekrutacja': typeof RekrutacjaRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/zaproszenie': typeof ZaproszenieRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -368,6 +382,7 @@ export interface FileRoutesByFullPath {
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
+  '/admin/kandydaci': typeof AuthenticatedAdminKandydaciRoute
   '/admin/kierowcy': typeof AuthenticatedAdminKierowcyRoute
   '/admin/komunikaty': typeof AuthenticatedAdminKomunikatyRoute
   '/admin/mapa': typeof AuthenticatedAdminMapaRoute
@@ -405,6 +420,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/bootstrap': typeof BootstrapRoute
+  '/rekrutacja': typeof RekrutacjaRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/zaproszenie': typeof ZaproszenieRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -421,6 +437,7 @@ export interface FileRoutesByTo {
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
+  '/admin/kandydaci': typeof AuthenticatedAdminKandydaciRoute
   '/admin/kierowcy': typeof AuthenticatedAdminKierowcyRoute
   '/admin/komunikaty': typeof AuthenticatedAdminKomunikatyRoute
   '/admin/mapa': typeof AuthenticatedAdminMapaRoute
@@ -459,6 +476,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
   '/bootstrap': typeof BootstrapRoute
+  '/rekrutacja': typeof RekrutacjaRoute
   '/unsubscribe': typeof UnsubscribeRoute
   '/zaproszenie': typeof ZaproszenieRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -475,6 +493,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/_authenticated/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
+  '/_authenticated/admin/kandydaci': typeof AuthenticatedAdminKandydaciRoute
   '/_authenticated/admin/kierowcy': typeof AuthenticatedAdminKierowcyRoute
   '/_authenticated/admin/komunikaty': typeof AuthenticatedAdminKomunikatyRoute
   '/_authenticated/admin/mapa': typeof AuthenticatedAdminMapaRoute
@@ -514,6 +533,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/bootstrap'
+    | '/rekrutacja'
     | '/unsubscribe'
     | '/zaproszenie'
     | '/admin'
@@ -530,6 +550,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/dziennik'
     | '/admin/incydenty'
+    | '/admin/kandydaci'
     | '/admin/kierowcy'
     | '/admin/komunikaty'
     | '/admin/mapa'
@@ -567,6 +588,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/bootstrap'
+    | '/rekrutacja'
     | '/unsubscribe'
     | '/zaproszenie'
     | '/admin'
@@ -583,6 +605,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/dziennik'
     | '/admin/incydenty'
+    | '/admin/kandydaci'
     | '/admin/kierowcy'
     | '/admin/komunikaty'
     | '/admin/mapa'
@@ -620,6 +643,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/bootstrap'
+    | '/rekrutacja'
     | '/unsubscribe'
     | '/zaproszenie'
     | '/_authenticated/admin'
@@ -636,6 +660,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/dziennik'
     | '/_authenticated/admin/incydenty'
+    | '/_authenticated/admin/kandydaci'
     | '/_authenticated/admin/kierowcy'
     | '/_authenticated/admin/komunikaty'
     | '/_authenticated/admin/mapa'
@@ -675,6 +700,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
   BootstrapRoute: typeof BootstrapRoute
+  RekrutacjaRoute: typeof RekrutacjaRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
   ZaproszenieRoute: typeof ZaproszenieRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
@@ -706,6 +732,13 @@ declare module '@tanstack/react-router' {
       path: '/unsubscribe'
       fullPath: '/unsubscribe'
       preLoaderRoute: typeof UnsubscribeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rekrutacja': {
+      id: '/rekrutacja'
+      path: '/rekrutacja'
+      fullPath: '/rekrutacja'
+      preLoaderRoute: typeof RekrutacjaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bootstrap': {
@@ -904,6 +937,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminKierowcyRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/kandydaci': {
+      id: '/_authenticated/admin/kandydaci'
+      path: '/kandydaci'
+      fullPath: '/admin/kandydaci'
+      preLoaderRoute: typeof AuthenticatedAdminKandydaciRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/incydenty': {
       id: '/_authenticated/admin/incydenty'
       path: '/incydenty'
@@ -1089,6 +1129,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
   AuthenticatedAdminDziennikRoute: typeof AuthenticatedAdminDziennikRoute
   AuthenticatedAdminIncydentyRoute: typeof AuthenticatedAdminIncydentyRoute
+  AuthenticatedAdminKandydaciRoute: typeof AuthenticatedAdminKandydaciRoute
   AuthenticatedAdminKierowcyRoute: typeof AuthenticatedAdminKierowcyRoute
   AuthenticatedAdminKomunikatyRoute: typeof AuthenticatedAdminKomunikatyRoute
   AuthenticatedAdminMapaRoute: typeof AuthenticatedAdminMapaRoute
@@ -1107,6 +1148,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
   AuthenticatedAdminDziennikRoute: AuthenticatedAdminDziennikRoute,
   AuthenticatedAdminIncydentyRoute: AuthenticatedAdminIncydentyRoute,
+  AuthenticatedAdminKandydaciRoute: AuthenticatedAdminKandydaciRoute,
   AuthenticatedAdminKierowcyRoute: AuthenticatedAdminKierowcyRoute,
   AuthenticatedAdminKomunikatyRoute: AuthenticatedAdminKomunikatyRoute,
   AuthenticatedAdminMapaRoute: AuthenticatedAdminMapaRoute,
@@ -1170,6 +1212,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
   BootstrapRoute: BootstrapRoute,
+  RekrutacjaRoute: RekrutacjaRoute,
   UnsubscribeRoute: UnsubscribeRoute,
   ZaproszenieRoute: ZaproszenieRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,

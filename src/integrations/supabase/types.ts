@@ -1038,6 +1038,51 @@ export type Database = {
         }
         Relationships: []
       }
+      recruitment_applications: {
+        Row: {
+          created_at: string
+          discord_username: string | null
+          email: string
+          experience: string | null
+          id: string
+          motivation: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          reviewer_notes: string | null
+          roblox_username: string
+          status: Database["public"]["Enums"]["recruitment_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          discord_username?: string | null
+          email: string
+          experience?: string | null
+          id?: string
+          motivation: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_notes?: string | null
+          roblox_username: string
+          status?: Database["public"]["Enums"]["recruitment_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          discord_username?: string | null
+          email?: string
+          experience?: string | null
+          id?: string
+          motivation?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_notes?: string | null
+          roblox_username?: string
+          status?: Database["public"]["Enums"]["recruitment_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       report_comments: {
         Row: {
           author_id: string
@@ -1501,6 +1546,7 @@ export type Database = {
         | "diversion"
         | "driver_message"
       planning_day_type: "weekday" | "saturday" | "sunday"
+      recruitment_status: "new" | "reviewing" | "accepted" | "rejected"
       report_category:
         | "operational"
         | "complaint"
@@ -1708,6 +1754,7 @@ export const Constants = {
         "driver_message",
       ],
       planning_day_type: ["weekday", "saturday", "sunday"],
+      recruitment_status: ["new", "reviewing", "accepted", "rejected"],
       report_category: [
         "operational",
         "complaint",
