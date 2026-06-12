@@ -12,6 +12,12 @@ import {
   Bus,
   FileBarChart,
   AlertTriangle,
+  Radio,
+  Activity,
+  Map as MapIcon,
+  BookOpen,
+  Gauge,
+  UserCircle,
 } from "lucide-react";
 import { useState } from "react";
 import {
@@ -32,33 +38,66 @@ const driverPrimary: Item[] = [
 ];
 
 const driverMore: Item[] = [
+  { title: "Komunikacja", url: "/wiadomosci", icon: Radio },
   { title: "Urlopy", url: "/urlopy", icon: Plane },
   { title: "Moje statystyki", url: "/statystyki", icon: BarChart3 },
+  { title: "Mój profil", url: "/profil", icon: UserCircle },
 ];
 
 const dispatcherMore: Item[] = [
+  { title: "Pulpit dyspozytora", url: "/admin/dashboard", icon: Gauge },
+  { title: "Monitor służb", url: "/admin/monitor", icon: Activity },
+  { title: "Incydenty", url: "/admin/incydenty", icon: AlertTriangle },
+  { title: "Centrum raportów", url: "/admin/raporty", icon: FileBarChart },
+  { title: "Kierowcy", url: "/admin/kierowcy", icon: Users },
   { title: "Planowanie służb", url: "/admin/sluzby", icon: ClipboardList },
   { title: "Nieprzydzielone", url: "/admin/nieprzydzielone", icon: AlertTriangle },
   { title: "Tabor", url: "/admin/pojazdy", icon: Bus },
+  { title: "Komunikacja", url: "/admin/komunikacja", icon: Radio },
+  { title: "Mapa operacyjna", url: "/admin/mapa", icon: MapIcon },
+  { title: "Dziennik", url: "/admin/dziennik", icon: BookOpen },
   { title: "Wnioski urlopowe", url: "/admin/urlopy", icon: Plane },
   { title: "Ogłoszenia (admin)", url: "/admin/ogloszenia", icon: Megaphone },
 ];
 
 const adminOnlyMore: Item[] = [
   { title: "Użytkownicy", url: "/admin/uzytkownicy", icon: Users },
-  { title: "Raporty", url: "/admin/raporty", icon: FileBarChart },
 ];
 
 export function BottomTabBar({ isAdmin, isDispatcher }: { isAdmin: boolean; isDispatcher: boolean }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
   const isActive = (url: string) => pathname === url || pathname.startsWith(url + "/");
+  const showDispatcher = isAdmin || isDispatcher;
 
-  const moreItems = [
-    ...driverMore,
-    ...((isAdmin || isDispatcher) ? dispatcherMore : []),
-    ...(isAdmin ? adminOnlyMore : []),
-  ];
+  const renderGroup = (label: string, items: Item[]) => (
+    <div>
+      <div className="px-1 pb-2 pt-1 text-[10px] uppercase tracking-widest text-muted-foreground">
+        {label}
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        {items.map((item) => {
+          const active = isActive(item.url);
+          return (
+            <Link
+              key={item.url}
+              to={item.url}
+              onClick={() => setOpen(false)}
+              className={[
+                "flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm transition-colors",
+                active
+                  ? "border-primary/30 bg-primary/10 text-primary"
+                  : "border-border bg-glass text-foreground hover:bg-glass-strong",
+              ].join(" ")}
+            >
+              <item.icon className="size-4 shrink-0" />
+              <span className="truncate">{item.title}</span>
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
 
   return (
     <nav
@@ -94,30 +133,14 @@ export function BottomTabBar({ isAdmin, isDispatcher }: { isAdmin: boolean; isDi
               <span className="text-[10px] font-semibold tracking-tight">Więcej</span>
             </button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="rounded-t-3xl pb-8">
+          <SheetContent side="bottom" className="rounded-t-3xl pb-8 max-h-[85vh] overflow-y-auto">
             <SheetHeader>
               <SheetTitle className="font-display text-2xl">Więcej</SheetTitle>
             </SheetHeader>
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              {moreItems.map((item) => {
-                const active = isActive(item.url);
-                return (
-                  <Link
-                    key={item.url}
-                    to={item.url}
-                    onClick={() => setOpen(false)}
-                    className={[
-                      "flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm transition-colors",
-                      active
-                        ? "border-primary/30 bg-primary/10 text-primary"
-                        : "border-border bg-glass text-foreground hover:bg-glass-strong",
-                    ].join(" ")}
-                  >
-                    <item.icon className="size-4 shrink-0" />
-                    <span className="truncate">{item.title}</span>
-                  </Link>
-                );
-              })}
+            <div className="mt-4 space-y-5">
+              {renderGroup("Kierowca", driverMore)}
+              {showDispatcher && renderGroup("Dyspozytor", dispatcherMore)}
+              {isAdmin && renderGroup("Administracja", adminOnlyMore)}
             </div>
           </SheetContent>
         </Sheet>
