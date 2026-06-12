@@ -556,6 +556,7 @@ function CreateDutyDialog({ open, onOpenChange, vehicles, onSubmit }: any) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader><DialogTitle>Nowa służba</DialogTitle></DialogHeader>
+        <datalist id="line-presets">{LINE_PRESETS.map(p => <option key={p.line} value={p.line} />)}</datalist>
         <form onSubmit={async (e) => { e.preventDefault(); try {
           await onSubmit({ ...form, vehicle_id: form.vehicle_id || null, vehicle_label: vehicles.find((v: any) => v.id === form.vehicle_id)?.vehicle_number ?? null, notes: form.notes || null });
           setForm({ duty_number: "", duty_date: "", start_time: "", end_time: "", depot: "", route: "", vehicle_id: "", notes: "" });
