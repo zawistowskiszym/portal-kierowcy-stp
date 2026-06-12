@@ -28,6 +28,8 @@ export const Route = createFileRoute("/api/public/roblox/pis")({
           pis_current_stop: current_stop ?? null,
           pis_next_stop: next_stop ?? null,
           pis_delay_sec: delay,
+          pis_stop_index: typeof stop_index === "number" ? Math.trunc(stop_index) : null,
+          pis_total_stops: typeof total_stops === "number" ? Math.trunc(total_stops) : null,
           pis_updated_at: now,
           duty_number: duty_number ? String(duty_number) : null,
         });
