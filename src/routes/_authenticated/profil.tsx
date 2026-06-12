@@ -236,15 +236,6 @@ function ProfilePage() {
             />
           </div>
           <div className="space-y-1">
-            <Label>Nazwa użytkownika Roblox *</Label>
-            <Input
-              required
-              maxLength={40}
-              value={form.roblox_username}
-              onChange={(e) => setForm({ ...form, roblox_username: e.target.value })}
-            />
-          </div>
-          <div className="space-y-1">
             <Label>Discord</Label>
             <Input
               maxLength={40}
