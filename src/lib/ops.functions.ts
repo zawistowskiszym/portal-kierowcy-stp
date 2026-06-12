@@ -635,7 +635,6 @@ export const listChatContacts = createServerFn({ method: "GET" })
     const { data, error } = await context.supabase
       .from("profiles")
       .select("id, full_name, employee_id, roblox_username")
-      .eq("active", true)
       .neq("id", context.userId)
       .order("full_name");
     if (error) throw new Error(error.message);
@@ -790,7 +789,6 @@ export const sendDirectMessage = createServerFn({ method: "POST" })
       .from("profiles")
       .select("id")
       .eq("id", data.recipient_id)
-      .eq("active", true)
       .maybeSingle();
 
     if (recipientError) throw new Error(recipientError.message);
