@@ -11,6 +11,7 @@ import {
   Plane,
   BarChart3,
   FileBarChart,
+  AlertTriangle,
 } from "lucide-react";
 import {
   Sidebar,
@@ -35,6 +36,7 @@ const driverItems = [
 const adminItems = [
   { title: "Użytkownicy", url: "/admin/uzytkownicy", icon: Users },
   { title: "Planowanie służb", url: "/admin/sluzby", icon: ClipboardList },
+  { title: "Nieprzydzielone", url: "/admin/nieprzydzielone", icon: AlertTriangle },
   { title: "Tabor", url: "/admin/pojazdy", icon: Bus },
   { title: "Wnioski urlopowe", url: "/admin/urlopy", icon: Plane },
   { title: "Raporty", url: "/admin/raporty", icon: FileBarChart },
