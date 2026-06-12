@@ -5,6 +5,13 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { completeInvitation } from "@/lib/portal.functions";
 
@@ -54,6 +61,14 @@ function InvitePage() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!/^\d{4}$/.test(form.employee_id)) {
+      toast.error("Nr służbowy musi składać się z 4 cyfr");
+      return;
+    }
+    if (!form.depot) {
+      toast.error("Wybierz zajezdnię");
+      return;
+    }
     if (form.password.length < 8) {
       toast.error("Hasło musi mieć co najmniej 8 znaków");
       return;
@@ -69,8 +84,8 @@ function InvitePage() {
       await completeFn({
         data: {
           full_name: form.full_name,
-          employee_id: form.employee_id || null,
-          depot: form.depot || null,
+          employee_id: form.employee_id,
+          depot: form.depot,
         },
       });
       toast.success("Konto aktywowane");
@@ -124,16 +139,34 @@ function InvitePage() {
             <div className="space-y-1">
               <Label>Nr służbowy</Label>
               <Input
+                required
+                inputMode="numeric"
+                pattern="\d{4}"
+                maxLength={4}
+                placeholder="0000"
                 value={form.employee_id}
-                onChange={(e) => setForm({ ...form, employee_id: e.target.value })}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    employee_id: e.target.value.replace(/\D/g, "").slice(0, 4),
+                  })
+                }
               />
             </div>
             <div className="space-y-1">
               <Label>Zajezdnia</Label>
-              <Input
+              <Select
                 value={form.depot}
-                onChange={(e) => setForm({ ...form, depot: e.target.value })}
-              />
+                onValueChange={(v) => setForm({ ...form, depot: v })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Wybierz…" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Królewska">Królewska</SelectItem>
+                  <SelectItem value="Kijowska">Kijowska</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="space-y-1">

@@ -7,7 +7,6 @@ import {
   Head,
   Heading,
   Html,
-  Link,
   Preview,
   Text,
 } from '@react-email/components'
@@ -18,31 +17,23 @@ interface InviteEmailProps {
   confirmationUrl: string
 }
 
-export const InviteEmail = ({
-  siteName,
-  siteUrl,
-  confirmationUrl,
-}: InviteEmailProps) => (
-  <Html lang="en" dir="ltr">
+export const InviteEmail = ({ confirmationUrl }: InviteEmailProps) => (
+  <Html lang="pl" dir="ltr">
     <Head />
-    <Preview>You've been invited to join {siteName}</Preview>
+    <Preview>Zaproszenie do Portalu Kierowcy STP</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>You've been invited</Heading>
+        <Heading style={h1}>Dzień dobry!</Heading>
         <Text style={text}>
-          You've been invited to join{' '}
-          <Link href={siteUrl} style={link}>
-            <strong>{siteName}</strong>
-          </Link>
-          . Click the button below to accept the invitation and create your
-          account.
+          Zostałeś zaproszony do dołączenia do Portalu Kierowcy STP. Kliknij w
+          link poniżej, aby utworzyć konto.
         </Text>
         <Button style={button} href={confirmationUrl}>
-          Accept Invitation
+          Utwórz konto
         </Button>
-        <Text style={footer}>
-          If you weren't expecting this invitation, you can safely ignore this
-          email.
+        <Text style={text}>
+          Pozdrawiamy<br />
+          Zespół Kadr STP
         </Text>
       </Container>
     </Body>
@@ -65,7 +56,6 @@ const text = {
   lineHeight: '1.5',
   margin: '0 0 25px',
 }
-const link = { color: 'inherit', textDecoration: 'underline' }
 const button = {
   backgroundColor: '#000000',
   color: '#ffffff',
@@ -74,4 +64,3 @@ const button = {
   padding: '12px 20px',
   textDecoration: 'none',
 }
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
