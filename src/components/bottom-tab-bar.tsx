@@ -51,10 +51,10 @@ const dispatcherMore: Item[] = [
   { title: "Dziennik", url: "/admin/dziennik", icon: BookOpen },
   { title: "Ogłoszenia (admin)", url: "/admin/ogloszenia", icon: Megaphone },
   { title: "Komunikaty pop-up", url: "/admin/komunikaty", icon: AlertTriangle },
-  { title: "Kandydaci", url: "/admin/kandydaci", icon: UserPlus },
 ];
 
 const adminOnlyMore: Item[] = [
+  { title: "Kandydaci", url: "/admin/kandydaci", icon: UserPlus },
   { title: "Użytkownicy", url: "/admin/uzytkownicy", icon: Users },
 ];
 
