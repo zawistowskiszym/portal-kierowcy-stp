@@ -618,7 +618,7 @@ function BulkGeneratorDialog({ open, onOpenChange, defaultDate, depots, onSubmit
                 <SelectContent>{depots.map((d: string) => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
               </Select>
             </div>
-            <div className="space-y-1"><Label>Linia / trasy</Label><Input required value={form.route} onChange={(e) => setForm({ ...form, route: e.target.value })} placeholder="151+190" /></div>
+            <div className="space-y-1"><Label>Linia / trasy</Label><Input required list="line-presets" value={form.route} onChange={(e) => setForm({ ...form, route: e.target.value })} placeholder="151+190" /></div>
             <div className="space-y-1"><Label>Start</Label><Input type="time" required value={form.start_time} onChange={(e) => setForm({ ...form, start_time: e.target.value })} /></div>
             <div className="space-y-1"><Label>Koniec</Label><Input type="time" required value={form.end_time} onChange={(e) => setForm({ ...form, end_time: e.target.value })} /></div>
             <div className="space-y-1"><Label>Liczba służb</Label><Input type="number" min={1} max={50} required value={form.count} onChange={(e) => setForm({ ...form, count: Number(e.target.value) })} /></div>
