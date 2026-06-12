@@ -206,7 +206,7 @@ function AdminUsersPage() {
               <th className="px-6 py-3">Pracownik</th>
               <th className="px-6 py-3">Nr służbowy</th>
               <th className="px-6 py-3">Zajezdnia</th>
-              <th className="px-6 py-3">Roblox / Discord</th>
+              <th className="px-6 py-3">Discord</th>
               <th className="px-6 py-3">Rola</th>
               <th className="px-6 py-3">Status</th>
               <th className="px-6 py-3">Urlopy ({new Date().getFullYear()})</th>
