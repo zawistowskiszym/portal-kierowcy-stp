@@ -566,7 +566,7 @@ function CreateDutyDialog({ open, onOpenChange, vehicles, onSubmit }: any) {
             <div className="space-y-1"><Label>Start</Label><Input type="time" required value={form.start_time} onChange={(e) => setForm({ ...form, start_time: e.target.value })} /></div>
             <div className="space-y-1"><Label>Koniec</Label><Input type="time" required value={form.end_time} onChange={(e) => setForm({ ...form, end_time: e.target.value })} /></div>
             <div className="space-y-1"><Label>Zajezdnia</Label><Input required value={form.depot} onChange={(e) => setForm({ ...form, depot: e.target.value })} /></div>
-            <div className="space-y-1"><Label>Linia / trasy</Label><Input required value={form.route} onChange={(e) => setForm({ ...form, route: e.target.value })} placeholder="151+190" /></div>
+            <div className="space-y-1"><Label>Linia / trasy</Label><Input required list="line-presets" value={form.route} onChange={(e) => setForm({ ...form, route: e.target.value })} placeholder="151+190" /></div>
             <div className="space-y-1 col-span-2">
               <Label>Pojazd</Label>
               <Select value={form.vehicle_id || "none"} onValueChange={(v) => setForm({ ...form, vehicle_id: v === "none" ? "" : v })}>
