@@ -659,10 +659,27 @@ export const getDutyTimetable = createServerFn({ method: "GET" })
       .eq("block_id", block.id)
       .order("trip_order");
 
-    // Load lines (for terminus labels)
+    const lineIds = block.line_ids ?? [];
     const { data: linesData } = await context.supabase
       .from("lines").select("id,line_number,terminus_a,terminus_b")
-      .in("id", block.line_ids ?? []);
+      .in("id", lineIds);
+
+    // Per-line, per-direction stop list with travel times
+    const { data: lineStops } = await context.supabase
+      .from("line_stops")
+      .select("line_id,direction,position,travel_time_to_next_min,stops(name)")
+      .in("line_id", lineIds.length ? lineIds : ["00000000-0000-0000-0000-000000000000"])
+      .order("position");
+
+    const stopsByLine: Record<string, { AB: any[]; BA: any[] }> = {};
+    for (const row of lineStops ?? []) {
+      const key = row.line_id as string;
+      if (!stopsByLine[key]) stopsByLine[key] = { AB: [], BA: [] };
+      stopsByLine[key][row.direction as "AB" | "BA"].push({
+        name: (row as any).stops?.name ?? "—",
+        travel_time_to_next_min: row.travel_time_to_next_min ?? 0,
+      });
+    }
 
     return {
       duty,
@@ -670,5 +687,6 @@ export const getDutyTimetable = createServerFn({ method: "GET" })
       block,
       lines: linesData ?? [],
       trips: trips ?? [],
+      stopsByLine,
     };
   });
