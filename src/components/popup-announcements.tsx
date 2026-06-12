@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 import {
   listActivePopupAnnouncements,
   dismissPopupAnnouncement,
@@ -43,6 +44,20 @@ export function PopupAnnouncements() {
   useEffect(() => {
     if (index >= data.length) setIndex(0);
   }, [data.length, index]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("popup-announcements-rt")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "popup_announcements" },
+        () => qc.invalidateQueries({ queryKey: ["popup-announcements-active"] }),
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [qc]);
 
   if (!data.length) return null;
   const current: any = data[Math.min(index, data.length - 1)];
