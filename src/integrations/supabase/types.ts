@@ -482,7 +482,7 @@ export type Database = {
         | "events"
         | "training"
         | "general"
-      app_role: "admin" | "driver"
+      app_role: "admin" | "driver" | "dyspozytor"
       availability_type: "unavailable" | "preferred"
       duty_priority: "low" | "normal" | "high"
       duty_status: "unassigned" | "pending" | "assigned"
@@ -634,7 +634,7 @@ export const Constants = {
         "training",
         "general",
       ],
-      app_role: ["admin", "driver"],
+      app_role: ["admin", "driver", "dyspozytor"],
       availability_type: ["unavailable", "preferred"],
       duty_priority: ["low", "normal", "high"],
       duty_status: ["unassigned", "pending", "assigned"],
