@@ -127,7 +127,7 @@ export const updateDuty = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await requireAdmin(context.supabase, context.userId);
     const { id, ...patch } = data;
-    const { error } = await context.supabase.from("duties").update(patch).eq("id", id);
+    const { error } = await context.supabase.from("duties").update(patch as any).eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -184,7 +184,7 @@ export const updateAnnouncement = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await requireAdmin(context.supabase, context.userId);
     const { id, ...patch } = data;
-    const { error } = await context.supabase.from("announcements").update(patch).eq("id", id);
+    const { error } = await context.supabase.from("announcements").update(patch as any).eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -336,7 +336,7 @@ export const updateMyProfile = createServerFn({ method: "POST" })
     if (Object.keys(patch).length === 0) return { ok: true };
     const { error } = await context.supabase
       .from("profiles")
-      .update(patch)
+      .update(patch as any)
       .eq("id", context.userId);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -358,7 +358,7 @@ export const updateUser = createServerFn({ method: "POST" })
     const { id, role, ...rest } = data;
     const patch = Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== undefined));
     if (Object.keys(patch).length > 0) {
-      const { error } = await supabaseAdmin.from("profiles").update(patch).eq("id", id);
+      const { error } = await supabaseAdmin.from("profiles").update(patch as any).eq("id", id);
       if (error) throw new Error(error.message);
     }
     if (role) {
@@ -497,7 +497,7 @@ export const updateVehicle = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await requireAdmin(context.supabase, context.userId);
     const { id, ...patch } = data;
-    const { error } = await context.supabase.from("vehicles").update(patch).eq("id", id);
+    const { error } = await context.supabase.from("vehicles").update(patch as any).eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
