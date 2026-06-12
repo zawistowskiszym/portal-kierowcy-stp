@@ -28,6 +28,7 @@ import { Route as AuthenticatedAdminRaportyRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminPojazdyRouteImport } from './routes/_authenticated/admin/pojazdy'
 import { Route as AuthenticatedAdminOgloszeniaRouteImport } from './routes/_authenticated/admin/ogloszenia'
 import { Route as AuthenticatedAdminNieprzydzieloneRouteImport } from './routes/_authenticated/admin/nieprzydzielone'
+import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -138,6 +139,12 @@ const AuthenticatedAdminNieprzydzieloneRoute =
     path: '/nieprzydzielone',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminDashboardRoute =
+  AuthenticatedAdminDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -191,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/pulpit': typeof AuthenticatedPulpitRoute
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
@@ -218,6 +226,7 @@ export interface FileRoutesByTo {
   '/pulpit': typeof AuthenticatedPulpitRoute
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
+  '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
   '/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
@@ -247,6 +256,7 @@ export interface FileRoutesById {
   '/_authenticated/pulpit': typeof AuthenticatedPulpitRoute
   '/_authenticated/statystyki': typeof AuthenticatedStatystykiRoute
   '/_authenticated/urlopy': typeof AuthenticatedUrlopyRoute
+  '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/nieprzydzielone': typeof AuthenticatedAdminNieprzydzieloneRoute
   '/_authenticated/admin/ogloszenia': typeof AuthenticatedAdminOgloszeniaRoute
   '/_authenticated/admin/pojazdy': typeof AuthenticatedAdminPojazdyRoute
@@ -276,6 +286,7 @@ export interface FileRouteTypes {
     | '/pulpit'
     | '/statystyki'
     | '/urlopy'
+    | '/admin/dashboard'
     | '/admin/nieprzydzielone'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
@@ -303,6 +314,7 @@ export interface FileRouteTypes {
     | '/pulpit'
     | '/statystyki'
     | '/urlopy'
+    | '/admin/dashboard'
     | '/admin/nieprzydzielone'
     | '/admin/ogloszenia'
     | '/admin/pojazdy'
@@ -331,6 +343,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pulpit'
     | '/_authenticated/statystyki'
     | '/_authenticated/urlopy'
+    | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/nieprzydzielone'
     | '/_authenticated/admin/ogloszenia'
     | '/_authenticated/admin/pojazdy'
@@ -493,6 +506,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminNieprzydzieloneRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/dashboard': {
+      id: '/_authenticated/admin/dashboard'
+      path: '/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -546,6 +566,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
   AuthenticatedAdminNieprzydzieloneRoute: typeof AuthenticatedAdminNieprzydzieloneRoute
   AuthenticatedAdminOgloszeniaRoute: typeof AuthenticatedAdminOgloszeniaRoute
   AuthenticatedAdminPojazdyRoute: typeof AuthenticatedAdminPojazdyRoute
@@ -556,6 +577,7 @@ interface AuthenticatedAdminRouteChildren {
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
   AuthenticatedAdminNieprzydzieloneRoute:
     AuthenticatedAdminNieprzydzieloneRoute,
   AuthenticatedAdminOgloszeniaRoute: AuthenticatedAdminOgloszeniaRoute,
@@ -615,3 +637,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
