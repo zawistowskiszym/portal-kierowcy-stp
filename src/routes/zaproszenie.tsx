@@ -178,6 +178,25 @@ function InvitePage() {
             </div>
           </div>
           <div className="space-y-1">
+            <Label>Nazwa użytkownika Roblox *</Label>
+            <Input
+              required
+              maxLength={40}
+              placeholder="np. JanKowalski123"
+              value={form.roblox_username}
+              onChange={(e) => setForm({ ...form, roblox_username: e.target.value })}
+            />
+          </div>
+          <div className="space-y-1">
+            <Label>Discord (opcjonalnie)</Label>
+            <Input
+              maxLength={40}
+              placeholder="np. jan.kowalski"
+              value={form.discord_username}
+              onChange={(e) => setForm({ ...form, discord_username: e.target.value })}
+            />
+          </div>
+          <div className="space-y-1">
             <Label>Hasło</Label>
             <Input
               type="password"
