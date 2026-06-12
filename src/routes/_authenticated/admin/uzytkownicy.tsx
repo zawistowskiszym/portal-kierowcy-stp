@@ -322,13 +322,6 @@ function AdminUsersPage() {
                   </Select>
                 </div>
                 <div className="space-y-1">
-                  <Label>Roblox</Label>
-                  <Input
-                    value={edit.roblox_username}
-                    onChange={(e) => setEdit({ ...edit, roblox_username: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-1">
                   <Label>Discord</Label>
                   <Input
                     value={edit.discord_username}
