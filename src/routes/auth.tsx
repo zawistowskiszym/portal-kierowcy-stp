@@ -22,6 +22,16 @@ function AuthPage() {
   const [needsBootstrap, setNeedsBootstrap] = useState(false);
 
   useEffect(() => {
+    // Forward invite/recovery tokens that landed here by accident.
+    const hash = window.location.hash || "";
+    if (hash.includes("type=invite") || hash.includes("type=signup")) {
+      window.location.replace("/zaproszenie" + hash);
+      return;
+    }
+    if (hash.includes("type=recovery")) {
+      window.location.replace("/reset-hasla" + hash);
+      return;
+    }
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) navigate({ to: "/pulpit", replace: true });
     });
