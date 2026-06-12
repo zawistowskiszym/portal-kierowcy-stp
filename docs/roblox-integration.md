@@ -56,26 +56,6 @@ Returns the driver's profile, today's active duty, pending dispatcher
 messages and pending in‑game commands. Poll every 15–30 s. Commands are
 marked `delivered_at` on this call.
 
-#### Command type: `spawn_vehicle`
-Emitted when the driver presses **"Spawnuj pojazd w grze"** in the portal.
-Payload:
-```json
-{
-  "duty_id": "uuid", "duty_number": "12/01",
-  "route": "175", "depot": "R-1",
-  "vehicle_id": "uuid",
-  "vehicle_label": "1234",
-  "vehicle_number": "1234",
-  "model": "Solaris Urbino 18",
-  "fuel": "diesel",
-  "requested_at": "2026-06-12T10:00:00.000Z"
-}
-```
-Game should spawn the matching bus model near the driver's character at
-their depot spawn point, assign ownership/driver seat to the player, then
-ack the command via `POST /ack`. Other command types follow the same
-`{ id, type, payload }` envelope.
-
 ### POST `/ack`
 ```json
 { "roblox_username": "DriverX",
