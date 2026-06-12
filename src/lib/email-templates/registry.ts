@@ -3,6 +3,8 @@ import { template as newMessageTemplate } from './new-message'
 import { template as newAnnouncementTemplate } from './new-announcement'
 import { template as quizInviteTemplate } from './quiz-invite'
 import { template as introInviteTemplate } from './intro-invite'
+import { template as applicationApprovedTemplate } from './application-approved'
+import { template as applicationDeclinedTemplate } from './application-declined'
 
 export interface TemplateEntry {
   component: ComponentType<any>
@@ -18,4 +20,6 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'new-announcement': newAnnouncementTemplate,
   'quiz-invite': quizInviteTemplate,
   'intro-invite': introInviteTemplate,
+  'application-approved': applicationApprovedTemplate,
+  'application-declined': applicationDeclinedTemplate,
 }

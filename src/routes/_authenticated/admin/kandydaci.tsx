@@ -22,7 +22,7 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
-import { sendIntro } from "@/lib/recruitment.functions";
+import { sendIntro, decideQuizAttempt } from "@/lib/recruitment.functions";
 
 type Status = "new" | "reviewing" | "accepted" | "rejected";
 
@@ -364,6 +364,8 @@ function QuizzesSection() {
   const [selected, setSelected] = useState<Attempt | null>(null);
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
+  const [deciding, setDeciding] = useState<"approved" | "declined" | null>(null);
+  const decideFn = useServerFn(decideQuizAttempt);
 
   const { data } = useQuery({
     queryKey: ["admin", "quiz-attempts", filter],
@@ -422,6 +424,25 @@ function QuizzesSection() {
     toast.success("Usunięto");
     setSelected(null);
     qc.invalidateQueries({ queryKey: ["admin", "quiz-attempts"] });
+  };
+
+  const decide = async (decision: "approved" | "declined") => {
+    if (!selected) return;
+    const label = decision === "approved" ? "zaakceptować" : "odrzucić";
+    if (!confirm(`Czy na pewno ${label} tę aplikację? Kandydat dostanie email.`)) return;
+    setDeciding(decision);
+    try {
+      await decideFn({ data: { attemptId: selected.id, decision } });
+      toast.success(
+        decision === "approved" ? "Zaakceptowano i wysłano email" : "Odrzucono i wysłano email",
+      );
+      setSelected(null);
+      qc.invalidateQueries({ queryKey: ["admin", "quiz-attempts"] });
+    } catch (err: any) {
+      toast.error(err?.message ?? "Nie udało się wysłać decyzji");
+    } finally {
+      setDeciding(null);
+    }
   };
 
   const items = data ?? [];
@@ -528,8 +549,22 @@ function QuizzesSection() {
               </div>
             </div>
           )}
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 flex-wrap">
             <Button variant="destructive" onClick={remove}>Usuń</Button>
+            <Button
+              variant="outline"
+              onClick={() => decide("declined")}
+              disabled={deciding !== null}
+            >
+              {deciding === "declined" ? "Wysyłanie..." : "Odrzuć"}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => decide("approved")}
+              disabled={deciding !== null}
+            >
+              {deciding === "approved" ? "Wysyłanie..." : "Zaakceptuj"}
+            </Button>
             <Button variant="outline" onClick={() => setSelected(null)}>Anuluj</Button>
             <Button onClick={save} disabled={saving}>
               {saving ? "Zapisywanie..." : "Zapisz notatki"}

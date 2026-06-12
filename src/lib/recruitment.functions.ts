@@ -262,3 +262,64 @@ export const sendIntro = createServerFn({ method: 'POST' })
 
     return { ok: true, introUrl }
   })
+
+/** Admin — approve or decline a quiz attempt and notify the candidate. */
+export const decideQuizAttempt = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { attemptId: string; decision: 'approved' | 'declined' }) =>
+    z
+      .object({
+        attemptId: z.string().uuid(),
+        decision: z.enum(['approved', 'declined']),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { notifyByEmail } = await import('./email/notify.server')
+
+    const { data: isAdmin } = await context.supabase.rpc('has_role', {
+      _user_id: context.userId,
+      _role: 'admin',
+    })
+    if (!isAdmin) throw new Error('Brak uprawnień')
+
+    const { data: attempt, error: aErr } = await supabaseAdmin
+      .from('quiz_attempts')
+      .select('id, candidate_email, status')
+      .eq('id', data.attemptId)
+      .maybeSingle()
+    if (aErr || !attempt) throw new Error('Nie znaleziono próby')
+
+    const email = String(attempt.candidate_email).toLowerCase()
+    const { error: upErr } = await supabaseAdmin
+      .from('quiz_attempts')
+      .update({
+        status: data.decision,
+        reviewed_by: context.userId,
+        reviewed_at: new Date().toISOString(),
+      })
+      .eq('id', attempt.id)
+    if (upErr) throw new Error('Nie udało się zapisać decyzji')
+
+    // Mirror decision on the recruitment application if one matches by email.
+    const appStatus = data.decision === 'approved' ? 'accepted' : 'rejected'
+    await supabaseAdmin
+      .from('recruitment_applications')
+      .update({
+        status: appStatus,
+        reviewed_by: context.userId,
+        reviewed_at: new Date().toISOString(),
+      })
+      .eq('email', email)
+
+    await notifyByEmail({
+      templateName:
+        data.decision === 'approved' ? 'application-approved' : 'application-declined',
+      recipientEmail: email,
+      templateData: { candidateEmail: email },
+      idempotencyKey: `app-${data.decision}-${attempt.id}`,
+    })
+
+    return { ok: true }
+  })
