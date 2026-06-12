@@ -16,25 +16,41 @@ export const Route = createFileRoute("/api/public/roblox/pis")({
         if (!driver) return errorResponse(404, "driver not found");
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-        const today = new Date().toISOString().slice(0, 10);
+        const now = new Date().toISOString();
+        const today = now.slice(0, 10);
+        const delay = typeof delay_sec === "number" ? Math.trunc(delay_sec) : null;
 
-        let q = supabaseAdmin.from("duties").select("id").eq("assigned_to", driver.id);
-        if (duty_number) q = q.eq("duty_number", String(duty_number));
-        else q = q.eq("duty_date", today);
-        const { data: duty } = await q.maybeSingle();
-        if (!duty?.id) return errorResponse(404, "no active duty for driver");
-
-        const { error } = await supabaseAdmin.from("duties").update({
+        // Always write PIS to driver_live (no duty required).
+        const { error: liveErr } = await supabaseAdmin.from("driver_live").upsert({
+          user_id: driver.id,
           pis_route: String(route),
           pis_headsign: headsign ?? null,
           pis_current_stop: current_stop ?? null,
           pis_next_stop: next_stop ?? null,
-          pis_delay_sec: typeof delay_sec === "number" ? Math.trunc(delay_sec) : null,
-          pis_updated_at: new Date().toISOString(),
-        }).eq("id", duty.id);
-        if (error) return errorResponse(500, error.message);
+          pis_delay_sec: delay,
+          pis_updated_at: now,
+          duty_number: duty_number ? String(duty_number) : null,
+        });
+        if (liveErr) return errorResponse(500, liveErr.message);
 
-        return jsonResponse({ ok: true, duty_id: duty.id });
+        // Best-effort mirror to duty row if one matches today.
+        let q = supabaseAdmin.from("duties").select("id").eq("assigned_to", driver.id);
+        if (duty_number) q = q.eq("duty_number", String(duty_number));
+        else q = q.eq("duty_date", today);
+        const { data: duty } = await q.maybeSingle();
+
+        if (duty?.id) {
+          await supabaseAdmin.from("duties").update({
+            pis_route: String(route),
+            pis_headsign: headsign ?? null,
+            pis_current_stop: current_stop ?? null,
+            pis_next_stop: next_stop ?? null,
+            pis_delay_sec: delay,
+            pis_updated_at: now,
+          }).eq("id", duty.id);
+        }
+
+        return jsonResponse({ ok: true, duty_id: duty?.id ?? null });
       },
     },
   },
