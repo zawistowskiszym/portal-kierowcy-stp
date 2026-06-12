@@ -1162,6 +1162,8 @@ export const getMyRobloxLive = createServerFn({ method: "GET" })
           pis_current_stop: live?.pis_current_stop ?? null,
           pis_next_stop: live?.pis_next_stop ?? null,
           pis_delay_sec: live?.pis_delay_sec ?? null,
+          pis_stop_index: live?.pis_stop_index ?? null,
+          pis_total_stops: live?.pis_total_stops ?? null,
           pis_updated_at: live?.pis_updated_at ?? null,
         }
       : null;
