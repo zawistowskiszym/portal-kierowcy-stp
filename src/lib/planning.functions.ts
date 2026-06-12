@@ -561,3 +561,65 @@ export const planningDashboard = createServerFn({ method: "GET" })
       vehicles_required: blocks.length,
     };
   });
+
+// ============== DUTY TIMETABLE (real trips for a driver's duty) ==============
+
+export const getDutyTimetable = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { duty_id: string }) => z.object({ duty_id: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }) => {
+    // Load duty (RLS lets drivers see their own; staff see all)
+    const { data: duty, error: dErr } = await context.supabase
+      .from("duties")
+      .select("id,duty_number,duty_date,start_time,end_time,route,assigned_to,depot")
+      .eq("id", data.duty_id).single();
+    if (dErr || !duty) throw new Error("Nie znaleziono służby");
+
+    // Day type from duty_date
+    const dow = new Date(duty.duty_date + "T00:00:00").getDay();
+    const dayType: "weekday" | "saturday" | "sunday" =
+      dow === 0 ? "sunday" : dow === 6 ? "saturday" : "weekday";
+
+    // Parse line numbers from route (e.g. "178" or "178+204")
+    const lineNumbers = String(duty.route ?? "")
+      .split(/[+/,\s]+/).map((s) => s.trim()).filter(Boolean);
+
+    const blockNo = parseInt(String(duty.duty_number).replace(/\D+/g, ""), 10);
+    if (!isFinite(blockNo) || lineNumbers.length === 0) {
+      return { duty, dayType, lines: [] as any[], trips: [] as any[], block: null as any };
+    }
+
+    // Find matching vehicle_block
+    const { data: blocks } = await context.supabase
+      .from("vehicle_blocks").select("*")
+      .eq("day_type", dayType)
+      .eq("block_number", blockNo)
+      .overlaps("line_numbers", lineNumbers);
+
+    const block = (blocks ?? []).find(
+      (b: any) => {
+        const set = new Set((b.line_numbers ?? []).map(String));
+        return lineNumbers.every((n) => set.has(n));
+      },
+    ) ?? (blocks ?? [])[0] ?? null;
+
+    if (!block) return { duty, dayType, lines: [] as any[], trips: [] as any[], block: null };
+
+    const { data: trips } = await context.supabase
+      .from("vehicle_block_trips").select("*")
+      .eq("block_id", block.id)
+      .order("trip_order");
+
+    // Load lines (for terminus labels)
+    const { data: linesData } = await context.supabase
+      .from("lines").select("id,line_number,terminus_a,terminus_b")
+      .in("id", block.line_ids ?? []);
+
+    return {
+      duty,
+      dayType,
+      block,
+      lines: linesData ?? [],
+      trips: trips ?? [],
+    };
+  });
