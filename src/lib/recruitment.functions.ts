@@ -94,7 +94,7 @@ export const requestQuiz = createServerFn({ method: 'POST' })
       .parse(data),
   )
   .handler(async ({ data }) => {
-    const { pickQuizQuestions } = await import('./recruitment-quiz')
+    const { generateQuizQuestions } = await import('./recruitment-quiz.server')
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const { notifyByEmail } = await import('./email/notify.server')
 
@@ -112,7 +112,7 @@ export const requestQuiz = createServerFn({ method: 'POST' })
 
     if (!email) throw new Error('Brak adresu email')
 
-    const questions = pickQuizQuestions()
+    const questions = await generateQuizQuestions()
     const token = genToken()
 
     const { error } = await supabaseAdmin.from('quiz_attempts').insert({
