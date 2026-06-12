@@ -110,6 +110,54 @@ export type Database = {
         }
         Relationships: []
       }
+      driver_live: {
+        Row: {
+          created_at: string
+          duty_number: string | null
+          live_status: string | null
+          live_status_note: string | null
+          live_status_updated_at: string | null
+          pis_current_stop: string | null
+          pis_delay_sec: number | null
+          pis_headsign: string | null
+          pis_next_stop: string | null
+          pis_route: string | null
+          pis_updated_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duty_number?: string | null
+          live_status?: string | null
+          live_status_note?: string | null
+          live_status_updated_at?: string | null
+          pis_current_stop?: string | null
+          pis_delay_sec?: number | null
+          pis_headsign?: string | null
+          pis_next_stop?: string | null
+          pis_route?: string | null
+          pis_updated_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duty_number?: string | null
+          live_status?: string | null
+          live_status_note?: string | null
+          live_status_updated_at?: string | null
+          pis_current_stop?: string | null
+          pis_delay_sec?: number | null
+          pis_headsign?: string | null
+          pis_next_stop?: string | null
+          pis_route?: string | null
+          pis_updated_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       driver_positions: {
         Row: {
           heading: number | null
