@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, CalendarDays, MapPin, ArrowRight, Clock, Bus } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, CalendarDays, MapPin, ArrowRight, Clock, Bus, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LINE_PRESETS, parseRouteLines, buildSchedule, getLinePreset } from "@/lib/line-presets";
