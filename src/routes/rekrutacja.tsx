@@ -90,6 +90,12 @@ function RecruitmentPage() {
             Szukamy kierowców, dyspozytorów i pasjonatów transportu publicznego. Wypełnij
             formularz — odezwiemy się przez Discord lub email.
           </p>
+          <div className="mt-4 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-sm text-amber-500 flex items-start gap-2.5">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="size-4 mt-0.5 shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div>
+              <strong>Ważna informacja:</strong> Nasze wiadomości e-mail mogą trafiać do folderu <strong>Spam</strong>. Pamiętaj, aby regularnie go sprawdzać podczas procesu rekrutacji!
+            </div>
+          </div>
         </div>
 
         {submitted ? (
