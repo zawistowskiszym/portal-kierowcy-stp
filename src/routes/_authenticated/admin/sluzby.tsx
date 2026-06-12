@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LINE_PRESETS } from "@/lib/line-presets";
 import {
   getPlanningBoard,
   createDuty,
@@ -555,6 +556,7 @@ function CreateDutyDialog({ open, onOpenChange, vehicles, onSubmit }: any) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader><DialogTitle>Nowa służba</DialogTitle></DialogHeader>
+        <datalist id="line-presets">{LINE_PRESETS.map(p => <option key={p.line} value={p.line} />)}</datalist>
         <form onSubmit={async (e) => { e.preventDefault(); try {
           await onSubmit({ ...form, vehicle_id: form.vehicle_id || null, vehicle_label: vehicles.find((v: any) => v.id === form.vehicle_id)?.vehicle_number ?? null, notes: form.notes || null });
           setForm({ duty_number: "", duty_date: "", start_time: "", end_time: "", depot: "", route: "", vehicle_id: "", notes: "" });
@@ -565,7 +567,7 @@ function CreateDutyDialog({ open, onOpenChange, vehicles, onSubmit }: any) {
             <div className="space-y-1"><Label>Start</Label><Input type="time" required value={form.start_time} onChange={(e) => setForm({ ...form, start_time: e.target.value })} /></div>
             <div className="space-y-1"><Label>Koniec</Label><Input type="time" required value={form.end_time} onChange={(e) => setForm({ ...form, end_time: e.target.value })} /></div>
             <div className="space-y-1"><Label>Zajezdnia</Label><Input required value={form.depot} onChange={(e) => setForm({ ...form, depot: e.target.value })} /></div>
-            <div className="space-y-1"><Label>Linia / trasy</Label><Input required value={form.route} onChange={(e) => setForm({ ...form, route: e.target.value })} placeholder="151+190" /></div>
+            <div className="space-y-1"><Label>Linia / trasy</Label><Input required list="line-presets" value={form.route} onChange={(e) => setForm({ ...form, route: e.target.value })} placeholder="151+190" /></div>
             <div className="space-y-1 col-span-2">
               <Label>Pojazd</Label>
               <Select value={form.vehicle_id || "none"} onValueChange={(v) => setForm({ ...form, vehicle_id: v === "none" ? "" : v })}>
@@ -607,6 +609,7 @@ function BulkGeneratorDialog({ open, onOpenChange, defaultDate, depots, onSubmit
           <DialogTitle>Generator zbiorczy</DialogTitle>
           <DialogDescription>Utworzy N służb o numerach <span className="font-mono">linia/1</span> … <span className="font-mono">linia/N</span>.</DialogDescription>
         </DialogHeader>
+        <datalist id="line-presets">{LINE_PRESETS.map(p => <option key={p.line} value={p.line} />)}</datalist>
         <form onSubmit={async (e) => { e.preventDefault(); try { await onSubmit({ ...form, count: Number(form.count) }); } catch (err: any) { toast.error(err?.message); } }} className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1"><Label>Data</Label><Input type="date" required value={form.duty_date} onChange={(e) => setForm({ ...form, duty_date: e.target.value })} /></div>
@@ -617,7 +620,7 @@ function BulkGeneratorDialog({ open, onOpenChange, defaultDate, depots, onSubmit
                 <SelectContent>{depots.map((d: string) => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
               </Select>
             </div>
-            <div className="space-y-1"><Label>Linia / trasy</Label><Input required value={form.route} onChange={(e) => setForm({ ...form, route: e.target.value })} placeholder="151+190" /></div>
+            <div className="space-y-1"><Label>Linia / trasy</Label><Input required list="line-presets" value={form.route} onChange={(e) => setForm({ ...form, route: e.target.value })} placeholder="151+190" /></div>
             <div className="space-y-1"><Label>Start</Label><Input type="time" required value={form.start_time} onChange={(e) => setForm({ ...form, start_time: e.target.value })} /></div>
             <div className="space-y-1"><Label>Koniec</Label><Input type="time" required value={form.end_time} onChange={(e) => setForm({ ...form, end_time: e.target.value })} /></div>
             <div className="space-y-1"><Label>Liczba służb</Label><Input type="number" min={1} max={50} required value={form.count} onChange={(e) => setForm({ ...form, count: Number(e.target.value) })} /></div>
