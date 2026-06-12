@@ -1,5 +1,4 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, FileText } from "lucide-react";
 import { useState } from "react";
@@ -9,7 +8,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { submitReport } from "@/lib/ops.functions";
-import { getDuty } from "@/lib/portal.functions";
 
 export const Route = createFileRoute("/_authenticated/sluzba/$dutyId/raport")({
   head: () => ({ meta: [{ title: "Złóż raport — Portal STP" }] }),
