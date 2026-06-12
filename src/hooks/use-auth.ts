@@ -75,5 +75,7 @@ export function useAuth(): AuthState {
     profile,
     roles,
     isAdmin: roles.includes("admin"),
+    isDispatcher: roles.includes("dyspozytor"),
+    isStaff: roles.includes("admin") || roles.includes("dyspozytor"),
   };
 }
