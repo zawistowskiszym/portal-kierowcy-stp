@@ -1090,6 +1090,8 @@ export type Database = {
           email: string
           experience: string | null
           id: string
+          intro_sent_at: string | null
+          intro_token: string | null
           motivation: string
           reviewed_at: string | null
           reviewed_by: string | null
@@ -1104,6 +1106,8 @@ export type Database = {
           email: string
           experience?: string | null
           id?: string
+          intro_sent_at?: string | null
+          intro_token?: string | null
           motivation: string
           reviewed_at?: string | null
           reviewed_by?: string | null
@@ -1118,6 +1122,8 @@ export type Database = {
           email?: string
           experience?: string | null
           id?: string
+          intro_sent_at?: string | null
+          intro_token?: string | null
           motivation?: string
           reviewed_at?: string | null
           reviewed_by?: string | null
