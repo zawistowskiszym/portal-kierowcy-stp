@@ -50,6 +50,7 @@ function AdminVacationsPage() {
           <thead className="bg-muted/40 border-b border-border text-muted-foreground font-bold uppercase text-[10px]">
             <tr>
               <th className="px-6 py-3">Pracownik</th>
+              <th className="px-6 py-3">Rodzaj</th>
               <th className="px-6 py-3">Okres</th>
               <th className="px-6 py-3">Uzasadnienie</th>
               <th className="px-6 py-3">Status</th>
@@ -63,8 +64,10 @@ function AdminVacationsPage() {
                   <div className="font-semibold">{v.profiles?.full_name ?? "—"}</div>
                   <div className="text-xs text-muted-foreground font-mono">{v.profiles?.employee_id ?? ""}</div>
                 </td>
+                <td className="px-6 py-3"><Badge variant="secondary">{LEAVE_TYPE_LABEL[v.leave_type] ?? v.leave_type}</Badge></td>
                 <td className="px-6 py-3 font-mono text-xs">{v.start_date} → {v.end_date}</td>
                 <td className="px-6 py-3 text-muted-foreground max-w-xs">{v.reason ?? "—"}</td>
+
                 <td className="px-6 py-3">
                   {v.status === "approved" && <Badge className="bg-status-ok text-status-ok-foreground">Zatwierdzone</Badge>}
                   {v.status === "rejected" && <Badge variant="destructive">Odrzucone</Badge>}
