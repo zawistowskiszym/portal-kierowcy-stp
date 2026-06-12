@@ -1,10 +1,12 @@
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { LogOut } from "lucide-react";
+import { useEffect, useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { NotificationBell } from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { signedAvatarUrl } from "@/lib/avatar";
 import type { AuthProfile } from "@/hooks/use-auth";
 
 const WEEKDAYS = ["Niedziela", "Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota"];
@@ -26,6 +28,18 @@ export function AppHeader({
   title?: string;
 }) {
   const navigate = useNavigate();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const avatarPath = (profile as any)?.avatar_url ?? null;
+
+  useEffect(() => {
+    let cancelled = false;
+    signedAvatarUrl(avatarPath).then((url) => {
+      if (!cancelled) setAvatarUrl(url);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [avatarPath]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -65,15 +79,21 @@ export function AppHeader({
               ID: {profile?.employee_id ?? "—"}
             </p>
           </div>
-          <div
-            className="size-9 shrink-0 rounded-full grid place-items-center text-xs font-bold text-primary-foreground"
+          <Link
+            to="/profil"
+            title="Mój profil"
+            className="size-9 shrink-0 rounded-full grid place-items-center text-xs font-bold text-primary-foreground overflow-hidden"
             style={{
               background:
                 "linear-gradient(135deg, var(--color-primary), color-mix(in oklab, var(--color-primary) 60%, var(--color-brand-accent)))",
             }}
           >
-            {initials}
-          </div>
+            {avatarUrl ? (
+              <img src={avatarUrl} alt={profile?.full_name ?? ""} className="size-full object-cover" />
+            ) : (
+              initials
+            )}
+          </Link>
           <Button
             variant="ghost"
             size="icon"
