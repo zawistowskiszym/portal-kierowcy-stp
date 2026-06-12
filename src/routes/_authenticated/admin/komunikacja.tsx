@@ -26,6 +26,8 @@ function CommsPage() {
   const sendFn = useServerFn(sendMessage);
   const listFn = useServerFn(listSentMessages);
   const driversFn = useServerFn(listAllDrivers);
+  const inboxFn = useServerFn(listMyInbox);
+  const readFn = useServerFn(markMessageRead);
 
   const [form, setForm] = useState({
     kind: "announcement", subject: "", body: "",
