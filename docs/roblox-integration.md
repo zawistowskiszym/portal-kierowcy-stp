@@ -125,3 +125,40 @@ local res = send("/driver?roblox_username=DriverX", "GET", nil)
 ```
 
 HttpService requests must be enabled in the game settings.
+
+### POST `/pis` — extended fields
+The `/pis` endpoint also accepts `stop_index` (0-based index of the stop the
+bus just left / is at) and `total_stops` (number of stops on the current
+direction of the route). These power the "Progress X / Y stops" UI on the
+driver's dashboard and on the dispatcher monitor.
+
+```json
+{ "roblox_username": "DriverX", "route": "178",
+  "headsign": "Brokolin", "current_stop": "Śródmieście",
+  "next_stop": "Wiktoria", "stop_index": 7, "total_stops": 18,
+  "delay_sec": 0 }
+```
+
+### GET `/timetable?route=178[&day_type=weekday]`
+Returns the line definition, ordered list of stops (per direction) with
+travel time to next stop, the active timetable, and frequency windows. The
+game uses this to render arrival times and the stop list. `day_type` is
+optional — defaults to today's day type (`weekday`, `saturday`, `sunday`).
+
+```json
+{
+  "ok": true,
+  "line": { "id": "...", "line_number": "178", "terminus_a": "Centrum",
+            "terminus_b": "Brokolin", "depot": "R-1" },
+  "day_type": "weekday",
+  "stops": [
+    { "position": 1, "direction": "a", "name": "Centrum", "code": "01",
+      "travel_time_to_next_min": 2 }
+  ],
+  "timetable": { "first_departure": "04:30", "last_departure": "23:10",
+                 "layover_a_min": 5, "layover_b_min": 5 },
+  "frequency_windows": [
+    { "start_time": "06:00", "end_time": "09:00", "headway_min": 6 }
+  ]
+}
+```
