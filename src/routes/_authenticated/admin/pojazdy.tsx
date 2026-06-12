@@ -108,12 +108,17 @@ function VehiclesPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold">Kierowcy i tabor</h1>
+        <ResourcesTabs />
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold tracking-tight">Tabor</h2>
           <p className="text-sm text-muted-foreground">{vehicles.length} pojazdów w ewidencji</p>
         </div>
         <Button onClick={openCreate}>+ Nowy pojazd</Button>
       </div>
+
 
       <div className="flex flex-wrap gap-2">
         <Input placeholder="Szukaj numeru lub modelu…" value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-xs" />
