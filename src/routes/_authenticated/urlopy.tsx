@@ -40,7 +40,12 @@ function VacationsPage() {
   const list = (data ?? []) as any[];
 
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ start_date: "", end_date: "", reason: "" });
+  const [form, setForm] = useState<{ start_date: string; end_date: string; leave_type: LeaveTypeValue; reason: string }>({
+    start_date: "",
+    end_date: "",
+    leave_type: "wypoczynkowy",
+    reason: "",
+  });
 
   const refresh = () => qc.invalidateQueries({ queryKey: ["my-vacations"] });
 
@@ -51,17 +56,19 @@ function VacationsPage() {
         data: {
           start_date: form.start_date,
           end_date: form.end_date,
+          leave_type: form.leave_type,
           reason: form.reason || null,
         },
       });
       toast.success("Wniosek złożony");
       setOpen(false);
-      setForm({ start_date: "", end_date: "", reason: "" });
+      setForm({ start_date: "", end_date: "", leave_type: "wypoczynkowy", reason: "" });
       refresh();
     } catch (err: any) {
       toast.error("Błąd", { description: err?.message });
     }
   };
+
 
   const onCancel = async (id: string) => {
     if (!confirm("Anulować wniosek?")) return;
