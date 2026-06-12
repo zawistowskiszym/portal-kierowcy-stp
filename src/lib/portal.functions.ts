@@ -4,7 +4,18 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { LEAVE_TYPE_VALUES } from "@/lib/leave-types";
 
 
+// Staff = admin OR dyspozytor. Used for operational tasks (duties, vehicles, vacations decisions, announcements, planning board).
 const requireAdmin = async (supabase: any, userId: string) => {
+  const [a, d] = await Promise.all([
+    supabase.rpc("has_role", { _user_id: userId, _role: "admin" }),
+    supabase.rpc("has_role", { _user_id: userId, _role: "dyspozytor" }),
+  ]);
+  if (a.error && d.error) throw new Error("Brak uprawnień");
+  if (!a.data && !d.data) throw new Error("Brak uprawnień operacyjnych");
+};
+
+// Super admin = admin only. For user management & global reports.
+const requireSuperAdmin = async (supabase: any, userId: string) => {
   const { data, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
   if (error || !data) throw new Error("Brak uprawnień administratora");
 };
