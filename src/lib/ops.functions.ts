@@ -941,3 +941,248 @@ export const listMyOutbox = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return data ?? [];
   });
+
+
+// ============ DISPATCHER GROUP CHAT (per-driver) ============
+// A driver has a single group thread with all dispatchers + admins.
+// - Driver-authored message: audience_kind='dispatchers', audience=[]
+// - Dispatcher reply: audience_kind='dispatchers', audience=[driverId]
+// Recipients (message_recipients) include the driver (for dispatcher replies)
+// and every dispatcher/admin (so all of them see each other's messages).
+
+const DISPATCHER_THREAD_LIMIT = 200;
+
+async function resolveDispatcherIds(supabase: any): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("user_roles")
+    .select("user_id, role")
+    .in("role", ["admin", "dyspozytor"]);
+  if (error) throw new Error(error.message);
+  return Array.from(new Set(((data ?? []) as any[]).map((r) => r.user_id as string)));
+}
+
+async function isDispatcher(supabase: any, userId: string): Promise<boolean> {
+  const [a, d] = await Promise.all([
+    supabase.rpc("has_role", { _user_id: userId, _role: "admin" }),
+    supabase.rpc("has_role", { _user_id: userId, _role: "dyspozytor" }),
+  ]);
+  return Boolean(a.data || d.data);
+}
+
+export const listDispatcherGroupThreads = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireStaff(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: msgs, error } = await supabaseAdmin
+      .from("internal_messages")
+      .select("id, author_id, body, created_at, audience, recipients:message_recipients!inner(user_id, read_at)")
+      .eq("kind", "driver_message")
+      .eq("audience_kind", "dispatchers")
+      .order("created_at", { ascending: false })
+      .limit(DISPATCHER_THREAD_LIMIT);
+    if (error) throw new Error(error.message);
+
+    const dispatcherIds = new Set(await resolveDispatcherIds(supabaseAdmin));
+
+    type Thread = { driver_id: string; last_message: string; created_at: string; unread_count: number };
+    const threads = new Map<string, Thread>();
+
+    for (const m of (msgs ?? []) as any[]) {
+      const isDriverAuthored = !dispatcherIds.has(m.author_id);
+      const driverId: string | undefined = isDriverAuthored
+        ? m.author_id
+        : Array.isArray(m.audience) && typeof m.audience[0] === "string"
+        ? m.audience[0]
+        : undefined;
+      if (!driverId) continue;
+
+      const myRecipient = (m.recipients ?? []).find((r: any) => r.user_id === context.userId);
+      const unread = isDriverAuthored && myRecipient && !myRecipient.read_at ? 1 : 0;
+
+      const existing = threads.get(driverId);
+      if (!existing) {
+        threads.set(driverId, {
+          driver_id: driverId,
+          last_message: m.body,
+          created_at: m.created_at,
+          unread_count: unread,
+        });
+      } else {
+        existing.unread_count += unread;
+      }
+    }
+
+    const driverIds = [...threads.keys()];
+    if (driverIds.length === 0) return [];
+
+    const { data: profiles } = await supabaseAdmin
+      .from("profiles")
+      .select("id, full_name, employee_id, roblox_username")
+      .in("id", driverIds);
+    const profileMap = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+
+    return [...threads.values()]
+      .map((t) => ({ ...t, driver: profileMap.get(t.driver_id) ?? null }))
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  });
+
+export const listDispatcherGroupMessages = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ driverId: z.string().uuid().optional() }).parse(d ?? {}),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const staff = await isDispatcher(supabaseAdmin, context.userId);
+
+    let driverId: string;
+    if (staff) {
+      if (!data.driverId) throw new Error("driverId wymagany");
+      driverId = data.driverId;
+    } else {
+      driverId = context.userId;
+    }
+
+    const dispatcherIds = new Set(await resolveDispatcherIds(supabaseAdmin));
+
+    const [authored, addressed] = await Promise.all([
+      supabaseAdmin
+        .from("internal_messages")
+        .select("id, author_id, body, created_at, audience")
+        .eq("kind", "driver_message")
+        .eq("audience_kind", "dispatchers")
+        .eq("author_id", driverId)
+        .order("created_at", { ascending: true })
+        .limit(DISPATCHER_THREAD_LIMIT),
+      supabaseAdmin
+        .from("internal_messages")
+        .select("id, author_id, body, created_at, audience")
+        .eq("kind", "driver_message")
+        .eq("audience_kind", "dispatchers")
+        .contains("audience", JSON.stringify([driverId]))
+        .order("created_at", { ascending: true })
+        .limit(DISPATCHER_THREAD_LIMIT),
+    ]);
+    if (authored.error) throw new Error(authored.error.message);
+    if (addressed.error) throw new Error(addressed.error.message);
+
+    const all = [...(authored.data ?? []), ...(addressed.data ?? [])];
+    const seen = new Set<string>();
+    const merged = all
+      .filter((m: any) => (seen.has(m.id) ? false : (seen.add(m.id), true)))
+      .sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+
+    // Hydrate author display names
+    const authorIds = [...new Set(merged.map((m: any) => m.author_id))];
+    const { data: authors } = await supabaseAdmin
+      .from("profiles")
+      .select("id, full_name")
+      .in("id", authorIds);
+    const nameMap = new Map((authors ?? []).map((p: any) => [p.id, p.full_name as string]));
+
+    return merged.map((m: any) => ({
+      id: m.id as string,
+      author_id: m.author_id as string,
+      author_name: nameMap.get(m.author_id) ?? "?",
+      author_role: dispatcherIds.has(m.author_id) ? "dispatcher" : "driver",
+      body: m.body as string,
+      created_at: m.created_at as string,
+    }));
+  });
+
+export const sendDispatcherGroupMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({
+      driverId: z.string().uuid().optional(),
+      body: z.string().trim().min(1).max(5000),
+    }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const staff = await isDispatcher(supabaseAdmin, context.userId);
+
+    let driverId: string;
+    let audience: string[];
+    if (staff) {
+      if (!data.driverId) throw new Error("driverId wymagany");
+      driverId = data.driverId;
+      audience = [driverId];
+    } else {
+      driverId = context.userId;
+      audience = [];
+    }
+
+    const dispatcherIds = await resolveDispatcherIds(supabaseAdmin);
+    const recipientSet = new Set<string>(dispatcherIds);
+    if (staff) recipientSet.add(driverId);
+    recipientSet.delete(context.userId);
+
+    const messageId = crypto.randomUUID();
+    const subject = data.body.replace(/\s+/g, " ").trim().slice(0, 80) || "Wiadomość";
+
+    const { error } = await supabaseAdmin.from("internal_messages").insert({
+      id: messageId,
+      author_id: context.userId,
+      kind: "driver_message" as any,
+      subject,
+      body: data.body,
+      audience_kind: "dispatchers" as any,
+      audience,
+    });
+    if (error) throw new Error(error.message);
+
+    const rows = [...recipientSet].map((uid) => ({ message_id: messageId, user_id: uid }));
+    if (rows.length > 0) {
+      const { error: rErr } = await supabaseAdmin.from("message_recipients").insert(rows);
+      if (rErr) throw new Error(rErr.message);
+    }
+
+    return { ok: true, id: messageId };
+  });
+
+export const markDispatcherGroupRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ driverId: z.string().uuid().optional() }).parse(d ?? {}),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const staff = await isDispatcher(supabaseAdmin, context.userId);
+
+    const driverId = staff ? data.driverId : context.userId;
+    if (!driverId) return { ok: true, count: 0 };
+
+    // For dispatcher: unread = messages authored by the driver (audience_kind='dispatchers')
+    // For driver: unread = messages addressed to me via audience contains [me]
+    let query = supabaseAdmin
+      .from("internal_messages")
+      .select("id, recipients:message_recipients!inner(user_id, read_at)")
+      .eq("kind", "driver_message")
+      .eq("audience_kind", "dispatchers")
+      .eq("recipients.user_id", context.userId)
+      .is("recipients.read_at", null)
+      .limit(DISPATCHER_THREAD_LIMIT);
+
+    if (staff) {
+      query = query.eq("author_id", driverId);
+    } else {
+      query = query.contains("audience", JSON.stringify([context.userId]));
+    }
+
+    const { data: rows, error } = await query;
+    if (error) throw new Error(error.message);
+    const ids = (rows ?? []).map((r: any) => r.id);
+    if (ids.length === 0) return { ok: true, count: 0 };
+
+    const { error: uErr } = await supabaseAdmin
+      .from("message_recipients")
+      .update({ read_at: new Date().toISOString() })
+      .eq("user_id", context.userId)
+      .in("message_id", ids)
+      .is("read_at", null);
+    if (uErr) throw new Error(uErr.message);
+    return { ok: true, count: ids.length };
+  });
