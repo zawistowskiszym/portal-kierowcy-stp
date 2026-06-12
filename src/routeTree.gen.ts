@@ -31,6 +31,7 @@ import { Route as AuthenticatedAdminNieprzydzieloneRouteImport } from './routes/
 import { Route as AuthenticatedAdminMonitorRouteImport } from './routes/_authenticated/admin/monitor'
 import { Route as AuthenticatedAdminKierowcyRouteImport } from './routes/_authenticated/admin/kierowcy'
 import { Route as AuthenticatedAdminIncydentyRouteImport } from './routes/_authenticated/admin/incydenty'
+import { Route as AuthenticatedAdminDziennikRouteImport } from './routes/_authenticated/admin/dziennik'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
@@ -160,6 +161,12 @@ const AuthenticatedAdminIncydentyRoute =
     path: '/incydenty',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminDziennikRoute =
+  AuthenticatedAdminDziennikRouteImport.update({
+    id: '/dziennik',
+    path: '/dziennik',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminDashboardRoute =
   AuthenticatedAdminDashboardRouteImport.update({
     id: '/dashboard',
@@ -220,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
   '/admin/kierowcy': typeof AuthenticatedAdminKierowcyRoute
   '/admin/monitor': typeof AuthenticatedAdminMonitorRoute
@@ -251,6 +259,7 @@ export interface FileRoutesByTo {
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
   '/admin/kierowcy': typeof AuthenticatedAdminKierowcyRoute
   '/admin/monitor': typeof AuthenticatedAdminMonitorRoute
@@ -284,6 +293,7 @@ export interface FileRoutesById {
   '/_authenticated/statystyki': typeof AuthenticatedStatystykiRoute
   '/_authenticated/urlopy': typeof AuthenticatedUrlopyRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
+  '/_authenticated/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/_authenticated/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
   '/_authenticated/admin/kierowcy': typeof AuthenticatedAdminKierowcyRoute
   '/_authenticated/admin/monitor': typeof AuthenticatedAdminMonitorRoute
@@ -317,6 +327,7 @@ export interface FileRouteTypes {
     | '/statystyki'
     | '/urlopy'
     | '/admin/dashboard'
+    | '/admin/dziennik'
     | '/admin/incydenty'
     | '/admin/kierowcy'
     | '/admin/monitor'
@@ -348,6 +359,7 @@ export interface FileRouteTypes {
     | '/statystyki'
     | '/urlopy'
     | '/admin/dashboard'
+    | '/admin/dziennik'
     | '/admin/incydenty'
     | '/admin/kierowcy'
     | '/admin/monitor'
@@ -380,6 +392,7 @@ export interface FileRouteTypes {
     | '/_authenticated/statystyki'
     | '/_authenticated/urlopy'
     | '/_authenticated/admin/dashboard'
+    | '/_authenticated/admin/dziennik'
     | '/_authenticated/admin/incydenty'
     | '/_authenticated/admin/kierowcy'
     | '/_authenticated/admin/monitor'
@@ -566,6 +579,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIncydentyRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/dziennik': {
+      id: '/_authenticated/admin/dziennik'
+      path: '/dziennik'
+      fullPath: '/admin/dziennik'
+      preLoaderRoute: typeof AuthenticatedAdminDziennikRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/dashboard': {
       id: '/_authenticated/admin/dashboard'
       path: '/dashboard'
@@ -627,6 +647,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
+  AuthenticatedAdminDziennikRoute: typeof AuthenticatedAdminDziennikRoute
   AuthenticatedAdminIncydentyRoute: typeof AuthenticatedAdminIncydentyRoute
   AuthenticatedAdminKierowcyRoute: typeof AuthenticatedAdminKierowcyRoute
   AuthenticatedAdminMonitorRoute: typeof AuthenticatedAdminMonitorRoute
@@ -641,6 +662,7 @@ interface AuthenticatedAdminRouteChildren {
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
+  AuthenticatedAdminDziennikRoute: AuthenticatedAdminDziennikRoute,
   AuthenticatedAdminIncydentyRoute: AuthenticatedAdminIncydentyRoute,
   AuthenticatedAdminKierowcyRoute: AuthenticatedAdminKierowcyRoute,
   AuthenticatedAdminMonitorRoute: AuthenticatedAdminMonitorRoute,
