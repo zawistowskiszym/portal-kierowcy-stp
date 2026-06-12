@@ -148,7 +148,11 @@ function GrafikPage() {
                   </Link>
                 </Button>
                 <Button asChild variant="outline" className="justify-start">
-                  <Link to="/sluzba/$dutyId/rozklad" params={{ dutyId: d.id }}>
+                  <Link
+                    to="/sluzba/$dutyId/rozklad"
+                    params={{ dutyId: d.id }}
+                    search={{ route: d.route, start: d.start_time?.slice(0, 5) }}
+                  >
                     <CalendarDays className="size-4 mr-2" /> Rozkład jazdy
                   </Link>
                 </Button>
