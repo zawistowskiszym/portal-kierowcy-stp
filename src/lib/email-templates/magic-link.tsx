@@ -7,9 +7,13 @@ import {
   Head,
   Heading,
   Html,
+  Img,
   Preview,
   Text,
 } from '@react-email/components'
+
+const LOGO_URL = 'https://panel.skuszawyjice.eu/__l5e/assets-v1/e354d00a-e752-4fd1-87d1-da66f4008033/stp-logo.png'
+const logo = { display: 'block', margin: '0 auto 20px', width: '64px', height: '64px' }
 
 interface MagicLinkEmailProps {
   siteName: string
@@ -25,6 +29,7 @@ export const MagicLinkEmail = ({
     <Preview>Your login link for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Img src={LOGO_URL} alt="STP" width="64" height="64" style={logo} />
         <Heading style={h1}>Your login link</Heading>
         <Text style={text}>
           Click the button below to log in to {siteName}. This link will expire

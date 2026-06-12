@@ -7,10 +7,14 @@ import {
   Head,
   Heading,
   Html,
+  Img,
   Link,
   Preview,
   Text,
 } from '@react-email/components'
+
+const LOGO_URL = 'https://panel.skuszawyjice.eu/__l5e/assets-v1/e354d00a-e752-4fd1-87d1-da66f4008033/stp-logo.png'
+const logo = { display: 'block', margin: '0 auto 20px', width: '64px', height: '64px' }
 
 interface EmailChangeEmailProps {
   siteName: string
@@ -35,6 +39,7 @@ export const EmailChangeEmail = ({
     <Preview>Confirm your email change for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Img src={LOGO_URL} alt="STP" width="64" height="64" style={logo} />
         <Heading style={h1}>Confirm your email change</Heading>
         <Text style={text}>
           You requested to change your email address for {siteName} from{' '}
