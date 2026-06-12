@@ -191,23 +191,45 @@ export const listUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     await requireAdmin(context.supabase, context.userId);
-    const [profilesRes, rolesRes] = await Promise.all([
+    const yearStart = `${new Date().getFullYear()}-01-01`;
+    const [profilesRes, rolesRes, vacRes] = await Promise.all([
       context.supabase.from("profiles").select("*").order("full_name", { ascending: true }),
       context.supabase.from("user_roles").select("user_id, role"),
+      context.supabase
+        .from("vacation_requests")
+        .select("user_id, leave_type, start_date, end_date, status")
+        .gte("start_date", yearStart),
     ]);
     if (profilesRes.error) throw new Error(profilesRes.error.message);
     if (rolesRes.error) throw new Error(rolesRes.error.message);
+    if (vacRes.error) throw new Error(vacRes.error.message);
+
     const rolesByUser = new Map<string, string[]>();
     for (const r of rolesRes.data ?? []) {
       const arr = rolesByUser.get(r.user_id) ?? [];
       arr.push(r.role);
       rolesByUser.set(r.user_id, arr);
     }
+
+    // Aggregate approved leave days per user per category for the current year
+    const leavesByUser = new Map<string, Record<string, number>>();
+    for (const v of (vacRes.data ?? []) as any[]) {
+      if (v.status !== "approved") continue;
+      const s = new Date(v.start_date);
+      const e = new Date(v.end_date);
+      const days = Math.max(1, Math.round((e.getTime() - s.getTime()) / 86400000) + 1);
+      const map = leavesByUser.get(v.user_id) ?? {};
+      map[v.leave_type] = (map[v.leave_type] ?? 0) + days;
+      leavesByUser.set(v.user_id, map);
+    }
+
     return (profilesRes.data ?? []).map((p) => ({
       ...p,
       roles: rolesByUser.get(p.id) ?? [],
+      leave_summary: leavesByUser.get(p.id) ?? {},
     }));
   });
+
 
 const inviteUserInput = z.object({
   email: z.string().email().max(254),
