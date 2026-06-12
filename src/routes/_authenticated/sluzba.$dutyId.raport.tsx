@@ -27,8 +27,6 @@ function RaportPage() {
   const { dutyId } = Route.useParams();
   const navigate = useNavigate();
   const submitFn = useServerFn(submitReport);
-  const dutyFn = useServerFn(getDuty);
-  const { data: duty } = useQuery({ queryKey: ["duty", dutyId], queryFn: () => dutyFn({ data: { id: dutyId } }) });
   const [category, setCategory] = useState("operational");
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
@@ -38,13 +36,8 @@ function RaportPage() {
     if (!body.trim()) { toast.error("Treść raportu jest wymagana"); return; }
     setBusy(true);
     try {
-      const d = duty as any;
       await submitFn({ data: {
         duty_id: dutyId,
-        vehicle_id: d?.vehicle_id ?? null,
-        vehicle_label: d?.vehicle_label ?? null,
-        route: d?.route ?? null,
-        duty_number: d?.duty_number ?? null,
         category: category as any,
         description: body,
       } });
@@ -62,7 +55,7 @@ function RaportPage() {
           <FileText className="size-5 text-brand" />
           <h2 className="text-xl font-bold">Złóż raport ze służby</h2>
         </div>
-        <p className="text-sm text-muted-foreground">Służba: <span className="font-mono">{(duty as any)?.duty_number ?? dutyId}</span></p>
+        <p className="text-sm text-muted-foreground">Służba ID: <span className="font-mono">{dutyId}</span></p>
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-1">
             <Label>Kategoria</Label>
