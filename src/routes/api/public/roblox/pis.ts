@@ -9,7 +9,7 @@ export const Route = createFileRoute("/api/public/roblox/pis")({
         const v = await verifyRobloxRequest(request);
         if (!v.ok) return errorResponse(v.status, v.message);
 
-        const { roblox_username, route, headsign, current_stop, next_stop, delay_sec, duty_number } = v.json ?? {};
+        const { roblox_username, route, headsign, current_stop, next_stop, delay_sec, duty_number, stop_index, total_stops } = v.json ?? {};
         if (!roblox_username || !route) return errorResponse(400, "roblox_username and route required");
 
         const driver = await resolveDriverByRoblox(String(roblox_username));
