@@ -47,6 +47,39 @@ export type Database = {
         }
         Relationships: []
       }
+      dispatcher_log: {
+        Row: {
+          action: string
+          actor_id: string
+          created_at: string
+          id: string
+          meta: Json
+          target_id: string | null
+          target_kind: string | null
+          target_label: string | null
+        }
+        Insert: {
+          action: string
+          actor_id: string
+          created_at?: string
+          id?: string
+          meta?: Json
+          target_id?: string | null
+          target_kind?: string | null
+          target_label?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          created_at?: string
+          id?: string
+          meta?: Json
+          target_id?: string | null
+          target_kind?: string | null
+          target_label?: string | null
+        }
+        Relationships: []
+      }
       driver_availability: {
         Row: {
           created_at: string
@@ -77,6 +110,99 @@ export type Database = {
         }
         Relationships: []
       }
+      driver_presence: {
+        Row: {
+          note: string | null
+          status: Database["public"]["Enums"]["driver_presence_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          note?: string | null
+          status?: Database["public"]["Enums"]["driver_presence_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          note?: string | null
+          status?: Database["public"]["Enums"]["driver_presence_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      driver_reports: {
+        Row: {
+          archived: boolean
+          assigned_dispatcher_id: string | null
+          attachments: Json
+          category: Database["public"]["Enums"]["report_category"]
+          created_at: string
+          description: string
+          driver_id: string
+          duty_id: string | null
+          duty_number: string | null
+          id: string
+          report_code: string | null
+          route: string | null
+          status: Database["public"]["Enums"]["report_status"]
+          updated_at: string
+          vehicle_id: string | null
+          vehicle_label: string | null
+        }
+        Insert: {
+          archived?: boolean
+          assigned_dispatcher_id?: string | null
+          attachments?: Json
+          category: Database["public"]["Enums"]["report_category"]
+          created_at?: string
+          description: string
+          driver_id: string
+          duty_id?: string | null
+          duty_number?: string | null
+          id?: string
+          report_code?: string | null
+          route?: string | null
+          status?: Database["public"]["Enums"]["report_status"]
+          updated_at?: string
+          vehicle_id?: string | null
+          vehicle_label?: string | null
+        }
+        Update: {
+          archived?: boolean
+          assigned_dispatcher_id?: string | null
+          attachments?: Json
+          category?: Database["public"]["Enums"]["report_category"]
+          created_at?: string
+          description?: string
+          driver_id?: string
+          duty_id?: string | null
+          duty_number?: string | null
+          id?: string
+          report_code?: string | null
+          route?: string | null
+          status?: Database["public"]["Enums"]["report_status"]
+          updated_at?: string
+          vehicle_id?: string | null
+          vehicle_label?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_reports_duty_id_fkey"
+            columns: ["duty_id"]
+            isOneToOne: false
+            referencedRelation: "duties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "driver_reports_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       duties: {
         Row: {
           assigned_to: string | null
@@ -88,6 +214,9 @@ export type Database = {
           duty_number: string
           end_time: string
           id: string
+          live_status: Database["public"]["Enums"]["duty_status"] | null
+          live_status_note: string | null
+          live_status_updated_at: string | null
           notes: string | null
           priority: Database["public"]["Enums"]["duty_priority"]
           route: string
@@ -106,6 +235,9 @@ export type Database = {
           duty_number: string
           end_time: string
           id?: string
+          live_status?: Database["public"]["Enums"]["duty_status"] | null
+          live_status_note?: string | null
+          live_status_updated_at?: string | null
           notes?: string | null
           priority?: Database["public"]["Enums"]["duty_priority"]
           route: string
@@ -124,6 +256,9 @@ export type Database = {
           duty_number?: string
           end_time?: string
           id?: string
+          live_status?: Database["public"]["Enums"]["duty_status"] | null
+          live_status_note?: string | null
+          live_status_updated_at?: string | null
           notes?: string | null
           priority?: Database["public"]["Enums"]["duty_priority"]
           route?: string
@@ -236,6 +371,181 @@ export type Database = {
         }
         Relationships: []
       }
+      incident_notes: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          incident_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          incident_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          incident_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incident_notes_incident_id_fkey"
+            columns: ["incident_id"]
+            isOneToOne: false
+            referencedRelation: "incidents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      incidents: {
+        Row: {
+          attachments: Json
+          created_at: string
+          description: string
+          duty_id: string | null
+          duty_number: string | null
+          escalated: boolean
+          id: string
+          incident_code: string | null
+          location: string | null
+          occurred_at: string | null
+          priority: Database["public"]["Enums"]["incident_priority"]
+          reporter_id: string
+          route: string | null
+          status: Database["public"]["Enums"]["incident_status"]
+          type: Database["public"]["Enums"]["incident_type"]
+          updated_at: string
+          vehicle_id: string | null
+          vehicle_label: string | null
+        }
+        Insert: {
+          attachments?: Json
+          created_at?: string
+          description: string
+          duty_id?: string | null
+          duty_number?: string | null
+          escalated?: boolean
+          id?: string
+          incident_code?: string | null
+          location?: string | null
+          occurred_at?: string | null
+          priority?: Database["public"]["Enums"]["incident_priority"]
+          reporter_id: string
+          route?: string | null
+          status?: Database["public"]["Enums"]["incident_status"]
+          type: Database["public"]["Enums"]["incident_type"]
+          updated_at?: string
+          vehicle_id?: string | null
+          vehicle_label?: string | null
+        }
+        Update: {
+          attachments?: Json
+          created_at?: string
+          description?: string
+          duty_id?: string | null
+          duty_number?: string | null
+          escalated?: boolean
+          id?: string
+          incident_code?: string | null
+          location?: string | null
+          occurred_at?: string | null
+          priority?: Database["public"]["Enums"]["incident_priority"]
+          reporter_id?: string
+          route?: string | null
+          status?: Database["public"]["Enums"]["incident_status"]
+          type?: Database["public"]["Enums"]["incident_type"]
+          updated_at?: string
+          vehicle_id?: string | null
+          vehicle_label?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incidents_duty_id_fkey"
+            columns: ["duty_id"]
+            isOneToOne: false
+            referencedRelation: "duties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      internal_messages: {
+        Row: {
+          audience: Json
+          audience_kind: Database["public"]["Enums"]["message_audience_kind"]
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          kind: Database["public"]["Enums"]["message_kind"]
+          subject: string
+        }
+        Insert: {
+          audience?: Json
+          audience_kind: Database["public"]["Enums"]["message_audience_kind"]
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["message_kind"]
+          subject: string
+        }
+        Update: {
+          audience?: Json
+          audience_kind?: Database["public"]["Enums"]["message_audience_kind"]
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["message_kind"]
+          subject?: string
+        }
+        Relationships: []
+      }
+      message_recipients: {
+        Row: {
+          created_at: string
+          id: string
+          message_id: string
+          read_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message_id: string
+          read_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message_id?: string
+          read_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_recipients_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "internal_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null
@@ -303,6 +613,38 @@ export type Database = {
           id?: string
         }
         Relationships: []
+      }
+      report_comments: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          report_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          report_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          report_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_comments_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "driver_reports"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       suppressed_emails: {
         Row: {
@@ -390,6 +732,44 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      vehicle_maintenance: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          kind: string
+          performed_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          kind: string
+          performed_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          kind?: string
+          performed_at?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_maintenance_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       vehicles: {
         Row: {
@@ -484,9 +864,30 @@ export type Database = {
         | "general"
       app_role: "admin" | "driver" | "dyspozytor"
       availability_type: "unavailable" | "preferred"
+      driver_presence_status: "active" | "break" | "offline" | "unavailable"
       duty_priority: "low" | "normal" | "high"
-      duty_status: "unassigned" | "pending" | "assigned"
+      duty_status:
+        | "unassigned"
+        | "pending"
+        | "assigned"
+        | "on_route"
+        | "on_break"
+        | "delayed"
+        | "vehicle_failure"
+        | "emergency"
+        | "completed"
       fuel_type: "Diesel" | "Elektryczny" | "Hybrydowy" | "Wodorowy"
+      incident_priority: "critical" | "high" | "medium" | "low"
+      incident_status: "reported" | "in_progress" | "resolved" | "closed"
+      incident_type:
+        | "collision"
+        | "breakdown"
+        | "blockage"
+        | "major_delay"
+        | "passenger_emergency"
+        | "security"
+        | "infrastructure"
+        | "other"
       leave_type:
         | "wypoczynkowy"
         | "na_zadanie"
@@ -498,8 +899,29 @@ export type Database = {
         | "ojcowski"
         | "szkoleniowy"
         | "inny"
+      message_audience_kind:
+        | "all_drivers"
+        | "drivers"
+        | "routes"
+        | "vehicles"
+        | "divisions"
+      message_kind: "announcement" | "urgent" | "service_change" | "diversion"
+      report_category:
+        | "operational"
+        | "complaint"
+        | "infrastructure"
+        | "vehicle"
+        | "schedule"
+        | "info"
+      report_status: "new" | "in_review" | "action_taken" | "closed"
       vacation_status: "pending" | "approved" | "rejected"
-      vehicle_status: "available" | "assigned" | "out_of_service" | "reserve"
+      vehicle_status:
+        | "available"
+        | "assigned"
+        | "out_of_service"
+        | "reserve"
+        | "in_service"
+        | "under_repair"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -636,9 +1058,32 @@ export const Constants = {
       ],
       app_role: ["admin", "driver", "dyspozytor"],
       availability_type: ["unavailable", "preferred"],
+      driver_presence_status: ["active", "break", "offline", "unavailable"],
       duty_priority: ["low", "normal", "high"],
-      duty_status: ["unassigned", "pending", "assigned"],
+      duty_status: [
+        "unassigned",
+        "pending",
+        "assigned",
+        "on_route",
+        "on_break",
+        "delayed",
+        "vehicle_failure",
+        "emergency",
+        "completed",
+      ],
       fuel_type: ["Diesel", "Elektryczny", "Hybrydowy", "Wodorowy"],
+      incident_priority: ["critical", "high", "medium", "low"],
+      incident_status: ["reported", "in_progress", "resolved", "closed"],
+      incident_type: [
+        "collision",
+        "breakdown",
+        "blockage",
+        "major_delay",
+        "passenger_emergency",
+        "security",
+        "infrastructure",
+        "other",
+      ],
       leave_type: [
         "wypoczynkowy",
         "na_zadanie",
@@ -651,8 +1096,32 @@ export const Constants = {
         "szkoleniowy",
         "inny",
       ],
+      message_audience_kind: [
+        "all_drivers",
+        "drivers",
+        "routes",
+        "vehicles",
+        "divisions",
+      ],
+      message_kind: ["announcement", "urgent", "service_change", "diversion"],
+      report_category: [
+        "operational",
+        "complaint",
+        "infrastructure",
+        "vehicle",
+        "schedule",
+        "info",
+      ],
+      report_status: ["new", "in_review", "action_taken", "closed"],
       vacation_status: ["pending", "approved", "rejected"],
-      vehicle_status: ["available", "assigned", "out_of_service", "reserve"],
+      vehicle_status: [
+        "available",
+        "assigned",
+        "out_of_service",
+        "reserve",
+        "in_service",
+        "under_repair",
+      ],
     },
   },
 } as const
