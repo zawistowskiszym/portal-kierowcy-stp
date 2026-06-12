@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getMyNextDuty, getMyUpcomingDuties, listAnnouncements } from "@/lib/portal.functions";
 import { Badge } from "@/components/ui/badge";
+import { RobloxLivePanel } from "@/components/roblox-live-panel";
 
 export const Route = createFileRoute("/_authenticated/pulpit")({
   head: () => ({ meta: [{ title: "Pulpit — Portal STP" }] }),
