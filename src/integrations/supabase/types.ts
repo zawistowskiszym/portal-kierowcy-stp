@@ -799,6 +799,7 @@ export type Database = {
           created_at: string
           depot: string | null
           discord_username: string | null
+          email_notifications: boolean
           employee_id: string | null
           full_name: string
           id: string
@@ -812,6 +813,7 @@ export type Database = {
           created_at?: string
           depot?: string | null
           discord_username?: string | null
+          email_notifications?: boolean
           employee_id?: string | null
           full_name: string
           id: string
@@ -825,6 +827,7 @@ export type Database = {
           created_at?: string
           depot?: string | null
           discord_username?: string | null
+          email_notifications?: boolean
           employee_id?: string | null
           full_name?: string
           id?: string

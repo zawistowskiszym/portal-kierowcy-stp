@@ -173,8 +173,37 @@ export const createAnnouncement = createServerFn({ method: "POST" })
       .select()
       .single();
     if (error) throw new Error(error.message);
+
+    // Email everyone who opted in
+    try {
+      const { notifyByEmail, lookupAllNotifiableEmails } = await import(
+        "@/lib/email/notify.server"
+      );
+      const recipients = await lookupAllNotifiableEmails();
+      await Promise.all(
+        recipients.map((r) =>
+          notifyByEmail({
+            templateName: "new-announcement",
+            recipientEmail: r.email,
+            idempotencyKey: `ann-${row.id}-${r.id}`,
+            templateData: {
+              recipientName: r.full_name?.split(" ")[0] ?? null,
+              title: data.title,
+              body: data.body,
+              category: data.category,
+              severity: "info",
+              appUrl: "https://panel.skuszawyjice.eu",
+            },
+          }),
+        ),
+      );
+    } catch (e) {
+      console.error("notify announcement failed", e);
+    }
+
     return row;
   });
+
 
 export const updateAnnouncement = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

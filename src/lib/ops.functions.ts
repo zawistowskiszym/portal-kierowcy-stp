@@ -817,8 +817,42 @@ export const sendDirectMessage = createServerFn({ method: "POST" })
     });
     if (recipientInsertError) throw new Error(recipientInsertError.message);
 
+    // Fire-and-forget email notification
+    try {
+      const [{ notifyByEmail, lookupNotifiableEmails }] = await Promise.all([
+        import("@/lib/email/notify.server"),
+      ]);
+      const [senderProfile] = await Promise.all([
+        supabaseAdmin
+          .from("profiles")
+          .select("full_name")
+          .eq("id", context.userId)
+          .maybeSingle(),
+      ]);
+      const recipients = await lookupNotifiableEmails([data.recipient_id]);
+      await Promise.all(
+        recipients.map((r) =>
+          notifyByEmail({
+            templateName: "new-message",
+            recipientEmail: r.email,
+            idempotencyKey: `msg-${messageId}-${r.id}`,
+            templateData: {
+              recipientName: r.full_name?.split(" ")[0] ?? null,
+              senderName: (senderProfile.data as any)?.full_name ?? "Pracownik STP",
+              subject,
+              body: data.body,
+              appUrl: "https://panel.skuszawyjice.eu",
+            },
+          }),
+        ),
+      );
+    } catch (e) {
+      console.error("notify new-message failed", e);
+    }
+
     return { ok: true, id: messageId };
   });
+
 
 // ============ DRIVER → DISPATCH MESSAGES ============
 
@@ -858,9 +892,42 @@ export const sendDriverMessage = createServerFn({ method: "POST" })
       const rows = recipientIds.map((uid) => ({ message_id: messageId, user_id: uid }));
       const { error: iErr } = await context.supabase.from("message_recipients").insert(rows);
       if (iErr) throw new Error(iErr.message);
+
+      // Email each dispatcher/admin recipient
+      try {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        const { notifyByEmail, lookupNotifiableEmails } = await import(
+          "@/lib/email/notify.server"
+        );
+        const senderProfile = await supabaseAdmin
+          .from("profiles")
+          .select("full_name")
+          .eq("id", context.userId)
+          .maybeSingle();
+        const recipients = await lookupNotifiableEmails(recipientIds);
+        await Promise.all(
+          recipients.map((r) =>
+            notifyByEmail({
+              templateName: "new-message",
+              recipientEmail: r.email,
+              idempotencyKey: `msg-${messageId}-${r.id}`,
+              templateData: {
+                recipientName: r.full_name?.split(" ")[0] ?? null,
+                senderName: (senderProfile.data as any)?.full_name ?? "Kierowca STP",
+                subject: data.subject,
+                body: data.body,
+                appUrl: "https://panel.skuszawyjice.eu",
+              },
+            }),
+          ),
+        );
+      } catch (e) {
+        console.error("notify driver-message failed", e);
+      }
     }
     return { ok: true, recipientCount: recipientIds.length };
   });
+
 
 export const listMyOutbox = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
