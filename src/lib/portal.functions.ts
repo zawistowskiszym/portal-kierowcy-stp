@@ -1035,12 +1035,17 @@ export const getMyRobloxLive = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
     const today = new Date().toISOString().slice(0, 10);
-    const [dutyRes, posRes, presRes, cmdsRes] = await Promise.all([
+    const [liveRes, dutyRes, posRes, presRes, cmdsRes] = await Promise.all([
+      supabase
+        .from("driver_live")
+        .select(
+          "live_status, live_status_updated_at, live_status_note, duty_number, pis_route, pis_headsign, pis_current_stop, pis_next_stop, pis_delay_sec, pis_updated_at, updated_at",
+        )
+        .eq("user_id", userId)
+        .maybeSingle(),
       supabase
         .from("duties")
-        .select(
-          "id, duty_number, route, vehicle_label, depot, start_time, end_time, live_status, live_status_updated_at, live_status_note, pis_route, pis_headsign, pis_current_stop, pis_next_stop, pis_delay_sec, pis_updated_at",
-        )
+        .select("id, duty_number, route, vehicle_label, depot, start_time, end_time")
         .eq("assigned_to", userId)
         .eq("duty_date", today)
         .maybeSingle(),
@@ -1061,8 +1066,30 @@ export const getMyRobloxLive = createServerFn({ method: "GET" })
         .order("created_at", { ascending: false })
         .limit(10),
     ]);
+
+    const live: any = liveRes.data ?? null;
+    const duty: any = dutyRes.data ?? null;
+    const merged = live || duty
+      ? {
+          id: duty?.id ?? null,
+          duty_number: duty?.duty_number ?? live?.duty_number ?? null,
+          route: duty?.route ?? null,
+          vehicle_label: duty?.vehicle_label ?? null,
+          depot: duty?.depot ?? null,
+          live_status: live?.live_status ?? null,
+          live_status_updated_at: live?.live_status_updated_at ?? null,
+          live_status_note: live?.live_status_note ?? null,
+          pis_route: live?.pis_route ?? null,
+          pis_headsign: live?.pis_headsign ?? null,
+          pis_current_stop: live?.pis_current_stop ?? null,
+          pis_next_stop: live?.pis_next_stop ?? null,
+          pis_delay_sec: live?.pis_delay_sec ?? null,
+          pis_updated_at: live?.pis_updated_at ?? null,
+        }
+      : null;
+
     return {
-      duty: dutyRes.data ?? null,
+      duty: merged,
       position: posRes.data ?? null,
       presence: presRes.data ?? null,
       commands: cmdsRes.data ?? [],
