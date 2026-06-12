@@ -133,7 +133,7 @@ function AuthPage() {
           )}
 
           <p className="text-[11px] text-muted-foreground text-center">
-            Rejestracja jest wyłączona. Konta zakłada wyłącznie administrator.
+            Konta zakłada wyłącznie administrator.
           </p>
         </div>
       </div>
