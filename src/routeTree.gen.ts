@@ -14,6 +14,7 @@ import { Route as BootstrapRouteImport } from './routes/bootstrap'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as AuthenticatedZdarzenieRouteImport } from './routes/_authenticated/zdarzenie'
 import { Route as AuthenticatedUrlopyRouteImport } from './routes/_authenticated/urlopy'
 import { Route as AuthenticatedStatystykiRouteImport } from './routes/_authenticated/statystyki'
@@ -24,6 +25,7 @@ import { Route as AuthenticatedOgloszeniaRouteImport } from './routes/_authentic
 import { Route as AuthenticatedGrafikRouteImport } from './routes/_authenticated/grafik'
 import { Route as AuthenticatedDyspozycyjnoscRouteImport } from './routes/_authenticated/dyspozycyjnosc'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
 import { Route as AuthenticatedAdminUzytkownicyRouteImport } from './routes/_authenticated/admin/uzytkownicy'
 import { Route as AuthenticatedAdminUrlopyRouteImport } from './routes/_authenticated/admin/urlopy'
 import { Route as AuthenticatedAdminSluzbyRouteImport } from './routes/_authenticated/admin/sluzby'
@@ -38,6 +40,8 @@ import { Route as AuthenticatedAdminKierowcyRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminIncydentyRouteImport } from './routes/_authenticated/admin/incydenty'
 import { Route as AuthenticatedAdminDziennikRouteImport } from './routes/_authenticated/admin/dziennik'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin/dashboard'
+import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -74,6 +78,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmailUnsubscribeRoute = EmailUnsubscribeRouteImport.update({
+  id: '/email/unsubscribe',
+  path: '/email/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedZdarzenieRoute = AuthenticatedZdarzenieRouteImport.update({
@@ -126,6 +135,11 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => AuthenticatedRoute,
+} as any)
+const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
+  id: '/lovable/email/suppression',
+  path: '/lovable/email/suppression',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminUzytkownicyRoute =
   AuthenticatedAdminUzytkownicyRouteImport.update({
@@ -209,6 +223,18 @@ const AuthenticatedAdminDashboardRoute =
     id: '/dashboard',
     path: '/dashboard',
     getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const LovableEmailTransactionalSendRoute =
+  LovableEmailTransactionalSendRouteImport.update({
+    id: '/lovable/email/transactional/send',
+    path: '/lovable/email/transactional/send',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
@@ -296,6 +322,7 @@ export interface FileRoutesByFullPath {
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
   '/zdarzenie': typeof AuthenticatedZdarzenieRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -310,6 +337,7 @@ export interface FileRoutesByFullPath {
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
   '/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/sluzba/$dutyId/mapa': typeof AuthenticatedSluzbaDutyIdMapaRoute
   '/sluzba/$dutyId/raport': typeof AuthenticatedSluzbaDutyIdRaportRoute
   '/sluzba/$dutyId/rozklad': typeof AuthenticatedSluzbaDutyIdRozkladRoute
@@ -323,6 +351,8 @@ export interface FileRoutesByFullPath {
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -339,6 +369,7 @@ export interface FileRoutesByTo {
   '/statystyki': typeof AuthenticatedStatystykiRoute
   '/urlopy': typeof AuthenticatedUrlopyRoute
   '/zdarzenie': typeof AuthenticatedZdarzenieRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -353,6 +384,7 @@ export interface FileRoutesByTo {
   '/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
   '/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/sluzba/$dutyId/mapa': typeof AuthenticatedSluzbaDutyIdMapaRoute
   '/sluzba/$dutyId/raport': typeof AuthenticatedSluzbaDutyIdRaportRoute
   '/sluzba/$dutyId/rozklad': typeof AuthenticatedSluzbaDutyIdRozkladRoute
@@ -366,6 +398,8 @@ export interface FileRoutesByTo {
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -384,6 +418,7 @@ export interface FileRoutesById {
   '/_authenticated/statystyki': typeof AuthenticatedStatystykiRoute
   '/_authenticated/urlopy': typeof AuthenticatedUrlopyRoute
   '/_authenticated/zdarzenie': typeof AuthenticatedZdarzenieRoute
+  '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/dziennik': typeof AuthenticatedAdminDziennikRoute
   '/_authenticated/admin/incydenty': typeof AuthenticatedAdminIncydentyRoute
@@ -398,6 +433,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/sluzby': typeof AuthenticatedAdminSluzbyRoute
   '/_authenticated/admin/urlopy': typeof AuthenticatedAdminUrlopyRoute
   '/_authenticated/admin/uzytkownicy': typeof AuthenticatedAdminUzytkownicyRoute
+  '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/_authenticated/sluzba/$dutyId/mapa': typeof AuthenticatedSluzbaDutyIdMapaRoute
   '/_authenticated/sluzba/$dutyId/raport': typeof AuthenticatedSluzbaDutyIdRaportRoute
   '/_authenticated/sluzba/$dutyId/rozklad': typeof AuthenticatedSluzbaDutyIdRozkladRoute
@@ -411,6 +447,8 @@ export interface FileRoutesById {
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
+  '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -429,6 +467,7 @@ export interface FileRouteTypes {
     | '/statystyki'
     | '/urlopy'
     | '/zdarzenie'
+    | '/email/unsubscribe'
     | '/admin/dashboard'
     | '/admin/dziennik'
     | '/admin/incydenty'
@@ -443,6 +482,7 @@ export interface FileRouteTypes {
     | '/admin/sluzby'
     | '/admin/urlopy'
     | '/admin/uzytkownicy'
+    | '/lovable/email/suppression'
     | '/sluzba/$dutyId/mapa'
     | '/sluzba/$dutyId/raport'
     | '/sluzba/$dutyId/rozklad'
@@ -456,6 +496,8 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -472,6 +514,7 @@ export interface FileRouteTypes {
     | '/statystyki'
     | '/urlopy'
     | '/zdarzenie'
+    | '/email/unsubscribe'
     | '/admin/dashboard'
     | '/admin/dziennik'
     | '/admin/incydenty'
@@ -486,6 +529,7 @@ export interface FileRouteTypes {
     | '/admin/sluzby'
     | '/admin/urlopy'
     | '/admin/uzytkownicy'
+    | '/lovable/email/suppression'
     | '/sluzba/$dutyId/mapa'
     | '/sluzba/$dutyId/raport'
     | '/sluzba/$dutyId/rozklad'
@@ -499,6 +543,8 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
   id:
     | '__root__'
     | '/'
@@ -516,6 +562,7 @@ export interface FileRouteTypes {
     | '/_authenticated/statystyki'
     | '/_authenticated/urlopy'
     | '/_authenticated/zdarzenie'
+    | '/email/unsubscribe'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/dziennik'
     | '/_authenticated/admin/incydenty'
@@ -530,6 +577,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/sluzby'
     | '/_authenticated/admin/urlopy'
     | '/_authenticated/admin/uzytkownicy'
+    | '/lovable/email/suppression'
     | '/_authenticated/sluzba/$dutyId/mapa'
     | '/_authenticated/sluzba/$dutyId/raport'
     | '/_authenticated/sluzba/$dutyId/rozklad'
@@ -543,6 +591,8 @@ export interface FileRouteTypes {
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/queue/process'
+    | '/lovable/email/transactional/preview'
+    | '/lovable/email/transactional/send'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -551,6 +601,8 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BootstrapRoute: typeof BootstrapRoute
   ZaproszenieRoute: typeof ZaproszenieRoute
+  EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
+  LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicRobloxAckRoute: typeof ApiPublicRobloxAckRoute
   ApiPublicRobloxDriverRoute: typeof ApiPublicRobloxDriverRoute
   ApiPublicRobloxDutyRoute: typeof ApiPublicRobloxDutyRoute
@@ -560,6 +612,8 @@ export interface RootRouteChildren {
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
+  LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -597,6 +651,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/email/unsubscribe': {
+      id: '/email/unsubscribe'
+      path: '/email/unsubscribe'
+      fullPath: '/email/unsubscribe'
+      preLoaderRoute: typeof EmailUnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/zdarzenie': {
@@ -668,6 +729,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/lovable/email/suppression': {
+      id: '/lovable/email/suppression'
+      path: '/lovable/email/suppression'
+      fullPath: '/lovable/email/suppression'
+      preLoaderRoute: typeof LovableEmailSuppressionRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/uzytkownicy': {
       id: '/_authenticated/admin/uzytkownicy'
@@ -766,6 +834,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/dashboard'
       preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/lovable/email/transactional/send': {
+      id: '/lovable/email/transactional/send'
+      path: '/lovable/email/transactional/send'
+      fullPath: '/lovable/email/transactional/send'
+      preLoaderRoute: typeof LovableEmailTransactionalSendRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
@@ -944,6 +1026,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BootstrapRoute: BootstrapRoute,
   ZaproszenieRoute: ZaproszenieRoute,
+  EmailUnsubscribeRoute: EmailUnsubscribeRoute,
+  LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicRobloxAckRoute: ApiPublicRobloxAckRoute,
   ApiPublicRobloxDriverRoute: ApiPublicRobloxDriverRoute,
   ApiPublicRobloxDutyRoute: ApiPublicRobloxDutyRoute,
@@ -953,6 +1037,8 @@ const rootRouteChildren: RootRouteChildren = {
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
+  LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
