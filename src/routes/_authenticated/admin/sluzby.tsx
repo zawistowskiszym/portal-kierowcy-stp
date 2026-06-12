@@ -609,6 +609,7 @@ function BulkGeneratorDialog({ open, onOpenChange, defaultDate, depots, onSubmit
           <DialogTitle>Generator zbiorczy</DialogTitle>
           <DialogDescription>Utworzy N służb o numerach <span className="font-mono">linia/1</span> … <span className="font-mono">linia/N</span>.</DialogDescription>
         </DialogHeader>
+        <datalist id="line-presets">{LINE_PRESETS.map(p => <option key={p.line} value={p.line} />)}</datalist>
         <form onSubmit={async (e) => { e.preventDefault(); try { await onSubmit({ ...form, count: Number(form.count) }); } catch (err: any) { toast.error(err?.message); } }} className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1"><Label>Data</Label><Input type="date" required value={form.duty_date} onChange={(e) => setForm({ ...form, duty_date: e.target.value })} /></div>
