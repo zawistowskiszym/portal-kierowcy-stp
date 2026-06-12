@@ -26,7 +26,7 @@ export const Route = createFileRoute("/api/public/roblox/driver")({
             .eq("assigned_to", driver.id).eq("duty_date", today).maybeSingle(),
           supabaseAdmin.from("message_recipients")
             .select("read_at, internal_messages!inner(id, kind, title, body, created_at)")
-            .eq("user_id", driver.id).is("read_at", null).order("created_at", { foreignTable: "internal_messages", ascending: false }).limit(20),
+            .eq("user_id", driver.id).is("read_at", null).limit(20),
           supabaseAdmin.from("roblox_commands")
             .select("id, type, payload, created_at")
             .eq("target_user_id", driver.id).is("acked_at", null).order("created_at", { ascending: true }).limit(20),
